@@ -1,0 +1,97 @@
+name: Mihrab
+options:
+  bundleIdPrefix: com.caferkarakaya.mihrab
+  deploymentTarget:
+    iOS: "26.0"
+  developmentLanguage: en
+  knownRegions:
+    - en
+    - Base
+    - tr
+    - ar
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    SWIFT_STRICT_CONCURRENCY: minimal
+
+schemes:
+  Mihrab:
+    build:
+      targets:
+        Mihrab: all
+        MihrabWidgets: all
+    run:
+      config: Debug
+      language: tr
+      region: TR
+    test:
+      targets:
+        - MihrabTests
+
+targets:
+  Mihrab:
+    type: application
+    platform: iOS
+    deploymentTarget: "26.0"
+    sources:
+      - path: Mihrab
+        excludes:
+          - "Resources/Generated/*.png"
+    settings:
+      base:
+        PRODUCT_NAME: Mihrab
+        DEFINES_MODULE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: com.caferkarakaya.mihrab
+        TARGETED_DEVICE_FAMILY: "1"
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations: UIInterfaceOrientationPortrait
+        INFOPLIST_KEY_NSLocationWhenInUseUsageDescription: "Mihrab uses your location to calculate precise prayer times, Qibla direction, and nearby mosques."
+        INFOPLIST_KEY_NSCameraUsageDescription: "Camera is used only to show Qibla direction in AR. Nothing is recorded or uploaded."
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        INFOPLIST_KEY_CFBundleDisplayName: Mihrab
+        INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.lifestyle
+        INFOPLIST_KEY_UIAppFonts: AmiriQuran-Regular.ttf
+        INFOPLIST_KEY_NSSupportsLiveActivities: YES
+        INFOPLIST_KEY_NSSupportsLiveActivitiesFrequentUpdates: YES
+        CODE_SIGN_ENTITLEMENTS: Mihrab/Mihrab.entitlements
+    dependencies:
+      - target: MihrabWidgets
+        embed: true
+
+  MihrabWidgets:
+    type: app-extension
+    platform: iOS
+    deploymentTarget: "26.0"
+    sources:
+      - path: MihrabWidgets
+      - path: Mihrab/Core/Shared
+    resources:
+      - path: Mihrab/Resources/Localizable.xcstrings
+    settings:
+      base:
+        PRODUCT_NAME: MihrabWidgets
+        PRODUCT_BUNDLE_IDENTIFIER: com.caferkarakaya.mihrab.widgets
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: MihrabWidgets/Info.plist
+        CODE_SIGN_ENTITLEMENTS: MihrabWidgets/MihrabWidgets.entitlements
+
+  MihrabTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "26.0"
+    sources:
+      - path: MihrabTests
+      - path: Mihrab/Core/Shared
+      - path: Mihrab/Data/BundledContent.swift
+    resources:
+      - path: Mihrab/Data/Bundled
+    settings:
+      base:
+        PRODUCT_NAME: MihrabTests
+        PRODUCT_BUNDLE_IDENTIFIER: com.caferkarakaya.mihrab.tests
+        GENERATE_INFOPLIST_FILE: YES
+    dependencies:
+      - target: Mihrab

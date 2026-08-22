@@ -1,0 +1,31 @@
+# macOS junk
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Xcode build artifacts
+DerivedData/
+build/
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Xcode user data
+*.xcuserdatad/
+xcuserdata/
+*.xcscmblueprint
+*.xccheckout
+
+# Swift Package Manager
+.build/
+Packages/
+Package.pins
+Package.resolved
+.swiftpm/
+
+# CocoaPods
+Pods/
+
+# Misc
+*.hmap
+*.moved-aside

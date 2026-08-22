@@ -1,0 +1,72 @@
+[
+  {
+    "id": "hijri-new-year",
+    "hijriMonth": 1, "hijriDay": 1,
+    "nameEn": "Hijri New Year", "nameTr": "Hicri Yılbaşı", "nameAr": "رأس السنة الهجرية",
+    "descEn": "The first day of Muharram marks the beginning of the Islamic lunar year, commemorating the Prophet's migration (Hijrah) from Makkah to Madinah.",
+    "descTr": "Muharrem ayının ilk günü, Peygamber Efendimizin Mekke'den Medine'ye hicretini anarak İslami kameri yılın başlangıcını işaret eder."
+  },
+  {
+    "id": "ashura",
+    "hijriMonth": 1, "hijriDay": 10,
+    "nameEn": "Day of Ashura", "nameTr": "Aşure Günü", "nameAr": "يوم عاشوراء",
+    "descEn": "The 10th of Muharram. The Prophet fasted on this day and recommended fasting the day before or after as well.",
+    "descTr": "Muharrem'in 10. günü. Peygamber Efendimiz bu günde oruç tutmuş, bir gün öncesi veya sonrasıyla birlikte tutulmasını tavsiye etmiştir."
+  },
+  {
+    "id": "mawlid",
+    "hijriMonth": 3, "hijriDay": 12,
+    "nameEn": "Mawlid al-Nabi", "nameTr": "Mevlid Kandili", "nameAr": "المولد النبوي",
+    "descEn": "The birthday of Prophet Muhammad (peace be upon him), observed on the 12th of Rabi' al-Awwal.",
+    "descTr": "Peygamber Efendimizin (s.a.v.) doğum günü, Rebiülevvel ayının 12. gecesi idrak edilir."
+  },
+  {
+    "id": "raghaib",
+    "hijriMonth": 7, "hijriDay": 1,
+    "nameEn": "Laylat al-Raghaib", "nameTr": "Regaib Kandili", "nameAr": "ليلة الرغائب",
+    "descEn": "The night marking the beginning of the blessed three months, observed on the first Friday night of Rajab.",
+    "descTr": "Üç ayların başlangıcını müjdeleyen gece; Recep ayının ilk Cuma gecesi idrak edilir."
+  },
+  {
+    "id": "miraj",
+    "hijriMonth": 7, "hijriDay": 27,
+    "nameEn": "Laylat al-Mi'raj", "nameTr": "Miraç Kandili", "nameAr": "ليلة الإسراء والمعراج",
+    "descEn": "The night of the Prophet's miraculous ascension through the heavens, during which the five daily prayers were prescribed.",
+    "descTr": "Peygamber Efendimizin miracı; beş vakit namazın farz kılındığı mübarek gece."
+  },
+  {
+    "id": "barat",
+    "hijriMonth": 8, "hijriDay": 15,
+    "nameEn": "Laylat al-Bara'ah", "nameTr": "Berat Kandili", "nameAr": "ليلة البراءة",
+    "descEn": "The night of the 15th of Sha'ban, a night of forgiveness and mercy, preparing hearts for Ramadan.",
+    "descTr": "Şaban ayının 15. gecesi; af ve mağfiret gecesi olup Ramazan'a gönülleri hazırlar."
+  },
+  {
+    "id": "ramadan-start",
+    "hijriMonth": 9, "hijriDay": 1,
+    "nameEn": "Ramadan Begins", "nameTr": "Ramazan Başlangıcı", "nameAr": "بداية رمضان",
+    "descEn": "The first day of the holy month of fasting, prayer, and reflection.",
+    "descTr": "Oruç, ibadet ve tefekkür ayı olan mübarek Ramazan'ın ilk günü."
+  },
+  {
+    "id": "laylat-al-qadr",
+    "hijriMonth": 9, "hijriDay": 27,
+    "nameEn": "Laylat al-Qadr", "nameTr": "Kadir Gecesi", "nameAr": "ليلة القدر",
+    "descEn": "The Night of Decree, better than a thousand months, sought in the last ten nights of Ramadan.",
+    "descTr": "Bin aydan hayırlı olan Kadir Gecesi; Ramazan'ın son on gecesinde aranır."
+  },
+  {
+    "id": "eid-al-fitr",
+    "hijriMonth": 10, "hijriDay": 1,
+    "nameEn": "Eid al-Fitr", "nameTr": "Ramazan Bayramı", "nameAr": "عيد الفطر",
+    "descEn": "The festival of breaking the fast, celebrated on the first three days of Shawwal.",
+    "descTr": "Oruç açma bayramı; Şevval ayının ilk üç günü kutlanır."
+  },
+  {
+    "id": "eid-al-adha",
+    "hijriMonth": 12, "hijriDay": 10,
+    "nameEn": "Eid al-Adha", "nameTr": "Kurban Bayramı", "nameAr": "عيد الأضحى",
+    "descEn": "The festival of sacrifice, commemorating Prophet Ibrahim's devotion, observed during the Hajj season.",
+    "descTr": "Hz. İbrahim'in sadakatini anan kurban bayramı; hac mevsiminde idrak edilir."
+  }
+]
