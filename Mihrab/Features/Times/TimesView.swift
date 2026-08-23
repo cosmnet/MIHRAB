@@ -7,12 +7,20 @@ struct TimesView: View {
     @Environment(Theme.self) private var theme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
+    /// Day list or month table. One screen, two densities.
+    enum Mode: String, CaseIterable, Identifiable {
+        case day, month
+        var id: String { rawValue }
+        var localizedName: String { self == .day ? L10n.tmzModeDay : L10n.tmzModeMonth }
+    }
+
     @State private var dayOffset = 0
     @State private var displayedDay: DayPrayerTimes?
     @State private var showMonthly = false
     @State private var showSettings = false
     @State private var appeared = false
     @State private var isLoadingDay = false
+    @State private var mode: Mode = .day
 
     private var displayedDate: Date {
         Calendar.current.date(byAdding: .day, value: dayOffset, to: Date()) ?? Date()
@@ -21,18 +29,28 @@ struct TimesView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                AuroraBackground(ramadanMode: theme.isRamadanMode)
+                MihrabBackdrop(surface: .times, ramadanMode: theme.isRamadanMode)
 
                 ScrollView {
                     VStack(spacing: 20) {
                         header
-                        dayPager
+                        modePicker
 
-                        if let displayedDay {
-                            prayerRows(for: displayedDay)
-                            SunArcView(times: displayedDay, date: displayedDate)
-                                .padding(.top, 4)
-                        } else if isLoadingDay || repository.isLoading {
+                        if mode == .month {
+                            InlineMonthTable(anchorDate: displayedDate) { showMonthly = true }
+                                .transition(.asymmetric(
+                                    insertion: .move(edge: .trailing).combined(with: .opacity),
+                                    removal: .move(edge: .trailing).combined(with: .opacity)
+                                ))
+                        } else {
+                            dayPager
+
+                            if let displayedDay {
+                                nextUpBanner(for: displayedDay)
+                                prayerRows(for: displayedDay)
+                                SunArcView(times: displayedDay, date: displayedDate)
+                                    .padding(.top, 4)
+                            } else if isLoadingDay || repository.isLoading {
                             MihrabEmptyState(
                                 symbol: "clock.arrow.2.circlepath",
                                 title: L10n.loadingTimes,
@@ -63,12 +81,14 @@ struct TimesView: View {
                                 }
                             }
                             .padding(.top, 24)
+                            }
                         }
                     }
                     .padding(.horizontal, 16)
-                    .mihrabTabGutter()
+                    .animation(reduceMotion ? nil : MihrabMotion.standardAnimation, value: mode)
                 }
                 .mihrabTabScroll()
+                .mihrabTabSafeContent()
                 .refreshable {
                     await repository.refresh()
                     await loadDay()
@@ -120,7 +140,7 @@ struct TimesView: View {
                     Capsule().strokeBorder(MihrabColor.mint.opacity(0.28), lineWidth: 1)
                 }
             }
-            .buttonStyle(.plain)
+            .pressable(reduceMotion)
             .accessibilityHint(Text(L10n.settings))
 
             Spacer(minLength: 8)
@@ -140,14 +160,144 @@ struct TimesView: View {
                         .minimumScaleFactor(0.8)
                 }
             }
-            .buttonStyle(.plain)
+            .pressable(reduceMotion)
             .accessibilityHint(Text(L10n.settings))
+        }
+    }
+
+    // MARK: - Mode picker
+
+    /// Day ⇄ month without leaving the screen. A sheet still exists for the
+    /// full, shareable table — this is the glance.
+    private var modePicker: some View {
+        HStack(spacing: 6) {
+            ForEach(Mode.allCases) { candidate in
+                let selected = candidate == mode
+                Button {
+                    guard !selected else { return }
+                    HapticsEngine.shared.light()
+                    withAnimation(reduceMotion ? nil : MihrabMotion.snappyAnimation) { mode = candidate }
+                } label: {
+                    Text(candidate.localizedName)
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(selected ? .white : MihrabColor.textSecondary)
+                        .frame(maxWidth: .infinity)
+                        .frame(minHeight: 38)
+                        .background {
+                            if selected {
+                                Capsule().fill(theme.accent)
+                            }
+                        }
+                }
+                .buttonStyle(.plain)
+                .accessibilityAddTraits(selected ? [.isButton, .isSelected] : .isButton)
+            }
+        }
+        .padding(4)
+        .background(Capsule().fill(MihrabColor.moss.opacity(0.9)))
+        .overlay { Capsule().strokeBorder(MihrabColor.mint.opacity(0.2), lineWidth: 1) }
+        .frame(maxWidth: 260)
+    }
+
+    // MARK: - Next up
+
+    /// The one line people actually open this tab for: what is next, and how
+    /// long is left. Only shown for today — a countdown on a past day is a lie.
+    @ViewBuilder
+    private func nextUpBanner(for day: DayPrayerTimes) -> some View {
+        if dayOffset == 0,
+           let next = day.nextPrayer(after: Date(), tomorrow: repository.tomorrow) {
+            TimelineView(.periodic(from: .now, by: 1)) { context in
+                HStack(spacing: 12) {
+                    Image(systemName: next.prayer.symbolName)
+                        .font(.title3)
+                        .symbolRenderingMode(.hierarchical)
+                        .foregroundStyle(theme.accent)
+                        .frame(width: 28, height: 28)
+
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(L10n.tmzNextCaps)
+                            .ornamentalCaps()
+                        Text(next.prayer.localizedNamazName)
+                            .font(.headline)
+                            .foregroundStyle(MihrabColor.textPrimary)
+                            .lineLimit(1)
+                    }
+
+                    Spacer(minLength: 8)
+
+                    VStack(alignment: .trailing, spacing: 2) {
+                        CountdownText(from: context.date, to: next.date)
+                            .font(MihrabFont.timeDisplay(22))
+                            .foregroundStyle(MihrabColor.mint)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.7)
+                        Text(next.date, format: .dateTime.hour().minute())
+                            .font(.caption.monospacedDigit())
+                            .foregroundStyle(MihrabColor.textSecondary)
+                    }
+                }
+                .padding(.horizontal, 16)
+                .padding(.vertical, 14)
+                .mihrabShaderPanel(.caustics, cornerRadius: MihrabSpace.rowRadius, opacity: 0.22)
+                .mihrabSolidCard(
+                    cornerRadius: MihrabSpace.rowRadius,
+                    stroke: MihrabColor.mint.opacity(0.4)
+                )
+                .accessibilityElement(children: .combine)
+            }
         }
     }
 
     // MARK: - Day pager
 
+    /// Yesterday / today / tomorrow as one tap, anything further as arrows or
+    /// a horizontal drag.
     private var dayPager: some View {
+        VStack(spacing: 10) {
+            HStack(spacing: 6) {
+                ForEach([-1, 0, 1], id: \.self) { offset in
+                    let selected = dayOffset == offset
+                    Button {
+                        guard !selected else { return }
+                        HapticsEngine.shared.light()
+                        withAnimation(reduceMotion ? nil : MihrabMotion.snappyAnimation) { dayOffset = offset }
+                    } label: {
+                        Text(relativeDayName(offset))
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(selected ? MihrabColor.textPrimary : MihrabColor.textSecondary)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.8)
+                            .frame(maxWidth: .infinity)
+                            .frame(minHeight: 34)
+                            .background {
+                                Capsule().fill(selected ? MihrabColor.moss : Color.clear)
+                            }
+                            .overlay {
+                                Capsule().strokeBorder(
+                                    selected ? MihrabColor.mint.opacity(0.4) : .clear,
+                                    lineWidth: 1
+                                )
+                            }
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityAddTraits(selected ? [.isButton, .isSelected] : .isButton)
+                }
+            }
+
+            legacyDayPager
+        }
+    }
+
+    private func relativeDayName(_ offset: Int) -> String {
+        switch offset {
+        case -1: L10n.tmzYesterday
+        case 1: L10n.tmzTomorrow
+        default: L10n.today
+        }
+    }
+
+    private var legacyDayPager: some View {
         VStack(spacing: 8) {
             HStack {
                 Button { shiftDay(-1) } label: {
@@ -160,6 +310,7 @@ struct TimesView: View {
                             Circle().strokeBorder(MihrabColor.mint.opacity(0.28), lineWidth: 1)
                         }
                 }
+                .pressable(reduceMotion)
                 .accessibilityLabel(Text(L10n.previousDay))
 
                 Spacer()
@@ -172,7 +323,8 @@ struct TimesView: View {
                         .font(.subheadline)
                         .foregroundStyle(MihrabColor.textSecondary)
                 }
-                .contentTransition(.numericText())
+                .id(dayOffset)
+                .transition(.offset(x: 12).combined(with: .opacity))
 
                 Spacer()
 
@@ -186,10 +338,11 @@ struct TimesView: View {
                             Circle().strokeBorder(MihrabColor.mint.opacity(0.28), lineWidth: 1)
                         }
                 }
+                .pressable(reduceMotion)
                 .accessibilityLabel(Text(L10n.nextDay))
             }
 
-            if dayOffset != 0 {
+            if abs(dayOffset) > 1 {
                 Button(L10n.today) {
                     withAnimation(MihrabMotion.snappyAnimation) { dayOffset = 0 }
                 }
@@ -214,7 +367,12 @@ struct TimesView: View {
     // MARK: - Prayer rows — no GlassEffectContainer, no stacked liquid glass
 
     private func prayerRows(for day: DayPrayerTimes) -> some View {
-        VStack(spacing: 8) {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(L10n.tmzScheduleCaps)
+                .ornamentalCaps()
+                .padding(.leading, 6)
+                .padding(.bottom, 2)
+
             ForEach(Array(Prayer.allCases.enumerated()), id: \.element) { index, prayer in
                 PrayerRow(
                     prayer: prayer,
@@ -228,6 +386,8 @@ struct TimesView: View {
         }
         .padding(12)
         .mihrabCardScene("times-bg", opacity: 0.4)
+        .id(dayOffset)
+        .transition(.opacity.combined(with: .offset(y: 8)))
     }
 
     private func isCurrent(_ prayer: Prayer) -> Bool {
@@ -303,7 +463,7 @@ struct PrayerRow: View {
                     .foregroundStyle(isCurrent ? MihrabColor.brass : MihrabColor.textPrimary)
                     .lineLimit(1)
 
-                if isCurrent {
+                if isCurrent, let time, Date().timeIntervalSince(time) < 20 * 60 {
                     Text(L10n.now)
                         .font(.caption2.weight(.semibold))
                         .tracking(0.6)
@@ -331,13 +491,7 @@ struct PrayerRow: View {
             Image(systemName: notificationOn ? "bell.fill" : "bell.slash")
                 .font(.body)
                 .foregroundStyle(notificationOn ? MihrabColor.brass : MihrabColor.textTertiary)
-                .rotationEffect(.degrees(bellRinging ? 15 : 0))
-                .animation(
-                    bellRinging
-                        ? .easeInOut(duration: 0.1).repeatCount(4, autoreverses: true)
-                        : .default,
-                    value: bellRinging
-                )
+                .symbolEffect(.wiggle, options: .speed(3), value: bellRinging)
                 .frame(width: MihrabSpace.hit, height: MihrabSpace.hit)
                 .opacity(prayer.isNotifiable ? 1 : 0)
         }

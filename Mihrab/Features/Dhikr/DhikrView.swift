@@ -1,84 +1,82 @@
 import SwiftData
 import SwiftUI
 
-struct DhikrOption: Identifiable, Hashable {
-    let id: String
-    let arabic: String
-    let transliteration: String
-
-    var localizedName: String { L10n.dhikrPhrase(id) }
-
-    static let defaults: [DhikrOption] = [
-        .init(id: "subhanallah", arabic: "سُبْحَانَ اللَّه", transliteration: "Subhanallah"),
-        .init(id: "alhamdulillah", arabic: "الْحَمْدُ لِلَّه", transliteration: "Alhamdulillah"),
-        .init(id: "allahu-akbar", arabic: "اللَّهُ أَكْبَر", transliteration: "Allahu Akbar"),
-        .init(id: "la-ilaha", arabic: "لَا إِلَهَ إِلَّا اللَّه", transliteration: "La ilaha illallah"),
-        .init(id: "salawat", arabic: "اللَّهُمَّ صَلِّ عَلَى مُحَمَّد", transliteration: "Salawat"),
-        .init(id: "astaghfirullah", arabic: "أَسْتَغْفِرُ اللَّه", transliteration: "Astaghfirullah"),
-    ]
-}
-
+/// The Zikirmatik — the one screen in Mihrab that keeps the full-screen Metal
+/// motif. Everywhere else the app is calm; here it breathes, because here the
+/// user is doing one thing for minutes at a time and the room should move with
+/// them.
 struct DhikrView: View {
     @Environment(Theme.self) private var theme
+    @Environment(AppSettings.self) private var settings
     @Environment(\.modelContext) private var modelContext
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.scenePhase) private var scenePhase
 
-    @State private var selected: DhikrOption = DhikrOption.defaults[0]
+    @State private var store = DhikrStore.shared
+
+    // Current phrase & counting state.
+    @State private var selected: DhikrItem = DhikrCatalog.subhanallah
     @State private var target = 33
     @State private var count = 0
     @State private var completedSets = 0
-    @State private var orbScale: CGFloat = 1
-    @State private var rippleBorn: Date?
+    @State private var session: DhikrSession?
+    @State private var todayTotal = 0
+    @State private var currentStreak = 0
+
+    // Routine ("tesbihat") state.
+    @State private var routine: DhikrRoutine?
+    @State private var routineStep = 0
+    @State private var routineFinished = false
+
+    // Presentation.
     @State private var showStats = false
     @State private var showAchievements = false
-    @State private var keepAwake = false
-    @State private var session: DhikrSession?
+    @State private var showLibrary = false
+    @State private var strandMode = false
+
+    // Motion.
+    @State private var orbScale: CGFloat = 1
+    @State private var rippleBorn: Date?
+    @State private var milestoneBorn: Date?
     @State private var celebrating = false
-    @State private var hintVisible = true
     @State private var sparkBorn: Date?
+    @State private var hintVisible = true
     @State private var unlockToast: DhikrAchievementSnapshot?
+    @State private var phraseDirection = 1
 
     private let targets = [33, 99, 100, 500, 0]
-    private let orbSide: CGFloat = 256
-    private let chipHeight: CGFloat = 56
+    private let dialSide: CGFloat = 300
+    private let chipHeight: CGFloat = 44
     private let toolbarSide: CGFloat = 44
+
+    private var accent: Color { theme.accent }
+    private var motif: ShaderMotif { settings.dhikrShaderMotif }
+
+    // MARK: - Body
 
     var body: some View {
         NavigationStack {
             ZStack {
-                shaderBackdrop
+                MihrabBackdrop(surface: .dhikr, ramadanMode: theme.isRamadanMode)
 
                 VStack(spacing: 0) {
-                    dhikrSelector
-                        .padding(.top, 8)
+                    header
+                        .padding(.horizontal, 20)
+                        .padding(.top, 4)
 
-                    Spacer(minLength: 0)
+                    Spacer(minLength: 8)
 
-                    orb
+                    counterSurface
 
-                    Spacer(minLength: 0)
+                    hintLine
 
-                    targetPicker
-                    statsStrip
+                    Spacer(minLength: 8)
+
+                    footer
                 }
-                .padding(.bottom, MihrabSpace.tabClearance)
-                .contentShape(Rectangle())
-                .onTapGesture { tap() }
-                .simultaneousGesture(
-                    DragGesture(minimumDistance: 48).onEnded { value in
-                        guard abs(value.translation.width) > abs(value.translation.height) else { return }
-                        cyclePhrase(forward: value.translation.width < 0)
-                    }
-                )
-                .onLongPressGesture(minimumDuration: 0.7) {
-                    HapticsEngine.shared.warning()
-                    withAnimation(reduceMotion ? nil : MihrabMotion.snappyAnimation) {
-                        count = 0
-                    }
-                    persist()
-                }
+                .padding(.bottom, MihrabSpace.tabClearance + 4)
 
-                if celebrating {
+                if celebrating || routineFinished {
                     celebrationOverlay
                 }
             }
@@ -91,170 +89,324 @@ struct DhikrView: View {
             }
             .navigationTitle(L10n.zikirmatik)
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button { showStats = true } label: {
-                        toolbarGlyph("chart.bar.fill")
-                    }
-                    .tint(theme.accent)
-                    .accessibilityLabel(Text(L10n.dhikrStats))
-                }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button { showAchievements = true } label: {
-                        toolbarGlyph("seal.fill")
-                    }
-                    .tint(MihrabColor.brass)
-                    .accessibilityLabel(Text(L10n.achievements))
-                }
-                ToolbarItem(placement: .topBarLeading) {
-                    Button {
-                        keepAwake.toggle()
-                        UIApplication.shared.isIdleTimerDisabled = keepAwake
-                    } label: {
-                        toolbarGlyph(keepAwake ? "sun.max.fill" : "moon.zzz")
-                    }
-                    .tint(keepAwake ? MihrabColor.brass : MihrabColor.textTertiary)
-                    .accessibilityLabel(Text(L10n.keepAwake))
-                }
-            }
+            .toolbar { toolbarContent }
             .sheet(isPresented: $showStats) { DhikrStatsView() }
             .sheet(isPresented: $showAchievements) { DhikrAchievementSheet() }
+            .sheet(isPresented: $showLibrary) {
+                DhikrLibrarySheet(
+                    onPick: { pick($0, resetCount: true) },
+                    onStartRoutine: { start($0) }
+                )
+            }
             .task(id: celebrating) {
                 guard celebrating else { return }
-                try? await Task.sleep(for: .milliseconds(900))
-                withAnimation(reduceMotion ? nil : MihrabMotion.snappyAnimation) {
-                    count = 0
-                    celebrating = false
+                try? await Task.sleep(for: .milliseconds(routine == nil ? 900 : 700))
+                guard !Task.isCancelled else { return }
+                finishSetPause()
+            }
+            .task(id: routineFinished) {
+                guard routineFinished else { return }
+                try? await Task.sleep(for: .milliseconds(1800))
+                guard !Task.isCancelled else { return }
+                withAnimation(reduceMotion ? nil : MihrabMotion.gentleAnimation) {
+                    routineFinished = false
+                    routine = nil
+                    routineStep = 0
                 }
-                persist()
             }
             .task(id: unlockToast?.id) {
                 guard unlockToast != nil else { return }
                 try? await Task.sleep(for: .milliseconds(2200))
-                withAnimation(reduceMotion ? nil : MihrabMotion.snappyAnimation) {
-                    unlockToast = nil
-                }
+                withAnimation(reduceMotion ? nil : MihrabMotion.snappyAnimation) { unlockToast = nil }
             }
             .task(id: rippleBorn) {
                 guard rippleBorn != nil else { return }
-                try? await Task.sleep(for: .milliseconds(480))
+                try? await Task.sleep(for: .milliseconds(500))
                 rippleBorn = nil
             }
-        }
-        .onAppear {
-            loadOrCreateSession()
-            inscribeExistingAchievements()
-            Task {
-                try? await Task.sleep(for: .seconds(3.5))
-                withAnimation { hintVisible = false }
+            .task(id: milestoneBorn) {
+                guard milestoneBorn != nil else { return }
+                try? await Task.sleep(for: .milliseconds(1000))
+                milestoneBorn = nil
             }
         }
+        .onAppear(perform: onAppear)
         .onDisappear {
             UIApplication.shared.isIdleTimerDisabled = false
             celebrating = false
             rippleBorn = nil
+            milestoneBorn = nil
+        }
+        .onChange(of: scenePhase) { _, phase in
+            if phase != .active { UIApplication.shared.isIdleTimerDisabled = false }
+            else { refreshIdleTimer() }
         }
     }
 
-    private var progress: Double {
-        guard target > 0 else { return 0 }
-        return min(Double(count) / Double(target), 1)
-    }
+    // MARK: - Header
 
-    private var sessionTotal: Int {
-        completedSets * max(target, 1) + count
-    }
-
-    private var shaderBackdrop: some View {
-        TimelineView(.animation(minimumInterval: 1.0 / 12.0, paused: reduceMotion)) { context in
-            let t = reduceMotion ? 0 : context.date.timeIntervalSinceReferenceDate
-            DhikrShaderField(
-                time: t,
-                flash: brassFlash(at: context.date),
-                ramadan: theme.isRamadanMode
+    private var header: some View {
+        VStack(spacing: 12) {
+            DhikrGoalBar(
+                todayTotal: todayTotal,
+                goal: settings.dailyDhikrGoal,
+                streak: currentStreak,
+                accent: accent
             )
+
+            if let routine {
+                routineBanner(routine)
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+            } else {
+                phraseStrip
+            }
         }
-        .ignoresSafeArea()
-        .allowsHitTesting(false)
+        .animation(reduceMotion ? nil : MihrabMotion.gentleAnimation, value: routine?.id)
     }
 
-    private var orb: some View {
-        TimelineView(.animation(minimumInterval: 1.0 / 20.0, paused: reduceMotion || !celebrating)) { context in
-            let flash = brassFlash(at: context.date)
-
-            ZStack {
-                Circle()
-                    .fill(
-                        RadialGradient(
-                            colors: [
-                                MihrabColor.abyss.opacity(0.10),
-                                MihrabColor.abyss.opacity(0.42)
-                            ],
-                            center: .center,
-                            startRadius: 24,
-                            endRadius: orbSide / 2
-                        )
-                    )
-
-                Circle()
-                    .strokeBorder(MihrabColor.mint.opacity(0.22), lineWidth: 1)
-
-                if let rippleBorn, !reduceMotion {
-                    DhikrInnerRipple(born: rippleBorn, side: orbSide)
-                }
-
-                orbCopy(flash: flash)
-            }
-            .frame(width: orbSide, height: orbSide)
-            .clipShape(Circle())
-            .scaleEffect(orbScale)
-        }
-        .frame(width: orbSide, height: orbSide)
-        .frame(maxWidth: .infinity)
-        .overlay(alignment: .bottom) {
-            if hintVisible && count == 0 {
-                Text(L10n.swipePhrase)
+    private func routineBanner(_ routine: DhikrRoutine) -> some View {
+        HStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(routine.localizedTitle)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(MihrabColor.textPrimary)
+                    .lineLimit(1)
+                Text(L10n.dhkRoutineStep(routineStep + 1, routine.steps.count))
                     .font(.caption2)
+                    .foregroundStyle(MihrabColor.textSecondary)
+            }
+            Spacer(minLength: 8)
+            HStack(spacing: 5) {
+                ForEach(Array(routine.steps.enumerated()), id: \.offset) { index, _ in
+                    Capsule()
+                        .fill(index <= routineStep ? MihrabColor.brass : MihrabColor.textTertiary.opacity(0.4))
+                        .frame(width: index == routineStep ? 18 : 8, height: 5)
+                }
+            }
+            Button {
+                DhikrFeedback.light()
+                withAnimation(reduceMotion ? nil : MihrabMotion.gentleAnimation) {
+                    self.routine = nil
+                    routineStep = 0
+                }
+            } label: {
+                Image(systemName: "xmark.circle.fill")
+                    .font(.system(size: 20))
                     .foregroundStyle(MihrabColor.textTertiary)
-                    .padding(.bottom, 4)
-                    .transition(.opacity)
+                    .frame(width: MihrabSpace.hit, height: 34)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(Text(L10n.dhkRoutineStop))
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .mihrabSolidCard(cornerRadius: MihrabSpace.rowRadius, fill: MihrabColor.moss.opacity(0.8))
+    }
+
+    private var phraseStrip: some View {
+        ScrollViewReader { proxy in
+            ScrollView(.horizontal, showsIndicators: false) {
+                LazyHStack(spacing: 8) {
+                    ForEach(store.stripItems) { item in
+                        phraseChip(item)
+                    }
+                    libraryChip
+                }
+                .padding(.horizontal, 4)
+                .frame(height: chipHeight)
+                .animation(nil, value: selected)
+            }
+            .frame(height: chipHeight)
+            .softHorizontalFade(edgeWidth: 20)
+            .onChange(of: selected.id) { _, id in
+                withAnimation(reduceMotion ? nil : MihrabMotion.gentleAnimation) {
+                    proxy.scrollTo(id, anchor: .center)
+                }
+            }
+        }
+        .frame(height: chipHeight)
+    }
+
+    private func phraseChip(_ item: DhikrItem) -> some View {
+        let on = item.id == selected.id
+        return Button {
+            pick(item, resetCount: true)
+        } label: {
+            VStack(spacing: 4) {
+                Text(L10n.isArabic && !item.arabic.isEmpty ? item.arabic : item.localizedName)
+                    .font(L10n.isArabic ? MihrabFont.arabic(15) : .subheadline.weight(.semibold))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+                Capsule()
+                    .fill(MihrabColor.brass)
+                    .frame(width: 20, height: 3)
+                    .opacity(on ? 1 : 0)
+            }
+            .padding(.horizontal, 16)
+            .frame(height: chipHeight)
+            .foregroundStyle(on ? Color.white : MihrabColor.textSecondary)
+            .background {
+                if on {
+                    Capsule().fill(accent.opacity(0.55))
+                        .mihrabShaderPanel(motif, cornerRadius: chipHeight / 2, opacity: 0.5)
+                }
+            }
+            .overlay {
+                Capsule().strokeBorder(MihrabColor.mint.opacity(on ? 0.40 : 0), lineWidth: 1)
+            }
+            .clipShape(Capsule())
+        }
+        .pressable(reduceMotion)
+        .id(item.id)
+        .accessibilityAddTraits(on ? .isSelected : [])
+    }
+
+    private var libraryChip: some View {
+        Button {
+            DhikrFeedback.light()
+            showLibrary = true
+        } label: {
+            Label(L10n.dhkLibrary, systemImage: "books.vertical.fill")
+                .font(.caption.weight(.semibold))
+                .labelStyle(.iconOnly)
+                .frame(width: chipHeight, height: chipHeight)
+                .foregroundStyle(MihrabColor.brass)
+                .background { Circle().fill(MihrabColor.abyss.opacity(0.35)) }
+                .overlay { Circle().strokeBorder(MihrabColor.brass.opacity(0.35), lineWidth: 1) }
+        }
+        .pressable(reduceMotion)
+        .accessibilityLabel(Text(L10n.dhkLibrary))
+    }
+
+    // MARK: - Counter surface
+
+    @ViewBuilder
+    private var counterSurface: some View {
+        if strandMode {
+            ZStack {
+                DhikrStrandView(
+                    count: count,
+                    target: target,
+                    accent: accent,
+                    reduceMotion: reduceMotion,
+                    onAdvance: { advance() }
+                )
+                strandReadout
                     .allowsHitTesting(false)
             }
+            .frame(width: dialSide, height: dialSide)
+            .frame(maxWidth: .infinity)
+            .overlay {
+                if let milestoneBorn, !reduceMotion {
+                    DhikrMilestoneBurst(born: milestoneBorn, side: dialSide)
+                }
+            }
+        } else {
+            dial
+                .contentShape(Circle())
+                .onTapGesture { advance() }
+                .simultaneousGesture(
+                    DragGesture(minimumDistance: 48).onEnded { value in
+                        guard routine == nil,
+                              abs(value.translation.width) > abs(value.translation.height) else { return }
+                        cyclePhrase(forward: value.translation.width < 0)
+                    }
+                )
+                .onLongPressGesture(minimumDuration: 0.7) { resetCount() }
         }
+    }
+
+    private var dial: some View {
+        TimelineView(.animation(minimumInterval: 1.0 / 20.0, paused: reduceMotion || !celebrating)) { context in
+            let flash = reduceMotion ? (celebrating ? 1.0 : 0.0) : brassFlash(at: context.date)
+            dialContent(flash: flash)
+        }
+        .frame(width: dialSide, height: dialSide)
+        .frame(maxWidth: .infinity)
         .accessibilityElement()
-        .accessibilityLabel(L10n.dhikrA11y(count, target))
+        .accessibilityLabel(
+            L10n.dhikrA11y(count, target)
+                + ", \(sessionTotal) \(L10n.thisSession)"
+                + ", \(completedSets) \(L10n.setLabel(completedSets))"
+        )
         .accessibilityAddTraits(.isButton)
         .accessibilityHint(L10n.dhikrA11yHint(selected.localizedName))
+        .accessibilityAction { advance() }
     }
 
-    private func brassFlash(at now: Date) -> Double {
-        guard celebrating, let sparkBorn else { return 0 }
-        let elapsed = now.timeIntervalSince(sparkBorn)
-        guard elapsed >= 0, elapsed < 0.3 else { return 0 }
-        return 1 - elapsed / 0.3
-    }
+    private func dialContent(flash: Double) -> some View {
+        ZStack {
+            orbBase
 
-    private func orbCopy(flash: Double) -> some View {
-        VStack(spacing: 6) {
-            Text(primaryPhrase)
-                .font(L10n.isArabic ? MihrabFont.arabic(26) : .title3.weight(.semibold))
-                .foregroundStyle(MihrabColor.textPrimary)
-                .multilineTextAlignment(.center)
-                .minimumScaleFactor(0.55)
-                .lineLimit(2)
-                .padding(.horizontal, 18)
+            DhikrDialRing(
+                side: dialSide,
+                progress: target == 0 ? nil : progress,
+                target: target,
+                flash: flash,
+                accent: accent,
+                reduceMotion: reduceMotion
+            )
 
-            if !L10n.isArabic {
-                Text(selected.arabic)
-                    .font(MihrabFont.arabic(18))
-                    .foregroundStyle(MihrabColor.textTertiary)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.6)
-                    .padding(.horizontal, 16)
+            if let rippleBorn, !reduceMotion {
+                DhikrRipple(born: rippleBorn, side: dialSide, color: accent)
             }
 
+            dialCopy(flash: flash)
+
+            if let milestoneBorn, !reduceMotion {
+                DhikrMilestoneBurst(born: milestoneBorn, side: dialSide)
+            }
+        }
+        .frame(width: dialSide, height: dialSide)
+        .scaleEffect(orbScale)
+    }
+
+    private var orbBase: some View {
+        ZStack {
+            Circle()
+                .fill(MihrabColor.moss.opacity(0.35))
+                .mihrabShaderPanel(motif, cornerRadius: dialSide / 2, opacity: 0.5)
+            RadialGradient(
+                colors: [MihrabColor.abyss.opacity(0.06), MihrabColor.abyss.opacity(0.42)],
+                center: .center,
+                startRadius: 20,
+                endRadius: dialSide / 2
+            )
+        }
+        .clipShape(Circle())
+        .glassEffect(.regular.interactive(), in: .circle)
+        .overlay {
+            Circle()
+                .strokeBorder(MihrabColor.mint.opacity(0.34), lineWidth: 1)
+                .allowsHitTesting(false)
+        }
+        .frame(width: dialSide, height: dialSide)
+    }
+
+    private func dialCopy(flash: Double) -> some View {
+        VStack(spacing: 6) {
+            Group {
+                Text(selected.displayScript)
+                    .font(selected.arabic.isEmpty ? .title3.weight(.semibold) : MihrabFont.arabic(28))
+                    .foregroundStyle(MihrabColor.textPrimary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
+                    .padding(.horizontal, 26)
+
+                if !L10n.isArabic {
+                    Text(selected.localizedName)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(MihrabColor.textSecondary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+                }
+            }
+            .id(selected.id)
+            .transition(phraseTransition)
+
             Text("\(count)")
-                .font(MihrabFont.countdown(88))
+                .font(MihrabFont.countdown(92))
                 .foregroundStyle(
                     LinearGradient(
                         colors: flash > 0.15
@@ -264,25 +416,164 @@ struct DhikrView: View {
                         endPoint: .bottom
                     )
                 )
-                .shadow(color: (flash > 0.15 ? MihrabColor.brass : MihrabColor.mint).opacity(0.55), radius: 16)
-                .contentTransition(.numericText())
-                .animation(reduceMotion ? nil : MihrabMotion.snappyAnimation, value: count)
+                .contentTransition(.numericText(value: Double(count)))
+                .shadow(color: (flash > 0.15 ? MihrabColor.brass : MihrabColor.mint).opacity(0.28), radius: 6)
 
             if target > 0 {
-                Text(L10n.ofTargetSet(count, target, completedSets + 1))
-                    .font(.caption)
-                    .foregroundStyle(MihrabColor.textSecondary)
+                Text("\(count) · \(target)")
+                    .ornamentalCaps()
+            } else {
+                Text(L10n.dhkTargetLabel(0))
+                    .ornamentalCaps()
             }
         }
-        .frame(width: orbSide, height: orbSide)
+        .frame(width: dialSide, height: dialSide)
     }
 
-    private var primaryPhrase: String {
-        L10n.isArabic ? selected.arabic : selected.localizedName
+    private var strandReadout: some View {
+        VStack(spacing: 2) {
+            Text("\(count)")
+                .font(MihrabFont.countdown(64))
+                .foregroundStyle(
+                    LinearGradient(colors: [MihrabColor.sprout, MihrabColor.mint],
+                                   startPoint: .top, endPoint: .bottom)
+                )
+                .contentTransition(.numericText(value: Double(count)))
+            Text(target > 0 ? "\(count) · \(target)" : L10n.dhkTargetLabel(0))
+                .ornamentalCaps()
+        }
     }
+
+    private var phraseTransition: AnyTransition {
+        let forward = phraseDirection > 0
+        return .asymmetric(
+            insertion: .move(edge: forward ? .trailing : .leading)
+                .combined(with: .opacity)
+                .combined(with: .scale(scale: 0.92)),
+            removal: .move(edge: forward ? .leading : .trailing).combined(with: .opacity)
+        )
+    }
+
+    private var hintLine: some View {
+        ZStack {
+            if hintVisible && count == 0 {
+                Text(strandMode ? L10n.dhkStrandHint : L10n.dhkTapHint)
+                    .font(.caption2)
+                    .foregroundStyle(MihrabColor.textTertiary)
+                    .transition(.opacity)
+            } else if count > 0 && !strandMode {
+                Text(L10n.dhkHoldToReset)
+                    .font(.caption2)
+                    .foregroundStyle(MihrabColor.textTertiary.opacity(0.7))
+                    .transition(.opacity)
+            }
+        }
+        .frame(height: 16)
+        .padding(.top, 14)
+        .allowsHitTesting(false)
+    }
+
+    // MARK: - Footer
+
+    private var footer: some View {
+        VStack(spacing: 12) {
+            modeSwitch
+            TargetCycleBar(
+                targets: targets,
+                target: target,
+                accent: accent,
+                motif: motif,
+                enabled: routine == nil
+            ) { newValue in
+                DhikrFeedback.light()
+                withAnimation(reduceMotion ? nil : MihrabMotion.snappyAnimation) {
+                    target = newValue
+                    count = 0
+                    completedSets = 0
+                }
+                persist()
+            }
+        }
+        .padding(.horizontal, 20)
+    }
+
+    private var modeSwitch: some View {
+        HStack(spacing: 6) {
+            ForEach([false, true], id: \.self) { strand in
+                let on = strandMode == strand
+                Button {
+                    guard strandMode != strand else { return }
+                    DhikrFeedback.phraseSwap()
+                    withAnimation(reduceMotion ? nil : MihrabMotion.gentleAnimation) {
+                        strandMode = strand
+                    }
+                } label: {
+                    Label(
+                        strand ? L10n.dhkModeStrand : L10n.dhkModeCounter,
+                        systemImage: strand ? "circle.hexagongrid.fill" : "hand.tap.fill"
+                    )
+                    .font(.caption.weight(.semibold))
+                    .labelStyle(.titleAndIcon)
+                    .padding(.horizontal, 14)
+                    .frame(height: 34)
+                    .foregroundStyle(on ? MihrabColor.textPrimary : MihrabColor.textTertiary)
+                    .background {
+                        if on {
+                            Capsule().fill(MihrabColor.abyss.opacity(0.55))
+                        }
+                    }
+                    .overlay {
+                        Capsule().strokeBorder(MihrabColor.mint.opacity(on ? 0.3 : 0), lineWidth: 1)
+                    }
+                }
+                .buttonStyle(.plain)
+                .accessibilityAddTraits(on ? .isSelected : [])
+            }
+        }
+        .frame(minHeight: MihrabSpace.hit)
+        .accessibilityLabel(Text(L10n.dhkModeSwitch))
+    }
+
+    // MARK: - Toolbar
+
+    @ToolbarContentBuilder
+    private var toolbarContent: some ToolbarContent {
+        ToolbarItem(placement: .topBarLeading) {
+            Button {
+                DhikrFeedback.light()
+                showLibrary = true
+            } label: {
+                toolbarGlyph("books.vertical.fill")
+            }
+            .tint(MihrabColor.brass)
+            .accessibilityLabel(Text(L10n.dhkLibrary))
+        }
+        ToolbarItem(placement: .topBarTrailing) {
+            Button { showStats = true } label: {
+                toolbarGlyph("chart.bar.fill")
+            }
+            .tint(accent)
+            .accessibilityLabel(Text(L10n.dhikrStats))
+        }
+        ToolbarItem(placement: .topBarTrailing) {
+            Button { showAchievements = true } label: {
+                toolbarGlyph("seal.fill")
+            }
+            .tint(MihrabColor.brass)
+            .accessibilityLabel(Text(L10n.achievements))
+        }
+    }
+
+    private func toolbarGlyph(_ systemName: String) -> some View {
+        Image(systemName: systemName)
+            .frame(width: toolbarSide, height: toolbarSide)
+            .contentShape(Rectangle())
+    }
+
+    // MARK: - Overlays
 
     private var celebrationOverlay: some View {
-        Text(L10n.setComplete)
+        Text(routineFinished ? L10n.dhkRoutineComplete : L10n.setComplete)
             .font(.headline)
             .foregroundStyle(MihrabColor.brass)
             .padding(.horizontal, 24)
@@ -293,17 +584,37 @@ struct DhikrView: View {
             .allowsHitTesting(false)
     }
 
-    private func toolbarGlyph(_ systemName: String) -> some View {
-        Image(systemName: systemName)
-            .frame(width: toolbarSide, height: toolbarSide)
-            .contentShape(Rectangle())
+    // MARK: - Derived values
+
+    private var progress: Double {
+        guard target > 0 else { return 0 }
+        return min(Double(count) / Double(target), 1)
     }
 
-    private func tap() {
+    private var sessionTotal: Int { completedSets * max(target, 1) + count }
+
+    private func brassFlash(at now: Date) -> Double {
+        guard celebrating, let sparkBorn else { return 0 }
+        let elapsed = now.timeIntervalSince(sparkBorn)
+        guard elapsed >= 0, elapsed < 0.5 else { return 0 }
+        return 1 - elapsed / 0.5
+    }
+
+    // MARK: - Counting
+
+    private func advance() {
         guard !celebrating else { return }
         count += 1
-        HapticsEngine.shared.dhikrTap(progress: progress)
+        todayTotal += 1
+        DhikrFeedback.tap(countInSet: count, target: target > 0 ? target : 33)
         playTapMotion()
+        refreshIdleTimer()
+
+        // 33 / 66 / 99 inside a longer set get their own golden moment.
+        if target > 33, count % 33 == 0, count != target {
+            DhikrFeedback.milestone(index: count / 33)
+            milestoneBorn = Date()
+        }
 
         if target > 0 && count >= target {
             completeSet()
@@ -315,129 +626,120 @@ struct DhikrView: View {
         guard !reduceMotion else { return }
         var snap = Transaction()
         snap.disablesAnimations = true
-        withTransaction(snap) { orbScale = 0.94 }
-        withAnimation(.spring(response: 0.28, dampingFraction: 0.55)) {
-            orbScale = 1
-        }
+        withTransaction(snap) { orbScale = 0.945 }
+        withAnimation(.spring(response: 0.28, dampingFraction: 0.55)) { orbScale = 1 }
         rippleBorn = Date()
     }
 
     private func completeSet() {
-        HapticsEngine.shared.setComplete()
+        DhikrFeedback.setComplete()
         completedSets += 1
         sparkBorn = Date()
+        milestoneBorn = Date()
+        withAnimation(reduceMotion ? nil : MihrabMotion.snappyAnimation) { celebrating = true }
+        persist()
+    }
+
+    /// Called once the "set complete" badge has had its moment.
+    private func finishSetPause() {
+        if let routine {
+            let next = routineStep + 1
+            if next < routine.steps.count {
+                routineStep = next
+                DhikrFeedback.phraseSwap()
+                phraseDirection = 1
+                withAnimation(reduceMotion ? nil : MihrabMotion.gentleAnimation) {
+                    celebrating = false
+                }
+                pick(routine.steps[next], resetCount: true, keepRoutine: true)
+                return
+            }
+            DhikrFeedback.routineComplete()
+            withAnimation(reduceMotion ? nil : MihrabMotion.snappyAnimation) {
+                celebrating = false
+                routineFinished = true
+                count = 0
+            }
+            persist()
+            return
+        }
+
         withAnimation(reduceMotion ? nil : MihrabMotion.snappyAnimation) {
-            celebrating = true
+            count = 0
+            celebrating = false
         }
         persist()
     }
 
+    private func resetCount() {
+        guard count > 0 else { return }
+        DhikrFeedback.reset()
+        withAnimation(reduceMotion ? nil : MihrabMotion.snappyAnimation) { count = 0 }
+        persist()
+    }
+
     private func cyclePhrase(forward: Bool) {
-        HapticsEngine.shared.light()
-        guard let index = DhikrOption.defaults.firstIndex(of: selected) else { return }
-        let next = (index + (forward ? 1 : DhikrOption.defaults.count - 1)) % DhikrOption.defaults.count
-        selected = DhikrOption.defaults[next]
-        count = 0
-        completedSets = 0
+        let items = store.stripItems
+        guard let index = items.firstIndex(where: { $0.id == selected.id }) else { return }
+        let next = (index + (forward ? 1 : items.count - 1)) % items.count
+        phraseDirection = forward ? 1 : -1
+        pick(items[next], resetCount: true)
+    }
+
+    private func pick(_ item: DhikrItem, resetCount: Bool, keepRoutine: Bool = false) {
+        if !keepRoutine, routine != nil {
+            routine = nil
+            routineStep = 0
+        }
+        if item.id != selected.id {
+            DhikrFeedback.phraseSwap()
+            if let from = store.stripItems.firstIndex(where: { $0.id == selected.id }),
+               let to = store.stripItems.firstIndex(where: { $0.id == item.id }) {
+                phraseDirection = to > from ? 1 : -1
+            }
+        }
+        withAnimation(reduceMotion ? nil : MihrabMotion.gentleAnimation) {
+            selected = item
+            target = item.target
+            if resetCount {
+                count = 0
+                completedSets = 0
+            }
+        }
+        store.lastPhraseID = item.id
         loadOrCreateSession()
     }
 
-    private var dhikrSelector: some View {
-        ScrollViewReader { proxy in
-            ScrollView(.horizontal, showsIndicators: false) {
-                LazyHStack(spacing: 8) {
-                    ForEach(DhikrOption.defaults) { option in
-                        dhikrChip(option)
-                    }
-                }
-                .padding(.horizontal, 16)
-                .frame(height: chipHeight)
-                .animation(nil, value: selected)
-            }
-            .frame(height: chipHeight)
-            .fixedSize(horizontal: false, vertical: true)
-            .softHorizontalFade(edgeWidth: 24)
-            .onChange(of: selected) { _, newValue in
-                proxy.scrollTo(newValue.id, anchor: .center)
-            }
+    private func start(_ routine: DhikrRoutine) {
+        guard let first = routine.steps.first else { return }
+        DhikrFeedback.light()
+        withAnimation(reduceMotion ? nil : MihrabMotion.gentleAnimation) {
+            self.routine = routine
+            routineStep = 0
+            routineFinished = false
         }
-        .frame(height: chipHeight)
+        pick(first, resetCount: true, keepRoutine: true)
     }
 
-    private func dhikrChip(_ option: DhikrOption) -> some View {
-        let on = selected == option
-        return Button {
-            selected = option
-            count = 0
-            completedSets = 0
-            loadOrCreateSession()
-        } label: {
-            VStack(spacing: 3) {
-                Text(L10n.isArabic ? option.arabic : option.localizedName)
-                    .font(L10n.isArabic ? MihrabFont.arabic(15) : .subheadline.weight(.semibold))
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.7)
-                if !L10n.isArabic {
-                    Text(option.arabic)
-                        .font(MihrabFont.arabic(13))
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.6)
-                        .opacity(0.8)
-                }
-            }
-            .padding(.horizontal, 14)
-            .frame(height: chipHeight)
-            .foregroundStyle(on ? Color.white : MihrabColor.textSecondary)
-            .background(Capsule().fill(on ? theme.accent : MihrabColor.moss))
-            .overlay {
-                Capsule()
-                    .strokeBorder(MihrabColor.mint.opacity(on ? 0.40 : 0.12), lineWidth: 1)
-            }
+    // MARK: - Lifecycle & persistence
+
+    private func onAppear() {
+        strandMode = store.opensInStrandMode
+        if let last = store.item(id: store.lastPhraseID) {
+            selected = last
+            target = last.target
         }
-        .buttonStyle(.plain)
-        .id(option.id)
+        loadOrCreateSession()
+        recomputeTodayTotal()
+        DhikrAchievements.inscribeExisting(from: fetchSessions())
+        Task {
+            try? await Task.sleep(for: .seconds(3.5))
+            withAnimation { hintVisible = false }
+        }
     }
 
-    private var targetPicker: some View {
-        HStack(spacing: 8) {
-            ForEach(targets, id: \.self) { value in
-                targetChip(value)
-            }
-        }
-        .frame(height: 36)
-        .padding(.vertical, 8)
-        .animation(nil, value: target)
-    }
-
-    private func targetChip(_ value: Int) -> some View {
-        let on = target == value
-        return Button {
-            HapticsEngine.shared.light()
-            target = value
-            count = 0
-            completedSets = 0
-            persist()
-        } label: {
-            Text(value == 0 ? "∞" : "\(value)")
-                .font(.subheadline.weight(.semibold).monospacedDigit())
-                .frame(minWidth: 44)
-                .frame(height: 36)
-                .foregroundStyle(on ? Color.white : MihrabColor.textSecondary)
-                .background(Capsule().fill(on ? theme.accent : MihrabColor.moss))
-        }
-        .buttonStyle(.plain)
-    }
-
-    private var statsStrip: some View {
-        Button { showStats = true } label: {
-            HStack(spacing: 28) {
-                StatPill(value: "\(completedSets)", label: L10n.setLabel(completedSets))
-                StatPill(value: "\(sessionTotal)", label: L10n.thisSession)
-            }
-            .padding(.top, 4)
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel(Text(L10n.dhikrStats))
+    private func refreshIdleTimer() {
+        UIApplication.shared.isIdleTimerDisabled = store.keepAwakeWhileCounting && count > 0
     }
 
     private func persist() {
@@ -446,6 +748,7 @@ struct DhikrView: View {
         session.completedSets = completedSets
         session.target = target
         try? modelContext.save()
+        recomputeTodayTotal()
         noteAchievements()
     }
 
@@ -453,20 +756,19 @@ struct DhikrView: View {
         (try? modelContext.fetch(FetchDescriptor<DhikrSession>())) ?? []
     }
 
-    private func inscribeExistingAchievements() {
-        DhikrAchievements.inscribeExisting(from: fetchSessions())
+    private func recomputeTodayTotal() {
+        let sessions = fetchSessions()
+        let start = Calendar.current.startOfDay(for: Date())
+        todayTotal = sessions.filter { $0.date >= start }.reduce(0) { $0 + $1.recited }
+        currentStreak = DhikrSessionMetrics.streak(sessions, now: .now, calendar: .current)
     }
 
     private func noteAchievements() {
         let fresh = DhikrAchievements.reveal(from: fetchSessions(), celebrate: true)
         guard let newest = fresh.last else { return }
-        if !celebrating {
-            HapticsEngine.shared.success()
-        }
+        if !celebrating { DhikrFeedback.light() }
         guard !showAchievements else { return }
-        withAnimation(reduceMotion ? nil : MihrabMotion.snappyAnimation) {
-            unlockToast = newest
-        }
+        withAnimation(reduceMotion ? nil : MihrabMotion.snappyAnimation) { unlockToast = newest }
     }
 
     private func loadOrCreateSession() {
@@ -479,10 +781,14 @@ struct DhikrView: View {
             session = existing
             count = existing.count
             completedSets = existing.completedSets
-            target = existing.target
+            if existing.target > 0 { target = existing.target }
         } else {
-            let new = DhikrSession(dhikrID: selected.id, arabic: selected.arabic,
-                                   transliteration: selected.transliteration, target: target)
+            let new = DhikrSession(
+                dhikrID: selected.id,
+                arabic: selected.arabic,
+                transliteration: selected.transliteration,
+                target: target
+            )
             modelContext.insert(new)
             try? modelContext.save()
             session = new
@@ -490,150 +796,76 @@ struct DhikrView: View {
     }
 }
 
-private struct DhikrShaderField: View {
-    let time: TimeInterval
-    let flash: Double
-    let ramadan: Bool
+// MARK: - Target bar
+
+/// Five targets, one tap or one swipe apart. Disabled while a routine is
+/// running — the routine owns the targets then, and silently changing one would
+/// break the count the user is keeping in their head.
+private struct TargetCycleBar: View {
+    let targets: [Int]
+    let target: Int
+    let accent: Color
+    let motif: ShaderMotif
+    var enabled: Bool = true
+    let onChange: (Int) -> Void
 
     var body: some View {
-        ZStack {
-            (ramadan ? MihrabColor.ramadanViolet.opacity(0.55) : MihrabColor.abyss)
-
-            Image("dhikr-bg")
-                .resizable()
-                .scaledToFill()
-                .opacity(0.35)
-                .frame(minWidth: 0, maxWidth: .infinity, minHeight: 0, maxHeight: .infinity)
-                .clipped()
-                .accessibilityHidden(true)
-
-            MeshGradient(
-                width: 3,
-                height: 3,
-                points: meshPoints,
-                colors: meshColors
-            )
-            .opacity(0.84)
-
-            Ellipse()
-                .fill(
-                    RadialGradient(
-                        colors: [
-                            Color.white.opacity(0.20),
-                            MihrabColor.mint.opacity(0.12),
-                            .clear
-                        ],
-                        center: .center,
-                        startRadius: 8,
-                        endRadius: 200
-                    )
-                )
-                .frame(width: 380, height: 240)
-                .offset(
-                    x: 96 * cos(time * 2 * .pi / 20),
-                    y: -36 + 72 * sin(time * 2 * .pi / 26)
-                )
-                .blendMode(.plusLighter)
-
-            DhikrGrain()
-        }
-    }
-
-    private var meshPoints: [SIMD2<Float>] {
-        let cx = Float(0.50 + 0.18 * cos(time * 2 * .pi / 22))
-        let cy = Float(0.48 + 0.16 * sin(time * 2 * .pi / 28))
-        let top = Float(0.50 + 0.12 * sin(time * 2 * .pi / 26))
-        let lead = Float(0.50 + 0.10 * cos(time * 2 * .pi / 24))
-        let trail = Float(0.50 + 0.10 * sin(time * 2 * .pi / 30))
-        let bottom = Float(0.50 + 0.11 * cos(time * 2 * .pi / 32))
-        return [
-            SIMD2(0, 0), SIMD2(top, 0), SIMD2(1, 0),
-            SIMD2(0, lead), SIMD2(cx, cy), SIMD2(1, trail),
-            SIMD2(0, 1), SIMD2(bottom, 1), SIMD2(1, 1)
-        ]
-    }
-
-    private var meshColors: [Color] {
-        let f = flash
-        let gold = ramadan ? MihrabColor.ramadanGold : MihrabColor.brass
-        return [
-            MihrabColor.forest.mix(with: gold, by: f * 0.4),
-            MihrabColor.emerald.mix(with: gold, by: f * 0.5),
-            MihrabColor.moss.mix(with: gold, by: f * 0.3),
-            MihrabColor.moss.mix(with: gold, by: f * 0.35),
-            MihrabColor.mint.mix(with: gold, by: f),
-            MihrabColor.emerald.mix(with: gold, by: f * 0.55),
-            MihrabColor.forest.mix(with: gold, by: f * 0.25),
-            MihrabColor.moss.mix(with: gold, by: f * 0.3),
-            MihrabColor.sprout.mix(with: gold, by: f * 0.7)
-        ]
-    }
-}
-
-private struct DhikrGrain: View {
-    var body: some View {
-        Canvas { canvas, size in
-            var rng = DhikrSeededGenerator(seed: 42)
-            let dotCount = Int(size.width * size.height / 1000)
-            for _ in 0..<dotCount {
-                let x = CGFloat.random(in: 0...size.width, using: &rng)
-                let y = CGFloat.random(in: 0...size.height, using: &rng)
-                let shade = Double.random(in: 0...1, using: &rng)
-                canvas.fill(
-                    Path(ellipseIn: CGRect(x: x, y: y, width: 1.2, height: 1.2)),
-                    with: .color(.white.opacity(0.022 + 0.028 * shade))
-                )
+        HStack(spacing: 0) {
+            ForEach(targets, id: \.self) { value in
+                let on = value == target
+                Button {
+                    onChange(value)
+                } label: {
+                    Text(title(for: value))
+                        .font(.subheadline.weight(.semibold).monospacedDigit())
+                        .foregroundStyle(on ? Color.white : MihrabColor.textPrimary.opacity(0.72))
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 40)
+                        .background {
+                            if on { Capsule().fill(accent.opacity(0.92)) }
+                        }
+                }
+                .buttonStyle(.plain)
             }
         }
-        .allowsHitTesting(false)
-    }
-}
-
-private struct DhikrSeededGenerator: RandomNumberGenerator {
-    var state: UInt64
-    init(seed: UInt64) { state = seed }
-    mutating func next() -> UInt64 {
-        state &+= 0x9E3779B97F4A7C15
-        var z = state
-        z = (z ^ (z >> 30)) &* 0xBF58476D1CE4E5B9
-        z = (z ^ (z >> 27)) &* 0x94D049BB133111EB
-        return z ^ (z >> 31)
-    }
-}
-
-private struct DhikrInnerRipple: View {
-    let born: Date
-    let side: CGFloat
-
-    var body: some View {
-        TimelineView(.animation(minimumInterval: 1.0 / 30.0)) { context in
-            let elapsed = context.date.timeIntervalSince(born)
-            let duration = 0.46
-            let u = min(max(elapsed / duration, 0), 1)
-            Circle()
-                .stroke(MihrabColor.mint.opacity(0.50 * (1 - u)), lineWidth: 2.8 * (1 - u) + 0.6)
-                .padding(28)
-                .scaleEffect(0.42 + 0.58 * u)
+        .padding(5)
+        .background {
+            Capsule()
+                .fill(MihrabColor.abyss.opacity(0.40))
+                .mihrabShaderPanel(motif, cornerRadius: 25, opacity: 0.28)
+                .clipShape(Capsule())
         }
-        .frame(width: side, height: side)
-        .clipShape(Circle())
-        .allowsHitTesting(false)
-    }
-}
-
-private struct StatPill: View {
-    let value: String
-    let label: String
-
-    var body: some View {
-        VStack(spacing: 2) {
-            Text(value)
-                .font(.headline.monospacedDigit())
-                .foregroundStyle(MihrabColor.mint)
-                .shadow(color: MihrabColor.mint.opacity(0.35), radius: 6)
-            Text(label)
-                .font(.caption)
-                .foregroundStyle(MihrabColor.textTertiary)
+        .overlay {
+            Capsule().strokeBorder(MihrabColor.mint.opacity(0.26), lineWidth: 1)
         }
+        .opacity(enabled ? 1 : 0.4)
+        .disabled(!enabled)
+        .highPriorityGesture(
+            DragGesture(minimumDistance: 28).onEnded { value in
+                guard enabled,
+                      abs(value.translation.width) > abs(value.translation.height) else { return }
+                advance(by: value.translation.width < 0 ? 1 : -1)
+            }
+        )
+        .accessibilityElement()
+        .accessibilityLabel(Text(L10n.dhkCustomTarget))
+        .accessibilityValue(Text(title(for: target)))
+        .accessibilityAdjustableAction { direction in
+            switch direction {
+            case .increment: advance(by: 1)
+            case .decrement: advance(by: -1)
+            @unknown default: break
+            }
+        }
+    }
+
+    private func title(for value: Int) -> String {
+        value == 0 ? "∞" : "\(value)"
+    }
+
+    private func advance(by step: Int) {
+        let index = targets.firstIndex(of: target) ?? 0
+        let next = (index + step + targets.count) % targets.count
+        onChange(targets[next])
     }
 }

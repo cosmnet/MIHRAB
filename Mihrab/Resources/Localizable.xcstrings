@@ -4,6 +4,12 @@
     "–" : {
 
     },
+    ":" : {
+
+    },
+    "·" : {
+
+    },
     "· %@ min" : {
 
     },
@@ -410,6 +416,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "AR için kamera izni gerekli"
+          }
+        }
+      }
+    },
+    "Aurora Veil" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "حجاب الشفق"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aurora Veil"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kutup Perdesi"
           }
         }
       }
@@ -1081,6 +1110,29 @@
         }
       }
     },
+    "Dhikr shader" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "نسيج الذكر"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dhikr shader"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zikir dokusu"
+          }
+        }
+      }
+    },
     "Dhikr Stats" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -1169,6 +1221,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ramazan Bayramı’na %lld gün"
+          }
+        }
+      }
+    },
+    "Emerald Silk" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "حرير الزمرد"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Emerald Silk"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zümrüt İpek"
           }
         }
       }
@@ -2574,6 +2649,29 @@
         }
       }
     },
+    "Mosque Light" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "نور المسجد"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mosque Light"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cami Nuru"
+          }
+        }
+      }
+    },
     "Mosques" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -2891,6 +2989,29 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Bu ay için vakit yok"
+          }
+        }
+      }
+    },
+    "None" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "بدون"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "None"
+          }
+        },
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yok"
           }
         }
       }

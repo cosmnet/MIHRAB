@@ -1,12 +1,52 @@
 import SwiftUI
 
-struct EsmaGridView: View {
-    var featured: EsmaName?
-    @Binding var query: String
+enum EsmaViewMode: String, CaseIterable, Identifiable {
+    case list, grid
 
+    var id: String { rawValue }
+
+    var localizedName: String {
+        switch self {
+        case .list: L10n.esmaViewList
+        case .grid: L10n.esmaViewGrid
+        }
+    }
+
+    var symbolName: String {
+        switch self {
+        case .list: "list.bullet"
+        case .grid: "square.grid.2x2"
+        }
+    }
+}
+
+// MARK: - Browser
+
+/// The ninety-nine, browsable. Search, theme chips and a favorites filter sit
+/// above a body that flips between a rich list and a two-column calligraphy
+/// grid — the two share a `matchedGeometryEffect` namespace so a Name glides
+/// from row to tile instead of cross-fading.
+struct EsmaBrowserView: View {
+    @Binding var query: String
+    /// When set, the browser shows only these Names (collection sheet) and
+    /// hides the theme chips.
+    var restrictedTo: [Int]? = nil
+    var showsSearch: Bool = true
+
+    var onSelect: (Int) -> Void
+
+    private var library: EsmaLibrary { EsmaLibrary.shared }
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var selected: EsmaName?
-    @State private var appeared = false
+
+    @AppStorage("mihrab.esma.viewMode") private var storedMode = EsmaViewMode.list.rawValue
+    @State private var collectionFilter: String?
+    @State private var favoritesOnly = false
+    @Namespace private var calligraphy
+
+    private var mode: EsmaViewMode {
+        get { EsmaViewMode(rawValue: storedMode) ?? .list }
+        nonmutating set { storedMode = newValue.rawValue }
+    }
 
     private var trimmedQuery: String {
         query.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -14,39 +54,97 @@ struct EsmaGridView: View {
 
     private var isSearching: Bool { !trimmedQuery.isEmpty }
 
-    private var filtered: [(offset: Int, element: EsmaName)] {
-        let all = Array(BundledContent.esma.enumerated())
-        guard isSearching else { return all }
-        return all.filter {
-            $0.element.transliteration.localizedCaseInsensitiveContains(trimmedQuery)
-                || $0.element.en.localizedCaseInsensitiveContains(trimmedQuery)
-                || $0.element.tr.localizedCaseInsensitiveContains(trimmedQuery)
-                || $0.element.arabic.contains(trimmedQuery)
+    private var entries: [EsmaEntry] {
+        let all = BundledContent.esma
+        var pool: [EsmaEntry] = all.indices.map { EsmaEntry(index: $0, name: all[$0]) }
+
+        if let restrictedTo {
+            let allowed = Set(restrictedTo)
+            pool = pool.filter { allowed.contains($0.number) }
+        } else if let collectionFilter,
+                  let collection = EsmaCollections.all.first(where: { $0.id == collectionFilter }) {
+            let allowed = Set(collection.numbers)
+            pool = pool.filter { allowed.contains($0.number) }
+        }
+
+        if favoritesOnly {
+            pool = pool.filter { library.isFavorite($0.name) }
+        }
+
+        guard isSearching else { return pool }
+        return pool.filter { entry in
+            entry.name.transliteration.localizedCaseInsensitiveContains(trimmedQuery)
+                || entry.name.en.localizedCaseInsensitiveContains(trimmedQuery)
+                || entry.name.tr.localizedCaseInsensitiveContains(trimmedQuery)
+                || entry.name.arabic.contains(trimmedQuery)
         }
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            searchField
-                .padding(.bottom, 18)
-
-            Text(isSearching ? L10n.esmaResultCount(filtered.count) : L10n.esmaNinetyNine)
-                .ornamentalCaps()
-                .padding(.horizontal, 4)
-                .padding(.bottom, 8)
-
-            if let featured, !isSearching {
-                featuredEntry(featured)
-                    .padding(.bottom, 4)
+        VStack(alignment: .leading, spacing: 14) {
+            if showsSearch {
+                searchField
             }
 
-            dictionaryList
-        }
-        .onAppear { withAnimation { appeared = true } }
-        .sheet(item: $selected) { name in
-            EsmaDetailSheet(name: name)
+            if restrictedTo == nil {
+                filterChips
+            }
+
+            header
+
+            content
         }
     }
+
+    // MARK: Header
+
+    private var header: some View {
+        HStack(alignment: .center, spacing: 12) {
+            Text(isSearching || favoritesOnly || collectionFilter != nil
+                 ? L10n.esmaResultCount(entries.count)
+                 : L10n.esmaNinetyNine)
+                .ornamentalCaps()
+
+            Spacer(minLength: 8)
+
+            viewModeToggle
+        }
+        .padding(.horizontal, 4)
+    }
+
+    private var viewModeToggle: some View {
+        HStack(spacing: 2) {
+            ForEach(EsmaViewMode.allCases) { candidate in
+                let isOn = mode == candidate
+                Button {
+                    guard !isOn else { return }
+                    HapticsEngine.shared.light()
+                    withAnimation(reduceMotion ? .easeInOut(duration: 0.2) : MihrabMotion.standardAnimation) {
+                        mode = candidate
+                    }
+                } label: {
+                    Image(systemName: candidate.symbolName)
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(isOn ? MihrabColor.abyss : MihrabColor.textSecondary)
+                        .frame(width: 42, height: 30)
+                        .background {
+                            if isOn {
+                                Capsule().fill(MihrabColor.mint)
+                            }
+                        }
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(Text(candidate.localizedName))
+                .accessibilityAddTraits(isOn ? [.isSelected, .isButton] : .isButton)
+            }
+        }
+        .padding(3)
+        .background(Capsule().fill(MihrabColor.abyss.opacity(0.5)))
+        .overlay { Capsule().strokeBorder(MihrabColor.mint.opacity(0.22), lineWidth: 1) }
+        .accessibilityLabel(Text(L10n.esmaViewModeCaps))
+    }
+
+    // MARK: Search & filters
 
     private var searchField: some View {
         HStack(spacing: 10) {
@@ -78,196 +176,308 @@ struct EsmaGridView: View {
         }
     }
 
-    private func featuredEntry(_ name: EsmaName) -> some View {
-        let number = (BundledContent.esma.firstIndex(where: { $0.id == name.id }) ?? 0) + 1
-        return Button { selected = name } label: {
-            VStack(alignment: .leading, spacing: 10) {
-                Text(L10n.nameOfTheDay)
-                    .ornamentalCaps()
-                EsmaDictionaryRow(number: number, name: name, arabicSize: 36)
+    private var filterChips: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                chip(
+                    title: L10n.esmaFilterAll,
+                    symbol: "circle.grid.3x3.fill",
+                    tint: MihrabColor.mint,
+                    isOn: collectionFilter == nil && !favoritesOnly
+                ) {
+                    collectionFilter = nil
+                    favoritesOnly = false
+                }
+
+                chip(
+                    title: L10n.esmaFilterFavorites,
+                    symbol: favoritesOnly ? "star.fill" : "star",
+                    tint: MihrabColor.brass,
+                    isOn: favoritesOnly
+                ) {
+                    favoritesOnly.toggle()
+                }
+
+                ForEach(EsmaCollections.all) { collection in
+                    chip(
+                        title: collection.localizedTitle,
+                        symbol: collection.symbol,
+                        tint: collection.tint,
+                        isOn: collectionFilter == collection.id
+                    ) {
+                        collectionFilter = collectionFilter == collection.id ? nil : collection.id
+                    }
+                }
             }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 28)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .mihrabCardScene("esma-bg", opacity: 0.4)
-            .mihrabCard(interactive: true)
+            .padding(.horizontal, 4)
         }
-        .buttonStyle(.plain)
-        .accessibilityHint(Text(name.transliteration))
+        .scrollClipDisabled()
     }
 
-    @ViewBuilder
-    private var dictionaryList: some View {
-        if filtered.isEmpty {
-            MihrabEmptyState(
-                symbol: "magnifyingglass",
-                title: L10n.esmaNoResults,
-                message: L10n.esmaNoResultsBody
-            )
-            .padding(.top, 20)
-        } else {
-            LazyVStack(spacing: 0) {
-                ForEach(filtered, id: \.element.id) { index, name in
-                    Button { selected = name } label: {
-                        EsmaDictionaryRow(number: index + 1, name: name, arabicSize: 34)
-                            .padding(.horizontal, 20)
-                            .padding(.vertical, 18)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .contentShape(Rectangle())
-                    }
-                    .buttonStyle(.plain)
-                    .padding(.horizontal, -16)
-                    .opacity(appeared ? 1 : 0)
-                    .offset(y: appeared || reduceMotion ? 0 : 10)
-                    .animation(
-                        reduceMotion
-                            ? .easeInOut(duration: 0.2)
-                            : MihrabMotion.standardAnimation.delay(Double(min(index, 20)) * 0.02),
-                        value: appeared
-                    )
+    private func chip(
+        title: String,
+        symbol: String,
+        tint: Color,
+        isOn: Bool,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button {
+            HapticsEngine.shared.light()
+            withAnimation(reduceMotion ? .easeInOut(duration: 0.2) : MihrabMotion.snappyAnimation) {
+                action()
+            }
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: symbol)
+                    .font(.caption2.weight(.semibold))
+                Text(title)
+                    .font(.caption.weight(.semibold))
+                    .lineLimit(1)
+            }
+            .foregroundStyle(isOn ? MihrabColor.abyss : MihrabColor.textSecondary)
+            .padding(.horizontal, 14)
+            .frame(height: 34)
+            .background {
+                Capsule().fill(isOn ? tint : MihrabColor.moss)
+            }
+            .overlay {
+                Capsule().strokeBorder(
+                    isOn ? .clear : MihrabColor.mint.opacity(0.22),
+                    lineWidth: 1
+                )
+            }
+        }
+        .buttonStyle(.plain)
+        .accessibilityAddTraits(isOn ? [.isSelected, .isButton] : .isButton)
+    }
 
-                    if index != filtered.last?.offset {
-                        MihrabHairline()
-                            .padding(.horizontal, -16)
-                    }
+    // MARK: Content
+
+    @ViewBuilder
+    private var content: some View {
+        let items = entries
+        if items.isEmpty {
+            MihrabEmptyState(
+                symbol: favoritesOnly ? "star" : "magnifyingglass",
+                title: favoritesOnly ? L10n.esmaNoFavorites : L10n.esmaNoResults,
+                message: favoritesOnly ? L10n.esmaNoFavoritesBody : L10n.esmaNoResultsBody
+            )
+            .padding(.top, 12)
+            .transition(.opacity)
+        } else if mode == .grid {
+            LazyVGrid(
+                columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)],
+                spacing: 12
+            ) {
+                ForEach(items) { entry in
+                    EsmaGridCell(entry: entry, namespace: calligraphy) { onSelect(entry.index) }
+                }
+            }
+        } else {
+            LazyVStack(spacing: 10) {
+                ForEach(items) { entry in
+                    EsmaListRow(entry: entry, namespace: calligraphy) { onSelect(entry.index) }
                 }
             }
         }
     }
 }
 
-struct EsmaDictionaryRow: View {
-    let number: Int
+// MARK: - Entry
+
+struct EsmaEntry: Identifiable, Hashable {
+    /// 0-based position in `BundledContent.esma`.
+    let index: Int
     let name: EsmaName
-    var arabicSize: CGFloat = 38
+
+    var id: String { name.id }
+    /// 1-based, the number shown to the user.
+    var number: Int { index + 1 }
+    var collection: EsmaCollection { EsmaCollections.primaryCollection(for: number) }
+}
+
+// MARK: - List row
+
+struct EsmaListRow: View {
+    let entry: EsmaEntry
+    var namespace: Namespace.ID
+    var action: () -> Void
+
+    private var library: EsmaLibrary { EsmaLibrary.shared }
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack(alignment: .firstTextBaseline, spacing: 12) {
-                Text(String(format: "%02d", number))
-                    .font(.system(size: 15, weight: .semibold, design: .rounded).monospacedDigit())
-                    .foregroundStyle(MihrabColor.brass)
-                    .frame(width: 36, alignment: .leading)
+        Button(action: action) {
+            HStack(alignment: .center, spacing: 14) {
+                // Thin tint rail: the row's collection, readable without text.
+                Capsule()
+                    .fill(entry.collection.tint.opacity(0.75))
+                    .frame(width: 3)
+                    .frame(maxHeight: .infinity)
+
+                VStack(alignment: .leading, spacing: 5) {
+                    HStack(spacing: 8) {
+                        Text(String(format: "%02d", entry.number))
+                            .font(.system(size: 13, weight: .bold, design: .rounded).monospacedDigit())
+                            .foregroundStyle(MihrabColor.brass)
+                        if library.hasVisited(entry.name) {
+                            Image(systemName: "checkmark.seal.fill")
+                                .font(.caption2)
+                                .foregroundStyle(MihrabColor.emerald.opacity(0.8))
+                        }
+                    }
+
+                    Text(entry.name.localizedMeaning)
+                        .font(.system(size: 19, weight: .semibold))
+                        .foregroundStyle(MihrabColor.textPrimary)
+                        .multilineTextAlignment(.leading)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    Text(entry.name.transliteration)
+                        .font(.caption.weight(.medium))
+                        .foregroundStyle(MihrabColor.textTertiary)
+                }
 
                 Spacer(minLength: 8)
 
-                Text(name.arabic)
-                    .font(MihrabFont.arabic(arabicSize))
+                Text(entry.name.arabic)
+                    .font(MihrabFont.arabic(32))
                     .foregroundStyle(MihrabColor.textPrimary)
-                    .multilineTextAlignment(.trailing)
-                    .lineSpacing(6)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
                     .environment(\.layoutDirection, .rightToLeft)
+                    .matchedGeometryEffect(id: entry.id, in: namespace)
+
+                EsmaStarButton(name: entry.name)
             }
-
-            Text(name.localizedMeaning)
-                .font(.system(size: 22, weight: .semibold))
-                .foregroundStyle(MihrabColor.textPrimary)
-                .multilineTextAlignment(.leading)
-                .fixedSize(horizontal: false, vertical: true)
-                .padding(.leading, 48)
-
-            Text(name.transliteration)
-                .font(.caption.weight(.medium))
-                .foregroundStyle(MihrabColor.textTertiary)
-                .padding(.leading, 48)
+            .padding(.vertical, 14)
+            .padding(.trailing, 12)
+            .frame(minHeight: 76)
+            .mihrabSolidCard(cornerRadius: MihrabSpace.rowRadius)
+            .contentShape(RoundedRectangle(cornerRadius: MihrabSpace.rowRadius, style: .continuous))
         }
+        .pressable(reduceMotion)
         .accessibilityElement(children: .combine)
+        .accessibilityLabel(Text("\(entry.number). \(entry.name.transliteration), \(entry.name.localizedMeaning)"))
     }
 }
 
-struct EsmaDetailSheet: View {
-    let name: EsmaName
-    @Environment(\.dismiss) private var dismiss
+// MARK: - Grid cell
+
+struct EsmaGridCell: View {
+    let entry: EsmaEntry
+    var namespace: Namespace.ID
+    var action: () -> Void
+
+    private var library: EsmaLibrary { EsmaLibrary.shared }
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
-    private var number: Int {
-        (BundledContent.esma.firstIndex(where: { $0.id == name.id }) ?? 0) + 1
-    }
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 8) {
+                HStack {
+                    Text(String(format: "%02d", entry.number))
+                        .font(.system(size: 12, weight: .bold, design: .rounded).monospacedDigit())
+                        .foregroundStyle(MihrabColor.brass)
+                    Spacer()
+                    if library.isFavorite(entry.name) {
+                        Image(systemName: "star.fill")
+                            .font(.caption2)
+                            .foregroundStyle(MihrabColor.brass)
+                    }
+                }
 
-    private var otherLanguageMeaning: String {
-        L10n.isTurkish ? name.en : name.tr
+                Spacer(minLength: 4)
+
+                Text(entry.name.arabic)
+                    .font(MihrabFont.arabic(40))
+                    .foregroundStyle(MihrabColor.textPrimary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.4)
+                    .environment(\.layoutDirection, .rightToLeft)
+                    .matchedGeometryEffect(id: entry.id, in: namespace)
+
+                Spacer(minLength: 4)
+
+                Text(entry.name.localizedMeaning)
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(MihrabColor.textPrimary)
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.8)
+                    .frame(maxWidth: .infinity)
+
+                Text(entry.name.transliteration)
+                    .font(.caption2)
+                    .foregroundStyle(MihrabColor.textTertiary)
+                    .lineLimit(1)
+            }
+            .padding(14)
+            .frame(height: 172)
+            .frame(maxWidth: .infinity)
+            .background {
+                RoundedRectangle(cornerRadius: 24, style: .continuous)
+                    .fill(MihrabColor.moss)
+            }
+            .overlay {
+                // Thin gold frame — the "illuminated page" cue.
+                RoundedRectangle(cornerRadius: 24, style: .continuous)
+                    .strokeBorder(
+                        LinearGradient(
+                            colors: [
+                                MihrabColor.brass.opacity(0.55),
+                                entry.collection.tint.opacity(0.22)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        lineWidth: 1
+                    )
+            }
+            .contentShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+        }
+        .pressable(reduceMotion)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(Text("\(entry.number). \(entry.name.transliteration), \(entry.name.localizedMeaning)"))
     }
+}
+
+// MARK: - Star
+
+/// Favorite toggle with a short spring pop. 44pt target even though the glyph
+/// is small.
+struct EsmaStarButton: View {
+    let name: EsmaName
+    var size: CGFloat = 18
+
+    private var library: EsmaLibrary { EsmaLibrary.shared }
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var pop = false
+
+    private var isFavorite: Bool { library.isFavorite(name) }
 
     var body: some View {
-        NavigationStack {
-            ZStack {
-                AuroraBackground()
-                MihrabOrnament(name: "esma-ornament", opacity: 0.09, side: 340)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-                    .padding(.top, 48)
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 20) {
-                        Text(String(format: "%02d  ·  99", number))
-                            .ornamentalCaps()
-
-                        Text(name.arabic)
-                            .font(MihrabFont.arabic(64))
-                            .foregroundStyle(MihrabColor.textPrimary)
-                            .multilineTextAlignment(.trailing)
-                            .lineSpacing(12)
-                            .frame(maxWidth: .infinity, alignment: .trailing)
-                            .environment(\.layoutDirection, .rightToLeft)
-                            .padding(.top, 8)
-
-                        Text(name.localizedMeaning)
-                            .font(.system(size: 34, weight: .semibold, design: .default))
-                            .foregroundStyle(MihrabColor.textPrimary)
-                            .fixedSize(horizontal: false, vertical: true)
-
-                        Text(name.transliteration)
-                            .font(.title3.weight(.medium))
-                            .foregroundStyle(MihrabColor.brass)
-
-                        Capsule()
-                            .fill(MihrabColor.brass.opacity(0.45))
-                            .frame(width: 48, height: 1)
-                            .padding(.vertical, 4)
-
-                        Text(otherLanguageMeaning)
-                            .font(MihrabFont.quote(22))
-                            .foregroundStyle(MihrabColor.textSecondary)
-                            .fixedSize(horizontal: false, vertical: true)
-
-                        Text(L10n.esmaReflection(name.localizedMeaning))
-                            .font(MihrabFont.quoteItalic(19))
-                            .foregroundStyle(MihrabColor.textSecondary)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                    .padding(.horizontal, 24)
-                    .padding(.top, 12)
-                    .padding(.bottom, 24)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                .scrollEdgeEffectStyle(.soft, for: .top)
+        Button {
+            let added = library.toggleFavorite(name)
+            if added {
+                HapticsEngine.shared.success()
+            } else {
+                HapticsEngine.shared.light()
             }
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button(L10n.done) { dismiss() }
-                }
-            }
-            .safeAreaInset(edge: .bottom) {
-                NavigationLink {
-                    DhikrView()
-                } label: {
-                    Text(L10n.recite100)
-                        .font(.headline.weight(.semibold))
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 52)
-                        .background(Capsule().fill(MihrabColor.emerald))
-                        .shadow(color: MihrabColor.emerald.opacity(reduceMotion ? 0 : 0.22), radius: 12, y: 6)
-                }
-                .buttonStyle(.plain)
-                .padding(.horizontal, 20)
-                .padding(.top, 8)
-                .padding(.bottom, 12)
-                .background(MihrabColor.abyss.opacity(0.001))
-            }
+            guard !reduceMotion else { return }
+            pop = true
+            withAnimation(MihrabMotion.snappyAnimation) { pop = false }
+        } label: {
+            Image(systemName: isFavorite ? "star.fill" : "star")
+                .font(.system(size: size, weight: .semibold))
+                .foregroundStyle(isFavorite ? MihrabColor.brass : MihrabColor.textTertiary)
+                .symbolEffect(.bounce, value: isFavorite)
+                .scaleEffect(pop ? 1.35 : 1)
+                .frame(width: MihrabSpace.hit, height: MihrabSpace.hit)
+                .contentShape(Rectangle())
         }
-        .presentationDetents([.large])
-        .presentationDragIndicator(.visible)
-        .presentationContentInteraction(.scrolls)
-        .presentationBackground(.ultraThinMaterial)
+        .buttonStyle(.plain)
+        .accessibilityLabel(Text(isFavorite ? L10n.esmaRemoveFavorite : L10n.esmaAddFavorite))
+        .accessibilityAddTraits(isFavorite ? [.isSelected, .isButton] : .isButton)
     }
 }

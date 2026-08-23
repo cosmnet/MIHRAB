@@ -32,13 +32,26 @@ struct QiblaCompassView: View {
 
     private var isAligned: Bool { abs(qiblaDelta) <= 3 }
 
+    /// Raw sensor accuracy in degrees. Negative means CoreLocation itself does
+    /// not trust the reading.
+    private var headingAccuracy: Double? {
+        locationManager.heading?.headingAccuracy
+    }
+
+    /// `true` when the magnetometer is either unusable or badly skewed. We say
+    /// so out loud rather than pointing a confident needle at nothing.
+    private var needsCalibration: Bool {
+        guard let headingAccuracy else { return false }
+        return headingAccuracy < 0 || headingAccuracy > 20
+    }
+
     var body: some View {
         NavigationStack {
             ZStack {
-                AuroraBackground(ramadanMode: theme.isRamadanMode)
+                MihrabBackdrop(surface: .qibla, ramadanMode: theme.isRamadanMode)
 
-                VStack(spacing: 20) {
-                    Spacer(minLength: 8)
+                VStack(spacing: 16) {
+                    Spacer(minLength: 4)
 
                     if locationManager.effectiveCoordinate == nil {
                         MihrabEmptyState(
@@ -73,29 +86,37 @@ struct QiblaCompassView: View {
                             readout
                         }
                         .padding(20)
+                        .mihrabShaderPanel(.kufic, cornerRadius: MihrabSpace.cardRadius, opacity: 0.18)
                         .mihrabCardScene("qibla-bg", opacity: 0.45)
                         .mihrabCard()
-                    }
 
-                    Spacer()
-                }
-                .padding(.bottom, showsAREntry ? MihrabSpace.tabClearance : 32)
-
-                if showsAREntry, locationManager.effectiveCoordinate != nil {
-                    VStack {
-                        Spacer()
-                        Button { showAR = true } label: {
-                            Label(L10n.viewInAR, systemImage: "camera.viewfinder")
-                                .font(.subheadline.weight(.semibold))
-                                .frame(minHeight: MihrabSpace.hit)
-                                .padding(.horizontal, 20)
-                                .glassEffect(.regular.interactive(), in: .capsule)
+                        if needsCalibration {
+                            calibrationBanner
+                                .transition(.opacity.combined(with: .offset(y: 8)))
                         }
-                        .buttonStyle(.plain)
-                        .padding(.bottom, MihrabSpace.tabClearance)
                     }
+
+                    Spacer(minLength: 0)
+                }
+                .padding(.horizontal, 4)
+                .animation(reduceMotion ? nil : MihrabMotion.standardAnimation, value: needsCalibration)
+            }
+            // The floating tab bar already owns the bottom safe area; the AR
+            // entry rides just above it instead of guessing a clearance.
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                if showsAREntry, locationManager.effectiveCoordinate != nil {
+                    Button { showAR = true } label: {
+                        Label(L10n.viewInAR, systemImage: "camera.viewfinder")
+                            .font(.subheadline.weight(.semibold))
+                            .frame(minHeight: MihrabSpace.hit)
+                            .padding(.horizontal, 22)
+                            .glassEffect(.regular.interactive(), in: .capsule)
+                    }
+                    .pressable(reduceMotion)
+                    .padding(.bottom, 8)
                 }
             }
+            .mihrabTabSafeContent(showsAREntry ? MihrabSpace.tabClearance : 16)
             .navigationTitle(L10n.tabQibla)
             .navigationBarTitleDisplayMode(.inline)
         }
@@ -119,6 +140,9 @@ struct QiblaCompassView: View {
             }
         }
         .onChange(of: heading) { _, newHeading in
+            // Only tick while closing in — a click every 5° across a full spin
+            // is noise, and it fires constantly when the phone is on a table.
+            guard abs(qiblaDelta) < 40, !needsCalibration else { return }
             let bucket = Int(newHeading) / 5
             if bucket != lastTickDegree {
                 lastTickDegree = bucket
@@ -128,47 +152,133 @@ struct QiblaCompassView: View {
     }
 
     private var readout: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 10) {
             Text("\(Int(heading.rounded()))°")
                 .font(MihrabFont.countdown(48))
                 .foregroundStyle(isAligned ? MihrabColor.mint : MihrabColor.textPrimary)
+                .contentTransition(.numericText())
+                .animation(reduceMotion ? nil : .snappy(duration: 0.25), value: Int(heading.rounded()))
 
-            Text(L10n.qiblaDegrees(Int(qiblaBearing.rounded()), L10n.cardinal(for: qiblaBearing)))
-                .font(.subheadline.weight(.medium))
-                .foregroundStyle(MihrabColor.mint)
-
-            if distanceKm > 0 {
-                Label {
-                    Text(L10n.kmToMakkah(Int(distanceKm.rounded())))
-                } icon: {
-                    Image(systemName: "point.topleft.down.to.point.bottomright.curvepath.fill")
+            // Two facts side by side: where the Qibla is, and how far Makkah is.
+            HStack(spacing: 10) {
+                factTile(
+                    caption: L10n.qibHeadingCaps,
+                    value: L10n.qiblaDegrees(Int(qiblaBearing.rounded()), L10n.cardinal(for: qiblaBearing)),
+                    tint: MihrabColor.mint
+                )
+                if distanceKm > 0 {
+                    factTile(
+                        caption: L10n.qibDistanceCaps,
+                        value: L10n.kmToMakkah(Int(distanceKm.rounded())),
+                        tint: MihrabColor.brass
+                    )
                 }
-                .font(.caption)
-                .foregroundStyle(MihrabColor.textTertiary)
             }
 
-            if isAligned {
-                Text(L10n.facingQibla)
-                    .font(.headline)
-                    .foregroundStyle(MihrabColor.mint)
-                    .padding(.horizontal, 16).padding(.vertical, 8)
-                    .background(Capsule().fill(MihrabColor.moss))
-                    .overlay {
-                        Capsule().strokeBorder(MihrabColor.mint.opacity(0.45), lineWidth: 1)
-                    }
-                    .transition(.opacity.combined(with: .scale))
-            } else if locationManager.heading == nil {
-                Text(L10n.holdFlat)
-                    .font(.caption)
-                    .foregroundStyle(MihrabColor.textSecondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 32)
-            }
+            guidance
         }
         .animation(reduceMotion ? nil : MihrabMotion.snappyAnimation, value: isAligned)
         .accessibilityElement(children: .combine)
+        .accessibilityLabel(Text(accessibilitySummary))
     }
 
+    private func factTile(caption: String, value: String, tint: Color) -> some View {
+        VStack(spacing: 4) {
+            Text(caption)
+                .ornamentalCaps()
+                .lineLimit(1)
+            Text(value)
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(tint)
+                .lineLimit(1)
+                .minimumScaleFactor(0.75)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 10)
+        .padding(.horizontal, 8)
+        .mihrabSolidCard(cornerRadius: 16)
+    }
+
+    /// Locked on, told which way to turn, or told honestly that we cannot say.
+    @ViewBuilder
+    private var guidance: some View {
+        if isAligned {
+            Text(L10n.facingQibla)
+                .font(.headline)
+                .foregroundStyle(MihrabColor.mint)
+                .padding(.horizontal, 16).padding(.vertical, 8)
+                .background(Capsule().fill(MihrabColor.moss))
+                .overlay {
+                    Capsule().strokeBorder(MihrabColor.mint.opacity(0.45), lineWidth: 1)
+                }
+                .transition(.opacity.combined(with: .scale))
+        } else if locationManager.heading == nil {
+            Text(L10n.holdFlat)
+                .font(.caption)
+                .foregroundStyle(MihrabColor.textSecondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 32)
+        } else {
+            let degrees = Int(abs(qiblaDelta).rounded())
+            Label {
+                Text(qiblaDelta > 0 ? L10n.qibTurnRight(degrees) : L10n.qibTurnLeft(degrees))
+                    .contentTransition(.numericText())
+            } icon: {
+                Image(systemName: qiblaDelta > 0 ? "arrow.turn.up.right" : "arrow.turn.up.left")
+            }
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(MihrabColor.textPrimary)
+            .padding(.horizontal, 16).padding(.vertical, 8)
+            .background(Capsule().fill(MihrabColor.moss.opacity(0.9)))
+            .animation(reduceMotion ? nil : .snappy(duration: 0.25), value: degrees)
+        }
+    }
+
+    /// Never dressed up: if the magnetometer is off, the number is worthless
+    /// and we say so instead of quietly rounding it.
+    private var calibrationBanner: some View {
+        HStack(alignment: .top, spacing: 12) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .font(.body)
+                .foregroundStyle(MihrabColor.brass)
+                .symbolRenderingMode(.hierarchical)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(L10n.qibCalibrateTitle)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(MihrabColor.textPrimary)
+                Text(L10n.qibCalibrateBody)
+                    .font(.caption)
+                    .foregroundStyle(MihrabColor.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                if let headingAccuracy {
+                    Text(headingAccuracy < 0
+                         ? L10n.qibAccuracyLow
+                         : L10n.qibAccuracy(Int(headingAccuracy.rounded())))
+                        .font(.caption2.weight(.medium))
+                        .foregroundStyle(MihrabColor.textTertiary)
+                }
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(16)
+        .mihrabSolidCard(cornerRadius: MihrabSpace.rowRadius, stroke: MihrabColor.brass.opacity(0.45))
+        .padding(.horizontal, 16)
+        .accessibilityElement(children: .combine)
+    }
+
+    private var accessibilitySummary: String {
+        var parts = [L10n.qiblaDegrees(Int(qiblaBearing.rounded()), L10n.cardinal(for: qiblaBearing))]
+        if distanceKm > 0 { parts.append(L10n.kmToMakkah(Int(distanceKm.rounded()))) }
+        if isAligned {
+            parts.append(L10n.facingQibla)
+        } else if locationManager.heading != nil {
+            let degrees = Int(abs(qiblaDelta).rounded())
+            parts.append(qiblaDelta > 0 ? L10n.qibTurnRight(degrees) : L10n.qibTurnLeft(degrees))
+        }
+        if needsCalibration { parts.append(L10n.qibCalibrateTitle) }
+        return parts.joined(separator: ", ")
+    }
 }
 
 // MARK: - Dial

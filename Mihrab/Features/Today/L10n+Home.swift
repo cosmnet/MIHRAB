@@ -1,0 +1,244 @@
+import Foundation
+
+/// Copy owned by the Home surfaces — Today, Times, Qibla, Ramadan, Mosques.
+/// Prefixed (`home…`, `tmz…`, `qib…`, `ram…`) so it can never collide with the
+/// shared catalogue in `L10n.swift`.
+extension L10n {
+
+    // MARK: - Today · day summary
+
+    static var homeTodayCaps: String {
+        string(en: "TODAY", tr: "BUGÜN", ar: "اليوم")
+    }
+
+    static var homeSummaryCaps: String {
+        string(en: "DAY AT A GLANCE", tr: "GÜNÜN ÖZETİ", ar: "ملخص اليوم")
+    }
+
+    static func homePrayersLeft(_ count: Int) -> String {
+        switch language {
+        case .turkish: count == 1 ? "Bugün 1 vakit kaldı" : "Bugün \(count) vakit kaldı"
+        case .arabic: "بقيت \(count) صلوات اليوم"
+        case .english: count == 1 ? "1 prayer left today" : "\(count) prayers left today"
+        }
+    }
+
+    static var homeAllPrayersDone: String {
+        string(
+            en: "All of today's prayers have passed",
+            tr: "Bugünün vakitleri tamamlandı",
+            ar: "انقضت جميع صلوات اليوم"
+        )
+    }
+
+    static func homeDaylight(_ hours: Int, _ minutes: Int) -> String {
+        string(
+            en: "\(hours) h \(minutes) m of daylight",
+            tr: "\(hours) sa \(minutes) dk gündüz",
+            ar: "\(hours) س \(minutes) د من النهار"
+        )
+    }
+
+    static var homeDaylightCaps: String {
+        string(en: "DAYLIGHT", tr: "GÜNDÜZ", ar: "النهار")
+    }
+
+    static var homeLocatingCity: String {
+        string(en: "Finding your city…", tr: "Şehrin bulunuyor…", ar: "جارٍ تحديد مدينتك…")
+    }
+
+    // MARK: - Today · prayer log & streak
+
+    static var homeLogCaps: String {
+        string(en: "PRAYER LOG", tr: "NAMAZ TAKİBİ", ar: "سجل الصلاة")
+    }
+
+    static var homeLogHint: String {
+        string(
+            en: "Tap a prayer once you have prayed it.",
+            tr: "Kıldığın vakte dokunarak işaretle.",
+            ar: "انقر على الصلاة بعد أدائها."
+        )
+    }
+
+    static func homeLogProgress(_ done: Int, _ total: Int) -> String {
+        string(en: "\(done) of \(total)", tr: "\(done) / \(total)", ar: "\(done) من \(total)")
+    }
+
+    static func homeStreakDays(_ days: Int) -> String {
+        switch language {
+        case .turkish: days == 1 ? "1 günlük seri" : "\(days) günlük seri"
+        case .arabic: "سلسلة \(days) يوم"
+        case .english: days == 1 ? "1 day streak" : "\(days) day streak"
+        }
+    }
+
+    static var homeStreakStart: String {
+        string(en: "Start your streak today", tr: "Serini bugün başlat", ar: "ابدأ سلسلتك اليوم")
+    }
+
+    static func homeMarkedPrayed(_ prayer: String) -> String {
+        string(en: "\(prayer) marked as prayed", tr: "\(prayer) kılındı olarak işaretlendi", ar: "تم تسجيل \(prayer)")
+    }
+
+    static func homeMarkPrayed(_ prayer: String) -> String {
+        string(en: "Mark \(prayer) as prayed", tr: "\(prayer) namazını kılındı işaretle", ar: "سجّل صلاة \(prayer)")
+    }
+
+    // MARK: - Today · misc
+
+    static var homeQuickCaps: String {
+        string(en: "QUICK ACTIONS", tr: "HIZLI EYLEMLER", ar: "إجراءات سريعة")
+    }
+
+    static var homeMonthlyTimes: String {
+        string(en: "Month", tr: "Aylık", ar: "الشهر")
+    }
+
+    static func homePrayerEntered(_ prayer: String) -> String {
+        string(en: "\(prayer) has begun", tr: "\(prayer) vakti girdi", ar: "دخل وقت \(prayer)")
+    }
+
+    static var homePullToRefresh: String {
+        string(en: "Pull to refresh", tr: "Yenilemek için çek", ar: "اسحب للتحديث")
+    }
+
+    // MARK: - Times
+
+    static var tmzModeDay: String {
+        string(en: "Day", tr: "Gün", ar: "يوم")
+    }
+
+    static var tmzModeMonth: String {
+        string(en: "Month", tr: "Ay", ar: "شهر")
+    }
+
+    static var tmzYesterday: String {
+        string(en: "Yesterday", tr: "Dün", ar: "أمس")
+    }
+
+    static var tmzTomorrow: String {
+        string(en: "Tomorrow", tr: "Yarın", ar: "غدًا")
+    }
+
+    static var tmzNextCaps: String {
+        string(en: "NEXT", tr: "SIRADAKİ", ar: "التالي")
+    }
+
+    static var tmzLoadingMonth: String {
+        string(en: "Loading the month…", tr: "Ay yükleniyor…", ar: "جارٍ تحميل الشهر…")
+    }
+
+    static var tmzOpenFullMonth: String {
+        string(en: "Full month", tr: "Tüm ay", ar: "الشهر كامل")
+    }
+
+    static var tmzScheduleCaps: String {
+        string(en: "SCHEDULE", tr: "VAKİTLER", ar: "المواقيت")
+    }
+
+    // MARK: - Qibla
+
+    static var qibCalibrateTitle: String {
+        string(en: "Compass needs calibrating", tr: "Pusula kalibrasyon istiyor", ar: "البوصلة تحتاج معايرة")
+    }
+
+    static var qibCalibrateBody: String {
+        string(
+            en: "Move the phone in a figure-eight, away from metal and magnets.",
+            tr: "Telefonu sekiz çizerek çevir; metal ve mıknatıslardan uzak tut.",
+            ar: "حرّك الهاتف على شكل رقم ثمانية بعيدًا عن المعادن والمغناطيس."
+        )
+    }
+
+    static func qibAccuracy(_ degrees: Int) -> String {
+        string(en: "±\(degrees)° accuracy", tr: "±\(degrees)° doğruluk", ar: "دقة ±\(degrees)°")
+    }
+
+    static var qibAccuracyLow: String {
+        string(
+            en: "Reading is unreliable right now",
+            tr: "Şu an ölçüm güvenilir değil",
+            ar: "القراءة غير موثوقة الآن"
+        )
+    }
+
+    static func qibTurnRight(_ degrees: Int) -> String {
+        string(en: "Turn right \(degrees)°", tr: "\(degrees)° sağa dön", ar: "استدر يمينًا \(degrees)°")
+    }
+
+    static func qibTurnLeft(_ degrees: Int) -> String {
+        string(en: "Turn left \(degrees)°", tr: "\(degrees)° sola dön", ar: "استدر يسارًا \(degrees)°")
+    }
+
+    static var qibHeadingCaps: String {
+        string(en: "HEADING", tr: "YÖN", ar: "الاتجاه")
+    }
+
+    static var qibDistanceCaps: String {
+        string(en: "TO MAKKAH", tr: "MEKKE'YE", ar: "إلى مكة")
+    }
+
+    // MARK: - Mosques
+
+    static var msqTitle: String {
+        string(en: "Mosques nearby", tr: "Yakındaki camiler", ar: "المساجد القريبة")
+    }
+
+    static var msqSearchArea: String {
+        string(en: "Search this area", tr: "Bu alanda ara", ar: "ابحث في هذه المنطقة")
+    }
+
+    static var msqSearching: String {
+        string(en: "Searching…", tr: "Aranıyor…", ar: "جارٍ البحث…")
+    }
+
+    static var msqNoneFound: String {
+        string(en: "No mosques found nearby", tr: "Yakında cami bulunamadı", ar: "لم يتم العثور على مساجد قريبة")
+    }
+
+    static var msqDirections: String {
+        string(en: "Directions", tr: "Yol tarifi", ar: "الاتجاهات")
+    }
+
+    static var msqCall: String {
+        string(en: "Call", tr: "Ara", ar: "اتصل")
+    }
+
+    static var msqJumuahToday: String {
+        string(en: "Jumu'ah today", tr: "Bugün Cuma", ar: "الجمعة اليوم")
+    }
+
+    static func msqWalkMinutes(_ minutes: Int) -> String {
+        string(en: "\(minutes) min walk", tr: "\(minutes) dk yürüme", ar: "\(minutes) دقيقة سيرًا")
+    }
+
+    // MARK: - Ramadan · fasting log
+
+    static var ramFastingLogCaps: String {
+        string(en: "FASTING LOG", tr: "ORUÇ TAKİBİ", ar: "سجل الصيام")
+    }
+
+    static func ramFastedDays(_ count: Int) -> String {
+        switch language {
+        case .turkish: "\(count) gün oruç"
+        case .arabic: "\(count) يوم صيام"
+        case .english: count == 1 ? "1 day fasted" : "\(count) days fasted"
+        }
+    }
+
+    static var ramMarkFastToday: String {
+        string(en: "I fasted today", tr: "Bugün oruç tuttum", ar: "صمت اليوم")
+    }
+
+    static var ramFastedTodayDone: String {
+        string(en: "Today is logged", tr: "Bugün işaretlendi", ar: "تم تسجيل اليوم")
+    }
+
+    static func ramFastDayA11y(_ day: Int, _ fasted: Bool) -> String {
+        let state = fasted
+            ? string(en: "fasted", tr: "oruçlu", ar: "صائم")
+            : string(en: "not logged", tr: "işaretlenmedi", ar: "غير مسجل")
+        return string(en: "Day \(day), \(state)", tr: "\(day). gün, \(state)", ar: "اليوم \(day)، \(state)")
+    }
+}

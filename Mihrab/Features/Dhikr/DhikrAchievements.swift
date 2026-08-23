@@ -89,7 +89,7 @@ enum DhikrSessionMetrics {
     }
 
     static func phraseVariety(_ sessions: [DhikrSession]) -> Int {
-        let ids = Set(DhikrOption.defaults.map(\.id))
+        let ids = Set(DhikrCatalog.core.map(\.id))
         var used: Set<String> = []
         for session in sessions where recited(session) > 0 && ids.contains(session.dhikrID) {
             used.insert(session.dhikrID)

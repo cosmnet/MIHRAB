@@ -7,15 +7,27 @@ struct MihrabApp: App {
     @State private var locationManager = LocationManager.shared
     @State private var repository = PrayerTimesRepository.shared
     @State private var theme = Theme.shared
+    @State private var splashFinished = false
 
     var body: some Scene {
         WindowGroup {
-            RootView()
-                .environment(settings)
-                .environment(locationManager)
-                .environment(repository)
-                .environment(theme)
-                .preferredColorScheme(settings.themeMode == .light ? .light : .dark)
+            ZStack {
+                RootView()
+                    .environment(settings)
+                    .environment(locationManager)
+                    .environment(repository)
+                    .environment(theme)
+                    .opacity(splashFinished ? 1 : 0)
+
+                if !splashFinished {
+                    SplashOverlay {
+                        withAnimation(.easeInOut(duration: 0.45)) { splashFinished = true }
+                    }
+                    .transition(.opacity)
+                    .zIndex(10)
+                }
+            }
+            .preferredColorScheme(settings.themeMode == .light ? .light : .dark)
         }
         .modelContainer(Persistence.container)
     }
@@ -39,6 +51,13 @@ final class Theme: @unchecked Sendable {
         }
     }
 
-    var accent: Color { isRamadanMode ? MihrabColor.ramadanGold : MihrabColor.emerald }
-    var accentSecondary: Color { isRamadanMode ? MihrabColor.ramadanGold : MihrabColor.mint }
+    var accent: Color {
+        if isRamadanMode { return MihrabColor.ramadanGold }
+        return AppSettings.shared.accentTheme.color
+    }
+
+    var accentSecondary: Color {
+        if isRamadanMode { return MihrabColor.ramadanGold }
+        return AppSettings.shared.accentTheme.secondary
+    }
 }

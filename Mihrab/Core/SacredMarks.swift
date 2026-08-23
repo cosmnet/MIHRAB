@@ -9,7 +9,15 @@ enum MihrabSpace {
     static let timeColumn: CGFloat = 90
     static let rowHeight: CGFloat = 68
     static let hit: CGFloat = 44
-    static let tabClearance: CGFloat = 128
+
+    /// Breathing room above the floating tab bar.
+    ///
+    /// iOS 26 already reports the tab bar inside the safe area of every tab's
+    /// content, so this is a *gutter*, not a clearance — the old 128pt figure
+    /// double-counted the bar, parking card edges exactly behind the glass and
+    /// reading as a second, ghost bar. Keep it small and let the system inset
+    /// plus the soft scroll-edge effect do the real work.
+    static let tabClearance: CGFloat = 28
 }
 
 extension View {
@@ -21,9 +29,25 @@ extension View {
             .foregroundStyle(color)
     }
 
+    /// Scroll views hosted in a tab: soft dissolve under both bars.
+    ///
+    /// The bottom effect only reads correctly when the scroll view actually
+    /// owns the bottom edge, so this must sit on the `ScrollView` itself —
+    /// never on an inner stack.
     func mihrabTabScroll() -> some View {
         scrollEdgeEffectStyle(.soft, for: .top)
             .scrollEdgeEffectStyle(.soft, for: .bottom)
+    }
+
+    /// Bottom inset for content that lives above the floating tab bar.
+    ///
+    /// `safeAreaPadding` *extends* the safe area instead of hard-padding the
+    /// content, so it composes with the tab bar inset the system already
+    /// supplies and with `.tabBarMinimizeBehavior(.onScrollDown)`: the last
+    /// card ends a gutter above the bar, yet still dissolves under it while
+    /// the scroll is in flight. Prefer this over `mihrabTabGutter()`.
+    func mihrabTabSafeContent(_ extra: CGFloat = MihrabSpace.tabClearance) -> some View {
+        safeAreaPadding(.bottom, extra)
     }
 }
 

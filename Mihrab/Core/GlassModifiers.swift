@@ -7,15 +7,23 @@ struct GlassCard: ViewModifier {
     var interactive: Bool = false
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
 
+    private var shape: RoundedRectangle {
+        RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+    }
+
     func body(content: Content) -> some View {
         content
             .background {
                 if reduceTransparency {
-                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                        .fill(MihrabColor.moss)
+                    shape.fill(MihrabColor.moss)
                 } else {
-                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                        .fill(MihrabColor.moss.opacity(0.4))
+                    shape
+                        // Inner shadow gives the glass a lip: light catches the
+                        // top edge, the floor recedes. Cheap depth, no blur pass.
+                        .fill(
+                            MihrabColor.moss.opacity(0.42)
+                                .shadow(.inner(color: MihrabColor.abyss.opacity(0.55), radius: 8, y: 4))
+                        )
                         .glassEffect(
                             interactive ? .regular.interactive() : .regular,
                             in: .rect(cornerRadius: cornerRadius)
@@ -23,17 +31,26 @@ struct GlassCard: ViewModifier {
                 }
             }
             .overlay {
-                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                // Two-stop rim: a bright crown at 12 o'clock fading out by the
+                // middle, then a faint emerald return along the bottom so the
+                // card reads as a solid object rather than a cut-out.
+                shape
                     .strokeBorder(
                         LinearGradient(
-                            colors: [MihrabColor.mint.opacity(0.6), .clear],
+                            stops: [
+                                .init(color: MihrabColor.mint.opacity(0.55), location: 0),
+                                .init(color: MihrabColor.mint.opacity(0.14), location: 0.35),
+                                .init(color: .clear, location: 0.72),
+                                .init(color: MihrabColor.emerald.opacity(0.18), location: 1)
+                            ],
                             startPoint: .top,
-                            endPoint: .center
+                            endPoint: .bottom
                         ),
                         lineWidth: 1
                     )
                     .allowsHitTesting(false)
             }
+            .shadow(color: MihrabColor.abyss.opacity(reduceTransparency ? 0 : 0.35), radius: 14, y: 6)
     }
 }
 
@@ -67,14 +84,51 @@ extension View {
         stroke: Color = MihrabColor.mint.opacity(0.28)
     ) -> some View {
         background {
-            RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                .fill(fill)
+            ZStack {
+                // Opaque floor — this is the row's contrast guarantee.
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .fill(fill)
+
+                // Top-lit sheen, then a deepening floor. Both stay under 6%
+                // so the fill colour still measures as the text background.
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                Color.white.opacity(0.055),
+                                .clear,
+                                MihrabColor.abyss.opacity(0.22)
+                            ],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
+            }
+            .compositingGroup()
         }
         .overlay {
             RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                .strokeBorder(stroke, lineWidth: 1)
+                .strokeBorder(
+                    LinearGradient(
+                        colors: [stroke, stroke.opacity(0.35)],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    ),
+                    lineWidth: 1
+                )
                 .allowsHitTesting(false)
         }
+    }
+
+    /// A card whose interior carries a shader motif. Equivalent to
+    /// `mihrabShaderPanel` with the app's standard card radius — use it when a
+    /// screen wants its own visual signature without a full-screen shader.
+    func mihrabTexturedCard(
+        _ motif: ShaderMotif,
+        cornerRadius: CGFloat = MihrabSpace.cardRadius,
+        opacity: Double = 0.5
+    ) -> some View {
+        mihrabShaderPanel(motif, cornerRadius: cornerRadius, opacity: opacity)
     }
 
     func mihrabHairline() -> some View {
@@ -158,5 +212,26 @@ private struct CardSceneModifier: ViewModifier {
         } else {
             content
         }
+    }
+}
+
+/// Springy press-down for cards & big targets. Reduce Motion -> simple dim.
+struct PressableCardStyle: ButtonStyle {
+    var reduceMotion: Bool = false
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed && !reduceMotion ? 0.97 : 1)
+            .opacity(configuration.isPressed ? 0.85 : 1)
+            .animation(
+                reduceMotion ? .easeInOut(duration: 0.12) : MihrabMotion.snappyAnimation,
+                value: configuration.isPressed
+            )
+    }
+}
+
+extension View {
+    func pressable(_ reduceMotion: Bool = false) -> some View {
+        buttonStyle(PressableCardStyle(reduceMotion: reduceMotion))
     }
 }

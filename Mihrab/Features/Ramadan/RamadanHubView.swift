@@ -8,6 +8,7 @@ struct RamadanHubView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     @State private var khatam: KhatamProgress?
+    @State private var fastingStore = FastingLogStore.shared
 
     private let microcopy = [
         L10n.ramadanQuote1,
@@ -23,12 +24,13 @@ struct RamadanHubView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                AuroraBackground(ramadanMode: true)
+                MihrabBackdrop(surface: .sheet, ramadanMode: true)
                 ScrollView {
                     VStack(spacing: 16) {
                         heroCountdown
                         dualTimes
                         fastingDayCounter
+                        if ramadanDay > 0 { fastingLog }
                         duasCard
                         khatamTracker
                         if ramadanDay >= 20 { eidCountdown }
@@ -85,6 +87,7 @@ struct RamadanHubView: View {
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 24)
+            .mihrabShaderPanel(.lantern, cornerRadius: MihrabSpace.cardRadius, opacity: 0.24)
             .mihrabCardScene("today-hero", opacity: 0.4)
             .mihrabCard()
         }
@@ -117,6 +120,98 @@ struct RamadanHubView: View {
         }
         .padding(20)
         .mihrabCard()
+    }
+
+    // MARK: - Fasting log
+
+    /// The month as thirty small squares. Days after today are dimmed and
+    /// untappable — you cannot log a fast you have not kept yet.
+    private var fastingLog: some View {
+        let dates = ramadanDates
+        let fasted = fastingStore.fastedCount(in: dates)
+
+        return VStack(alignment: .leading, spacing: 14) {
+            HStack(alignment: .firstTextBaseline) {
+                Text(L10n.ramFastingLogCaps)
+                    .ornamentalCaps(MihrabColor.ramadanGold)
+                Spacer()
+                Text(L10n.ramFastedDays(fasted))
+                    .font(.subheadline.weight(.semibold).monospacedDigit())
+                    .foregroundStyle(MihrabColor.textPrimary)
+                    .contentTransition(.numericText())
+            }
+
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 6), count: 10), spacing: 6) {
+                ForEach(Array(dates.enumerated()), id: \.offset) { index, date in
+                    fastingCell(day: index + 1, date: date)
+                }
+            }
+
+            Button {
+                let nowFasted = fastingStore.toggle(Date())
+                if nowFasted { HapticsEngine.shared.success() } else { HapticsEngine.shared.light() }
+            } label: {
+                Label(
+                    fastingStore.isFasted(Date()) ? L10n.ramFastedTodayDone : L10n.ramMarkFastToday,
+                    systemImage: fastingStore.isFasted(Date()) ? "checkmark.circle.fill" : "circle"
+                )
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(fastingStore.isFasted(Date()) ? MihrabColor.ramadanGold : MihrabColor.textPrimary)
+                .frame(maxWidth: .infinity, minHeight: MihrabSpace.hit)
+                .background(Capsule().fill(MihrabColor.moss))
+                .overlay {
+                    Capsule().strokeBorder(MihrabColor.ramadanGold.opacity(0.45), lineWidth: 1)
+                }
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(20)
+        .mihrabCard()
+    }
+
+    private func fastingCell(day: Int, date: Date) -> some View {
+        let isFasted = fastingStore.isFasted(date)
+        let isFuture = date > Date()
+        let isToday = Calendar.current.isDateInToday(date)
+
+        return Button {
+            guard !isFuture else { return }
+            let nowFasted = fastingStore.toggle(date)
+            if nowFasted { HapticsEngine.shared.success() } else { HapticsEngine.shared.light() }
+        } label: {
+            Text("\(day)")
+                .font(.system(size: 11, weight: .semibold, design: .rounded).monospacedDigit())
+                .foregroundStyle(isFasted ? MihrabColor.ramadanViolet : MihrabColor.textSecondary)
+                .frame(maxWidth: .infinity)
+                .frame(height: 28)
+                .background {
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .fill(isFasted ? MihrabColor.ramadanGold : MihrabColor.moss)
+                }
+                .overlay {
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .strokeBorder(
+                            isToday ? MihrabColor.ramadanGold : MihrabColor.mint.opacity(0.16),
+                            lineWidth: isToday ? 1.5 : 1
+                        )
+                }
+                .opacity(isFuture ? 0.4 : 1)
+                .animation(reduceMotion ? nil : MihrabMotion.snappyAnimation, value: isFasted)
+        }
+        .buttonStyle(.plain)
+        .disabled(isFuture)
+        .accessibilityLabel(Text(L10n.ramFastDayA11y(day, isFasted)))
+        .accessibilityAddTraits(isFasted ? [.isButton, .isSelected] : .isButton)
+    }
+
+    /// The 30 Gregorian dates that line up with Ramadan 1…30, anchored on
+    /// today's Hijri day.
+    private var ramadanDates: [Date] {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+        return (1...30).compactMap { day in
+            calendar.date(byAdding: .day, value: day - ramadanDay, to: today)
+        }
     }
 
     // MARK: - Duas

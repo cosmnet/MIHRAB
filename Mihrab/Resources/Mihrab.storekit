@@ -1,0 +1,147 @@
+{
+  "identifier" : "6E4A1C90-MIHRAB-PLUS-0001",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "59.99",
+      "familyShareable" : true,
+      "internalID" : "MIHRAB0003",
+      "localizations" : [
+        {
+          "description" : "Unlock every Mihrab Plus feature once, for good.",
+          "displayName" : "Mihrab Plus — Lifetime",
+          "locale" : "en_US"
+        },
+        {
+          "description" : "Tüm Mihrab Plus özelliklerini tek seferde, kalıcı olarak aç.",
+          "displayName" : "Mihrab Plus — Ömür Boyu",
+          "locale" : "tr"
+        },
+        {
+          "description" : "افتح جميع مزايا محراب بلس مرة واحدة وإلى الأبد.",
+          "displayName" : "محراب بلس — مدى الحياة",
+          "locale" : "ar"
+        }
+      ],
+      "productID" : "com.caferkarakaya.mihrab.plus.lifetime",
+      "referenceName" : "Mihrab Plus Lifetime",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+    "_askToBuyEnabled" : false,
+    "_billingIssuesEnabled" : false,
+    "_storeKitErrors" : [
+
+    ]
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "MIHRABPLUSGROUP",
+      "localizations" : [
+        {
+          "description" : "Mihrab Plus",
+          "displayName" : "Mihrab Plus",
+          "locale" : "en_US"
+        },
+        {
+          "description" : "Mihrab Plus",
+          "displayName" : "Mihrab Plus",
+          "locale" : "tr"
+        },
+        {
+          "description" : "محراب بلس",
+          "displayName" : "محراب بلس",
+          "locale" : "ar"
+        }
+      ],
+      "name" : "Mihrab Plus",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "24.99",
+          "familyShareable" : true,
+          "groupNumber" : 1,
+          "internalID" : "MIHRAB0002",
+          "introductoryOffer" : {
+            "internalID" : "MIHRABINTROYEAR",
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P1W"
+          },
+          "localizations" : [
+            {
+              "description" : "Rich widgets, themes, unlimited dhikr, Esma collections and the Ramadan planner.",
+              "displayName" : "Mihrab Plus — Yearly",
+              "locale" : "en_US"
+            },
+            {
+              "description" : "Zengin widget'lar, temalar, sınırsız zikir, Esma koleksiyonları ve Ramazan planlayıcı.",
+              "displayName" : "Mihrab Plus — Yıllık",
+              "locale" : "tr"
+            },
+            {
+              "description" : "عناصر واجهة غنية وسمات وذكر بلا حدود ومجموعات الأسماء ومخطط رمضان.",
+              "displayName" : "محراب بلس — سنوي",
+              "locale" : "ar"
+            }
+          ],
+          "productID" : "com.caferkarakaya.mihrab.plus.yearly",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Mihrab Plus Yearly",
+          "subscriptionGroupID" : "MIHRABPLUSGROUP",
+          "type" : "RecurringSubscription"
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "4.99",
+          "familyShareable" : true,
+          "groupNumber" : 1,
+          "internalID" : "MIHRAB0001",
+          "introductoryOffer" : {
+            "internalID" : "MIHRABINTROMONTH",
+            "paymentMode" : "free",
+            "subscriptionPeriod" : "P1W"
+          },
+          "localizations" : [
+            {
+              "description" : "Rich widgets, themes, unlimited dhikr, Esma collections and the Ramadan planner.",
+              "displayName" : "Mihrab Plus — Monthly",
+              "locale" : "en_US"
+            },
+            {
+              "description" : "Zengin widget'lar, temalar, sınırsız zikir, Esma koleksiyonları ve Ramazan planlayıcı.",
+              "displayName" : "Mihrab Plus — Aylık",
+              "locale" : "tr"
+            },
+            {
+              "description" : "عناصر واجهة غنية وسمات وذكر بلا حدود ومجموعات الأسماء ومخطط رمضان.",
+              "displayName" : "محراب بلس — شهري",
+              "locale" : "ar"
+            }
+          ],
+          "productID" : "com.caferkarakaya.mihrab.plus.monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Mihrab Plus Monthly",
+          "subscriptionGroupID" : "MIHRABPLUSGROUP",
+          "type" : "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 4,
+    "minor" : 0
+  }
+}

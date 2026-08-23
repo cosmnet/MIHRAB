@@ -491,6 +491,16 @@ enum L10n {
     static var themeDark: String { string(en: "Dark", tr: "Koyu", ar: "داكن") }
     static var themeLight: String { string(en: "Light", tr: "Açık", ar: "فاتح") }
     static var ramadanTheme: String { string(en: "Ramadan theme", tr: "Ramazan teması", ar: "سمة رمضان") }
+    static var dhikrShader: String { string(en: "Texture", tr: "Doku", ar: "النسيج") }
+    static var shaderNone: String { string(en: "None", tr: "Yok", ar: "بدون") }
+    static var shaderSilk: String { string(en: "Emerald Silk", tr: "Zümrüt İpek", ar: "حرير الزمرد") }
+    static var shaderCaustics: String { string(en: "Mosque Light", tr: "Cami Nuru", ar: "نور المسجد") }
+    static var shaderAurora: String { string(en: "Aurora Veil", tr: "Kutup Perdesi", ar: "حجاب الشفق") }
+    static var shaderEverywhere: String { string(en: "Use on all screens", tr: "Tüm ekranlarda kullan", ar: "استخدم في كل الشاشات") }
+    static var accentColor: String { string(en: "Accent", tr: "Vurgu", ar: "اللون") }
+    static var accentEmerald: String { string(en: "Emerald", tr: "Zümrüt", ar: "زمرد") }
+    static var accentBrass: String { string(en: "Brass", tr: "Pirinç", ar: "نحاس") }
+    static var accentViolet: String { string(en: "Violet", tr: "Menekşe", ar: "بنفسجي") }
     static var settingsAbout: String { string(en: "About", tr: "Hakkında", ar: "حول") }
     static var settingsVersion: String { string(en: "Version", tr: "Sürüm", ar: "الإصدار") }
     static var settingsAboutBody: String {

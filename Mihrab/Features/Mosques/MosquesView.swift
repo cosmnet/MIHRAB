@@ -106,7 +106,7 @@ struct MosquesView: View {
                         }
                         showSearchAreaChip = false
                     } label: {
-                        Label("Search this area", systemImage: "magnifyingglass")
+                        Label(L10n.msqSearchArea, systemImage: "magnifyingglass")
                             .font(.subheadline.weight(.medium))
                             .padding(.horizontal, 16).padding(.vertical, 10)
                             .glassEffect(.regular.interactive(), in: .capsule)
@@ -117,11 +117,11 @@ struct MosquesView: View {
             .overlay(alignment: .bottom) {
                 mosqueList
             }
-            .navigationTitle("Mosques Nearby")
+            .navigationTitle(L10n.msqTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Done") { dismiss() }
+                    Button(L10n.done) { dismiss() }
                 }
             }
         }
@@ -137,7 +137,7 @@ struct MosquesView: View {
     private var mosqueList: some View {
         VStack(spacing: 0) {
             if isFriday {
-                Label("Jumu'ah today", systemImage: "star.fill")
+                Label(L10n.msqJumuahToday, systemImage: "star.fill")
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(MihrabColor.brass)
                     .padding(.top, 10)
@@ -149,7 +149,7 @@ struct MosquesView: View {
                             .tint(MihrabColor.mint)
                             .padding(24)
                     } else if model.mosques.isEmpty {
-                        Text("No mosques found nearby")
+                        Text(L10n.msqNoneFound)
                             .font(.subheadline)
                             .foregroundStyle(MihrabColor.textSecondary)
                             .padding(20)
@@ -178,7 +178,7 @@ struct MosquesView: View {
                 .lineLimit(1)
             HStack(spacing: 8) {
                 Label(mosque.distanceText, systemImage: "figure.walk")
-                Text("· \(mosque.walkingMinutes) min")
+                Text("· " + L10n.msqWalkMinutes(mosque.walkingMinutes))
             }
             .font(.caption)
             .foregroundStyle(MihrabColor.textSecondary)
@@ -188,7 +188,7 @@ struct MosquesView: View {
                         MKLaunchOptionsDirectionsModeKey: MKLaunchOptionsDirectionsModeWalking,
                     ])
                 } label: {
-                    Label("Directions", systemImage: "arrow.triangle.turn.up.right.diamond.fill")
+                    Label(L10n.msqDirections, systemImage: "arrow.triangle.turn.up.right.diamond.fill")
                         .font(.caption.weight(.semibold))
                 }
                 .buttonStyle(.borderedProminent)
@@ -199,8 +199,10 @@ struct MosquesView: View {
                         UIApplication.shared.open(url)
                     } label: {
                         Image(systemName: "phone.fill")
+                            .frame(minWidth: 28, minHeight: 28)
                     }
                     .buttonStyle(.bordered)
+                    .accessibilityLabel(Text(L10n.msqCall))
                 }
             }
         }

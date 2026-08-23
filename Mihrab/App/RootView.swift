@@ -1,6 +1,6 @@
 import SwiftUI
 
-enum AppTab: Hashable {
+enum AppTab: Hashable, CaseIterable {
     case today, times, qibla, deen, dhikr
 }
 
@@ -10,13 +10,14 @@ struct RootView: View {
     @Environment(PrayerTimesRepository.self) private var repository
     @Environment(Theme.self) private var theme
     @State private var selectedTab: AppTab = Self.launchTab
+    @State private var tabTour = CoachMarkController.tabTour
 
     private static var launchTab: AppTab {
-        #if DEBUG
-        if CommandLine.arguments.contains("-tabTimes") { return .times }
-        if CommandLine.arguments.contains("-tabEsma") { return .deen }
-        if CommandLine.arguments.contains("-tabDhikr") { return .dhikr }
-        #endif
+        let args = CommandLine.arguments
+        if args.contains(where: { $0 == "-tabTimes" || $0 == "tabTimes" }) { return .times }
+        if args.contains(where: { $0 == "-tabEsma" || $0 == "tabEsma" }) { return .deen }
+        if args.contains(where: { $0 == "-tabDhikr" || $0 == "tabDhikr" }) { return .dhikr }
+        if args.contains(where: { $0 == "-tabQibla" || $0 == "tabQibla" }) { return .qibla }
         return .today
     }
 
@@ -25,13 +26,17 @@ struct RootView: View {
         Group {
             if settings.hasCompletedOnboarding {
                 mainTabs
+                    .overlay { tabTourOverlay }
             } else {
                 OnboardingView()
+                    .transition(.opacity)
             }
         }
+        .animation(.easeInOut(duration: 0.4), value: settings.hasCompletedOnboarding)
         .environment(\.locale, Locale(identifier: L10n.localeIdentifier))
         .task {
             locationManager.startUpdating()
+            await SubscriptionManager.shared.refresh()
             await repository.refresh()
             theme.update(hijri: repository.today?.hijriDate)
             await NotificationEngine.shared.rescheduleAll()
@@ -69,7 +74,46 @@ struct RootView: View {
                 DhikrView()
             }
         }
-        .tint(theme.accent)
+        .tint(theme.isRamadanMode ? MihrabColor.ramadanGold : settings.accentTheme.color)
         .tabBarMinimizeBehavior(.onScrollDown)
+    }
+
+    // MARK: - First-run tab tour
+
+    /// Introduces the five tabs once, right after onboarding. Advancing the tour
+    /// also switches tabs so the user sees what is being described.
+    private var tabTourOverlay: some View {
+        TabBarTourOverlay(
+            stops: Self.tourStops,
+            controller: tabTour,
+            onFocus: { index in
+                let tabs = AppTab.allCases
+                guard index < tabs.count else { return }
+                withAnimation(.easeInOut(duration: 0.25)) { selectedTab = tabs[index] }
+            },
+            onFinish: {
+                withAnimation(.easeInOut(duration: 0.25)) { selectedTab = Self.launchTab }
+            }
+        )
+    }
+
+    private static var tourStops: [TabTourStop] {
+        [
+            TabTourStop(id: "today", systemImage: "house.fill", title: L10n.tabToday, message: L10n.coachTodayBody),
+            TabTourStop(id: "times", systemImage: "clock.fill", title: L10n.tabTimes, message: L10n.coachTimesBody),
+            TabTourStop(
+                id: "qibla",
+                systemImage: "location.north.circle.fill",
+                title: L10n.tabQibla,
+                message: L10n.coachQiblaBody
+            ),
+            TabTourStop(id: "deen", systemImage: "book.fill", title: L10n.tabEsma, message: L10n.coachEsmaBody),
+            TabTourStop(
+                id: "dhikr",
+                systemImage: "circle.grid.3x3.fill",
+                title: L10n.tabDhikr,
+                message: L10n.coachDhikrBody
+            ),
+        ]
     }
 }
