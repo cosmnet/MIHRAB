@@ -24,6 +24,12 @@ enum L10n {
         }
     }
 
+    /// `Date.formatted()` is not a SwiftUI view API, so it ignores the
+    /// `\.locale` environment RootView sets and falls back to the device
+    /// region — which renders month and weekday names in the wrong language.
+    /// Every format style that produces a *name* must be given this locale.
+    static var appLocale: Locale { Locale(identifier: localeIdentifier) }
+
     static var isTurkish: Bool { language == .turkish }
     static var isArabic: Bool { language == .arabic }
 

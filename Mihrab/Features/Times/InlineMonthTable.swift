@@ -39,7 +39,7 @@ struct InlineMonthTable: View {
 
     private var header: some View {
         HStack(alignment: .firstTextBaseline) {
-            Text(anchorDate.formatted(.dateTime.month(.wide).year()))
+            Text(anchorDate.formatted(.dateTime.month(.wide).year().locale(L10n.appLocale)))
                 .font(.headline)
                 .foregroundStyle(MihrabColor.textPrimary)
             Spacer()
@@ -83,7 +83,7 @@ struct InlineMonthTable: View {
                     .minimumScaleFactor(0.7)
             }
         }
-        .font(.system(size: 10, weight: .semibold))
+        .font(.caption2.weight(.semibold))
         .foregroundStyle(MihrabColor.brass)
         .padding(.vertical, 4)
     }
@@ -92,26 +92,43 @@ struct InlineMonthTable: View {
         let isToday = Calendar.current.isDateInToday(day.date)
         let isRamadan = day.hijriDate?.isRamadan ?? false
         let isFriday = Calendar.current.component(.weekday, from: day.date) == 6
+        let sacred = day.hijriDate.flatMap(SacredDayLookup.day(for:))
 
-        return HStack(spacing: 0) {
-            Text(day.date, format: .dateTime.day())
-                .frame(width: 30, alignment: .leading)
-                .foregroundStyle(isFriday ? MihrabColor.brass : MihrabColor.textSecondary)
-            ForEach(columns) { prayer in
-                Text(day.time(for: prayer)?.formatted(date: .omitted, time: .shortened) ?? "–")
-                    .frame(maxWidth: .infinity)
+        return VStack(alignment: .leading, spacing: 1) {
+            HStack(spacing: 0) {
+                Text(day.date, format: .dateTime.day())
+                    .frame(width: 30, alignment: .leading)
+                    .foregroundStyle(isFriday ? MihrabColor.brass : MihrabColor.textSecondary)
+                ForEach(columns) { prayer in
+                    Text(day.time(for: prayer)?.formatted(date: .omitted, time: .shortened) ?? "–")
+                        .frame(maxWidth: .infinity)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+                }
+            }
+            .font(.caption.weight(isToday || isFriday ? .bold : .regular).monospacedDigit())
+            .foregroundStyle(isToday ? MihrabColor.textPrimary : MihrabColor.textSecondary)
+
+            // Kandil / religious day, named rather than reduced to a dot —
+            // this table is the one place people look for them.
+            if let sacred {
+                Label(sacred.localizedName, systemImage: "moon.stars.fill")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(MihrabColor.brass)
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
+                    .padding(.leading, 30)
             }
         }
-        .font(.system(size: 11.5, weight: isToday ? .bold : .regular, design: .rounded).monospacedDigit())
-        .foregroundStyle(isToday ? MihrabColor.textPrimary : MihrabColor.textSecondary)
         .padding(.vertical, 8)
         .padding(.horizontal, 6)
         .background {
             if isToday {
                 RoundedRectangle(cornerRadius: 12, style: .continuous)
                     .fill(theme.accent.opacity(0.28))
+            } else if sacred != nil {
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .fill(MihrabColor.brass.opacity(0.16))
             } else if isRamadan {
                 RoundedRectangle(cornerRadius: 12, style: .continuous)
                     .fill(MihrabColor.ramadanViolet.opacity(0.35))

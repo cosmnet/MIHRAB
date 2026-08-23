@@ -107,16 +107,29 @@ struct ShaderControlFill: View {
 struct MihrabBackdrop: View {
     private let surface: BackdropSurface
     private let ramadanMode: Bool
+    private let segment: DaySegment?
 
     @Environment(AppSettings.self) private var settings: AppSettings?
 
     init(ramadanMode: Bool = false) {
         self.surface = .sheet
         self.ramadanMode = ramadanMode
+        self.segment = nil
     }
 
     init(surface: BackdropSurface, ramadanMode: Bool = false) {
         self.surface = surface
+        self.ramadanMode = ramadanMode
+        self.segment = nil
+    }
+
+    /// Time-of-day variant. `segment` drifts the palette from cold dawn through
+    /// brass, emerald noon, gold, dusk and violet night — a tonal journey over
+    /// Emerald Glass, never a theme swap. `nil` behaves exactly like the two
+    /// initialisers above.
+    init(surface: BackdropSurface, segment: DaySegment?, ramadanMode: Bool) {
+        self.surface = surface
+        self.segment = segment
         self.ramadanMode = ramadanMode
     }
 
@@ -130,7 +143,8 @@ struct MihrabBackdrop: View {
             CalmBackdrop(
                 surface: surface,
                 ramadanMode: ramadanMode,
-                intensity: settings?.backdropIntensity ?? .calm
+                intensity: settings?.backdropIntensity ?? .calm,
+                segment: segment
             )
         }
     }

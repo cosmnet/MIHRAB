@@ -1,0 +1,176 @@
+import Foundation
+
+// Zakat copy. Two rules held throughout: never state a fatwa, never state a
+// price we did not get from the user.
+extension L10n {
+
+    static var zakatTitle: String { string(en: "Zakat Calculator", tr: "Zekât Hesaplayıcı", ar: "حاسبة الزكاة") }
+    static var zakatSubtitle: String {
+        string(en: "Work out what is due, item by item",
+               tr: "Kalem kalem hesapla",
+               ar: "احسب ما يجب، بنداً بنداً")
+    }
+    static var zakatCancel: String { string(en: "Cancel", tr: "Vazgeç", ar: "إلغاء") }
+    static var zakatReset: String { string(en: "Clear the worksheet", tr: "Hesabı temizle", ar: "مسح الحساب") }
+
+    // MARK: - Prices
+
+    static var zakatPricesHeader: String { string(en: "CURRENT GRAM PRICES", tr: "GÜNCEL GRAM FİYATLARI", ar: "أسعار الغرام الحالية") }
+    static var zakatGoldPrice: String { string(en: "Gold, current price per gram", tr: "Altın, güncel gram fiyatı", ar: "سعر غرام الذهب الحالي") }
+    static var zakatSilverPrice: String { string(en: "Silver, current price per gram", tr: "Gümüş, güncel gram fiyatı", ar: "سعر غرام الفضة الحالي") }
+    static var zakatPricesNote: String {
+        string(
+            en: "Enter today's prices yourself. Mihrab does not fetch them: there is no free, reliable price source we can stand behind, and a stale price would quietly give you the wrong zakat.",
+            tr: "Fiyatları kendin gir. Mihrab bunları çekmiyor: arkasında durabileceğimiz ücretsiz ve güvenilir bir kaynak yok; eski bir fiyat ise zekâtı sessizce yanlış hesaplar.",
+            ar: "أدخل الأسعار بنفسك؛ لا نجلبها لعدم وجود مصدر مجاني موثوق، والسعر القديم يعطي زكاة خاطئة."
+        )
+    }
+    static func zakatPricesUpdated(_ date: String) -> String {
+        string(en: "Last entered \(date)", tr: "Son giriş: \(date)", ar: "آخر إدخال \(date)")
+    }
+    static var zakatPricesStale: String {
+        string(en: "These prices may be out of date — check before you rely on the result.",
+               tr: "Bu fiyatlar eskimiş olabilir — sonuca güvenmeden önce kontrol et.",
+               ar: "قد تكون هذه الأسعار قديمة، فتحقق قبل الاعتماد على النتيجة.")
+    }
+    static var zakatPricesMissing: String {
+        string(en: "Enter a gram price to see the nisab threshold.",
+               tr: "Nisap eşiğini görmek için gram fiyatı gir.",
+               ar: "أدخل سعر الغرام لعرض حد النصاب.")
+    }
+    static var zakatStampPrices: String { string(en: "Prices are current", tr: "Fiyatlar güncel", ar: "الأسعار محدثة") }
+
+    // MARK: - Nisab
+
+    static var zakatNisabHeader: String { string(en: "NISAB", tr: "NİSAP", ar: "النصاب") }
+    static var zakatBasisGold: String { string(en: "Gold — 80.18 g", tr: "Altın — 80,18 gr", ar: "الذهب — ٨٠٫١٨ غ") }
+    static var zakatBasisSilver: String { string(en: "Silver", tr: "Gümüş", ar: "الفضة") }
+    static var zakatSilver595: String { string(en: "595 g (200 dirhem × 2.975 g)", tr: "595 gr (200 dirhem × 2,975 gr)", ar: "٥٩٥ غ") }
+    static var zakatSilver561: String { string(en: "561 g (200 dirhem × 2.805 g)", tr: "561 gr (200 dirhem × 2,805 gr)", ar: "٥٦١ غ") }
+    static var zakatBasisExplain: String {
+        string(
+            en: "The silver threshold is the lower of the two, so choosing it makes more people liable and more wealth zakatable. Both are held by recognised opinions; pick the one you follow, or ask someone you trust.",
+            tr: "Gümüş nisabı ikisinden düşüktür; onu seçmek daha çok kişiyi mükellef kılar ve daha çok malı zekâta tâbi hale getirir. Her ikisi de muteber görüşlerdir; takip ettiğini seç veya güvendiğin birine sor.",
+            ar: "نصاب الفضة أدنى، فاختياره يوسّع دائرة الوجوب. كلاهما قول معتبر، فاختر ما تتبعه أو استشر من تثق به."
+        )
+    }
+    static var zakatSilverStandardHeader: String {
+        string(en: "Silver nisab in grams", tr: "Gümüş nisabı (gram)", ar: "نصاب الفضة بالغرام")
+    }
+    static var zakatSilverStandardNote: String {
+        string(
+            en: "200 dirhem converts to a different gram figure depending on the dirham weight used, and published values differ. Pick the one your source uses.",
+            tr: "200 dirhem, esas alınan dirhem ağırlığına göre farklı gram karşılığı verir ve yayımlanan değerler farklılaşır. Takip ettiğin kaynağın kullandığını seç.",
+            ar: "يختلف تحويل ٢٠٠ درهم إلى الغرامات باختلاف وزن الدرهم المعتمد."
+        )
+    }
+    static func zakatNisabValue(_ amount: String) -> String {
+        string(en: "Threshold: \(amount)", tr: "Nisap: \(amount)", ar: "النصاب: \(amount)")
+    }
+
+    // MARK: - Asset lines
+
+    static var zakatAssetsHeader: String { string(en: "WHAT YOU HOLD", tr: "VARLIKLAR", ar: "ما تملك") }
+    static var zakatDeductionsHeader: String { string(en: "WHAT COMES OFF", tr: "DÜŞÜLECEKLER", ar: "ما يُخصم") }
+    static var zakatCash: String { string(en: "Cash", tr: "Nakit", ar: "نقد") }
+    static var zakatBank: String { string(en: "Bank accounts", tr: "Banka hesapları", ar: "حسابات بنكية") }
+    static var zakatGoldGrams: String { string(en: "Gold (grams)", tr: "Altın (gram)", ar: "ذهب (غرام)") }
+    static var zakatSilverGrams: String { string(en: "Silver (grams)", tr: "Gümüş (gram)", ar: "فضة (غرام)") }
+    static var zakatTradeGoods: String { string(en: "Trade goods", tr: "Ticaret malı", ar: "عروض التجارة") }
+    static var zakatReceivables: String { string(en: "Money owed to you", tr: "Alacaklar", ar: "الديون لك") }
+    static var zakatInvestments: String { string(en: "Investments", tr: "Yatırımlar", ar: "استثمارات") }
+    static var zakatDebts: String { string(en: "Debts you owe", tr: "Borçlar", ar: "ديون عليك") }
+    static var zakatEssentials: String { string(en: "Essential needs", tr: "Temel ihtiyaçlar", ar: "الحوائج الأصلية") }
+    static var zakatEssentialsNote: String {
+        string(en: "Housing, food and other basic needs are not zakatable.",
+               tr: "Konut, gıda ve benzeri temel ihtiyaçlar zekâta tâbi değildir.",
+               ar: "الحوائج الأصلية كالسكن والطعام لا زكاة فيها.")
+    }
+
+    // MARK: - Result
+
+    static var zakatResultHeader: String { string(en: "RESULT", tr: "SONUÇ", ar: "النتيجة") }
+    static func zakatGross(_ amount: String) -> String {
+        string(en: "Total held: \(amount)", tr: "Toplam varlık: \(amount)", ar: "إجمالي المال: \(amount)")
+    }
+    static func zakatDeductionsLine(_ amount: String) -> String {
+        string(en: "Deductions: −\(amount)", tr: "Düşülenler: −\(amount)", ar: "المخصوم: −\(amount)")
+    }
+    static func zakatNet(_ amount: String) -> String {
+        string(en: "Net wealth: \(amount)", tr: "Net varlık: \(amount)", ar: "صافي المال: \(amount)")
+    }
+    static func zakatDue(_ amount: String) -> String {
+        string(en: "Zakat due: \(amount)", tr: "Ödenecek zekât: \(amount)", ar: "الزكاة الواجبة: \(amount)")
+    }
+    static var zakatRateLine: String {
+        string(en: "1/40 of net wealth (2.5%)", tr: "Net varlığın 1/40'ı (%2,5)", ar: "ربع العشر (٢٫٥٪)")
+    }
+    static var zakatBelowNisab: String {
+        string(en: "Below the threshold — no zakat is due on this amount.",
+               tr: "Nisabın altında — bu tutar üzerinden zekât gerekmez.",
+               ar: "دون النصاب، فلا زكاة على هذا المقدار.")
+    }
+    static var zakatNoPrices: String {
+        string(en: "Enter a gram price and we can compare your wealth to the threshold.",
+               tr: "Gram fiyatını gir, varlığını nisapla karşılaştıralım.",
+               ar: "أدخل سعر الغرام لنقارن مالك بالنصاب.")
+    }
+
+    /// The disclaimer. Shown on the result and burned into the share card.
+    static var zakatDisclaimer: String {
+        string(
+            en: "This is a calculation aid, not a fatwa. Rulings differ between schools and situations — check with someone qualified before you act on it.",
+            tr: "Bu bir hesaplama aracıdır, fetva değildir. Hükümler mezhebe ve duruma göre değişir — uygulamadan önce ehline danış.",
+            ar: "هذه أداة حساب لا فتوى؛ تختلف الأحكام باختلاف المذاهب والأحوال، فاستشر أهل العلم."
+        )
+    }
+
+    // MARK: - Zakat year
+
+    static var zakatYearHeader: String { string(en: "ZAKAT YEAR", tr: "ZEKÂT YILI", ar: "الحول") }
+    static var zakatHawlExplain: String {
+        string(
+            en: "Zakat falls due once a full lunar year (havl) has passed over wealth that stayed above the threshold. Record the day your year began and we'll show the anniversary.",
+            tr: "Zekât, nisap miktarındaki malın üzerinden bir kameri yıl (havelân-ı havl) geçince gerekir. Yılın başladığı günü kaydet, yıldönümünü gösterelim.",
+            ar: "تجب الزكاة بعد حولان الحول على مال بلغ النصاب. سجّل بداية حولك لنعرض موعده."
+        )
+    }
+    static var zakatStartYear: String { string(en: "My zakat year starts today", tr: "Zekât yılım bugün başlıyor", ar: "يبدأ حولي اليوم") }
+    static var zakatClearYear: String { string(en: "Clear the date", tr: "Tarihi temizle", ar: "مسح التاريخ") }
+    static func zakatAnniversary(_ date: String) -> String {
+        string(en: "Next due around \(date)", tr: "Sonraki zekât: yaklaşık \(date)", ar: "الموعد القادم نحو \(date)")
+    }
+    static func zakatAnniversaryDays(_ n: Int) -> String {
+        string(en: n == 1 ? "in 1 day" : "in \(n) days", tr: "\(n) gün sonra", ar: "بعد \(n) يوماً")
+    }
+
+    // MARK: - Fitre
+
+    static var fitreTitle: String { string(en: "Fitre", tr: "Fitre", ar: "زكاة الفطر") }
+    static var fitreHeader: String { string(en: "FITRE (SADAQAT AL-FITR)", tr: "FİTRE (SADAKA-İ FITIR)", ar: "زكاة الفطر") }
+    static var fitrePerPerson: String { string(en: "Amount per person", tr: "Kişi başı tutar", ar: "المبلغ لكل شخص") }
+    static var fitrePeople: String { string(en: "People in the household", tr: "Hane halkı sayısı", ar: "عدد أفراد البيت") }
+    static func fitreTotal(_ amount: String) -> String {
+        string(en: "Total fitre: \(amount)", tr: "Toplam fitre: \(amount)", ar: "إجمالي الفطرة: \(amount)")
+    }
+    static var fitreNote: String {
+        string(
+            en: "Fitre is a fixed amount per person, not a percentage, and it is given before the eid prayer. In Türkiye the minimum is announced each year by the Diyanet fitre commission — enter this year's figure yourself; we do not ship one.",
+            tr: "Fitre yüzde değil, kişi başı sabit bir tutardır ve bayram namazından önce verilir. Türkiye'de asgari tutar her yıl Diyanet fitre komisyonunca açıklanır — bu yılın rakamını kendin gir; uygulamada gömülü bir değer yoktur.",
+            ar: "الفطرة مقدار ثابت لكل شخص تُخرج قبل صلاة العيد، ويُعلن حدها الأدنى سنوياً."
+        )
+    }
+
+    // MARK: - Share
+
+    static var zakatShare: String { string(en: "Share summary", tr: "Özeti paylaş", ar: "مشاركة الملخص") }
+    static var zakatShareTitle: String { string(en: "Zakat summary", tr: "Zekât özeti", ar: "ملخص الزكاة") }
+
+    // MARK: - Settings
+
+    static var zakatSectionTitle: String { string(en: "ZAKAT", tr: "ZEKÂT", ar: "الزكاة") }
+    static var zakatSettingsHint: String {
+        string(en: "Opens the zakat calculator", tr: "Zekât hesaplayıcıyı açar", ar: "يفتح حاسبة الزكاة")
+    }
+    static var zakatSettingsNoYear: String { string(en: "No date set", tr: "Tarih yok", ar: "لا يوجد تاريخ") }
+}

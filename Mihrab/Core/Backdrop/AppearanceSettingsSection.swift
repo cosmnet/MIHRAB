@@ -156,6 +156,9 @@ struct AppearanceSettingsSection: View {
                     }
                     Spacer(minLength: 0)
                 }
+                // The palette is what the paywall calls "themes"; the emerald
+                // default stays free, the alternates are the Plus layer.
+                .premiumRequired(.themes)
             }
             .padding(.vertical, 2)
 

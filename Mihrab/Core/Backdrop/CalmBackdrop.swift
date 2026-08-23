@@ -11,17 +11,45 @@ struct CalmBackdrop: View {
     var surface: BackdropSurface = .sheet
     var ramadanMode: Bool = false
     var intensity: AppSettings.BackdropIntensity = .calm
+    /// Where in the day we are, when the caller knows. `nil` keeps the
+    /// surface's neutral emerald recipe.
+    var segment: DaySegment? = nil
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
 
     @State private var drifted = false
 
+    /// Low Power Mode stops the drift outright — same branch as Reduce Motion.
+    private var motionOff: Bool { reduceMotion || MihrabPower.isLowPowerMode }
+
+    /// Under Reduce Transparency there are no washes at all, so the segment has
+    /// to arrive as a flat tint on the base colour.
+    private var flatBase: Color {
+        let base = surface.baseColor(ramadan: ramadanMode)
+        guard let segment else { return base }
+        let palette = segment.palette
+        return base.mihrabBlended(
+            with: palette.ground,
+            amount: 0.42 * palette.strength * (ramadanMode ? 0.45 : 1)
+        )
+    }
+
     var body: some View {
         ZStack {
-            surface.baseColor(ramadan: ramadanMode)
+            if reduceTransparency {
+                flatBase
+            } else {
+                surface.baseColor(ramadan: ramadanMode)
+            }
 
             if !reduceTransparency {
+                DaySegmentVeil(
+                    segment: segment,
+                    ramadanMode: ramadanMode,
+                    intensity: intensity
+                )
+
                 GeometryReader { geo in
                     ZStack {
                         ForEach(Array(surface.glows(ramadan: ramadanMode).enumerated()), id: \.offset) { item in
@@ -53,7 +81,7 @@ struct CalmBackdrop: View {
         let radius = max(minEdge * glow.radius, 1)
         let opacity = min(glow.opacity * intensity.glowScale, 0.34)
         let travel: CGFloat = drifted ? 1 : -1
-        let breath: Animation? = reduceMotion
+        let breath: Animation? = motionOff
             ? nil
             : Animation
                 .easeInOut(duration: glow.period * intensity.periodScale)
@@ -73,14 +101,14 @@ struct CalmBackdrop: View {
             y: size.height * glow.center.y
         )
         .offset(
-            x: reduceMotion ? 0 : size.width * glow.drift.width * intensity.driftScale * travel,
-            y: reduceMotion ? 0 : size.height * glow.drift.height * intensity.driftScale * travel
+            x: motionOff ? 0 : size.width * glow.drift.width * intensity.driftScale * travel,
+            y: motionOff ? 0 : size.height * glow.drift.height * intensity.driftScale * travel
         )
         .animation(breath, value: drifted)
     }
 
     private func startDrift() {
-        guard !reduceMotion, !drifted else { return }
+        guard !motionOff, !drifted else { return }
         drifted = true
     }
 }

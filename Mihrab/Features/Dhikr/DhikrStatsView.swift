@@ -18,7 +18,7 @@ struct DhikrStatsView: View {
     @State private var appeared = false
 
     private var accent: Color { theme.accent }
-    private var isPremium: Bool { SubscriptionManager.shared.isPremium }
+    private var isPremium: Bool { SubscriptionManager.shared.hasAccess(to: .dhikrFullHistory) }
     private let calendar = Calendar.current
 
     // MARK: - Aggregates
@@ -66,7 +66,7 @@ struct DhikrStatsView: View {
             let start = calendar.startOfDay(for: date)
             return DayTotal(
                 id: start,
-                label: date.formatted(.dateTime.weekday(.narrow)),
+                label: date.formatted(.dateTime.weekday(.narrow).locale(L10n.appLocale)),
                 total: map[start] ?? 0
             )
         }

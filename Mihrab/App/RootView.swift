@@ -10,6 +10,7 @@ struct RootView: View {
     @Environment(PrayerTimesRepository.self) private var repository
     @Environment(Theme.self) private var theme
     @State private var selectedTab: AppTab = Self.launchTab
+    @Environment(\.scenePhase) private var scenePhase
     @State private var tabTour = CoachMarkController.tabTour
 
     private static var launchTab: AppTab {
@@ -42,7 +43,28 @@ struct RootView: View {
             await NotificationEngine.shared.rescheduleAll()
             // rescheduleAll() clears every pending request, trial reminders included.
             TrialReminder.ensureScheduled(trialStart: SubscriptionManager.shared.trialStartedAt)
-            await LiveActivityManager.shared.update(for: repository.today, tomorrow: repository.tomorrow)
+            // Self-driving now: installs scene-phase observers and its own tick,
+            // so the card also appears when the app is opened early.
+            LiveActivityManager.activate()
+            await LiveActivityManager.shared.cleanUpOrphans()
+            CloudSyncManager.shared.reconcileEntitlement()
+            await MihrabIntentBridge.refresh()
+        }
+        .onOpenURL { url in
+            if let tab = MihrabIntentBridge.tab(for: url) { selectedTab = tab }
+        }
+        .onChange(of: scenePhase) { _, phase in
+            guard phase == .active else {
+                if phase == .background { BackgroundRefresh.scheduleAll() }
+                return
+            }
+            if let tab = MihrabIntentBridge.consumePendingNavigation() { selectedTab = tab }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .mihrabActiveCityChanged)) { _ in
+            Task {
+                await repository.refresh()
+                await NotificationEngine.shared.rescheduleAll()
+            }
         }
         .onChange(of: locationManager.location) { _, _ in
             Task {

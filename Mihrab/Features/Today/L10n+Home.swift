@@ -85,6 +85,73 @@ extension L10n {
         string(en: "Mark \(prayer) as prayed", tr: "\(prayer) namazını kılındı işaretle", ar: "سجّل صلاة \(prayer)")
     }
 
+    // MARK: - Today · primary action
+
+    static func homeActionMarkPrayed(_ prayer: String) -> String {
+        string(en: "I prayed \(prayer)", tr: "\(prayer) namazını kıldım", ar: "أديت صلاة \(prayer)")
+    }
+
+    static var homeActionShowQibla: String {
+        string(en: "Show the qibla", tr: "Kıbleyi göster", ar: "أظهر القبلة")
+    }
+
+    static var homeActionStartDhikr: String {
+        string(en: "Start dhikr", tr: "Zikre başla", ar: "ابدأ الذكر")
+    }
+
+    // MARK: - Today · week strip
+
+    static var homeWeekCaps: String {
+        string(en: "LAST 7 DAYS", tr: "SON 7 GÜN", ar: "آخر ٧ أيام")
+    }
+
+    static func homeWeekDayA11y(_ weekday: String, _ done: Int, _ total: Int) -> String {
+        string(
+            en: "\(weekday): \(done) of \(total) prayers",
+            tr: "\(weekday): \(total) vaktin \(done) tanesi",
+            ar: "\(weekday): \(done) من \(total) صلوات"
+        )
+    }
+
+    /// Shown on the log card once Agent W7's `QadaStore` lands.
+    static func homeQadaOwed(_ count: Int) -> String {
+        switch language {
+        case .turkish: "\(count) kaza namazı"
+        case .arabic: "\(count) صلاة قضاء"
+        case .english: count == 1 ? "1 missed prayer" : "\(count) missed prayers"
+        }
+    }
+
+    // MARK: - Today · data provenance
+
+    static var homeOnDeviceBadge: String {
+        string(en: "Calculated on device", tr: "Cihazda hesaplandı", ar: "محسوب على الجهاز")
+    }
+
+    static func homeLastUpdated(_ when: String) -> String {
+        string(en: "Last updated \(when)", tr: "Son güncelleme: \(when)", ar: "آخر تحديث: \(when)")
+    }
+
+    static var homeTimesErrorTitle: String {
+        string(en: "Times could not be refreshed", tr: "Vakitler yenilenemedi", ar: "تعذر تحديث المواقيت")
+    }
+
+    static var homeTimesErrorBody: String {
+        string(
+            en: "Qibla, dhikr and the Names still work offline.",
+            tr: "Kıble, zikirmatik ve Esmaül Hüsna çevrimdışı çalışmaya devam ediyor.",
+            ar: "القبلة والذكر وأسماء الله الحسنى تعمل دون اتصال."
+        )
+    }
+
+    static var homeTimesUnavailableHere: String {
+        string(
+            en: "No schedule can be produced for this location today.",
+            tr: "Bu konum için bugün vakit hesaplanamıyor.",
+            ar: "لا يمكن حساب المواقيت لهذا الموقع اليوم."
+        )
+    }
+
     // MARK: - Today · misc
 
     static var homeQuickCaps: String {

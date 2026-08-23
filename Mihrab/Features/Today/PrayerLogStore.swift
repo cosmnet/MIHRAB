@@ -77,6 +77,29 @@ final class PrayerLogStore: @unchecked Sendable {
         return nowLogged
     }
 
+    // MARK: - History
+
+    /// One entry per day, oldest first, ending today. Used by the week strip so
+    /// the streak reads as a *pattern* rather than a single number — and an
+    /// empty day stays simply empty, never an accusation.
+    struct DaySummary: Identifiable, Hashable {
+        let date: Date
+        let completed: Int
+        var total: Int { PrayerLogStore.fardPrayers.count }
+        var isComplete: Bool { completed == total }
+        var id: Date { date }
+    }
+
+    func recentDays(_ count: Int = 7, endingOn date: Date = Date()) -> [DaySummary] {
+        _ = revision
+        let calendar = Calendar.current
+        let end = calendar.startOfDay(for: date)
+        return (0..<max(count, 1)).reversed().compactMap { offset in
+            guard let day = calendar.date(byAdding: .day, value: -offset, to: end) else { return nil }
+            return DaySummary(date: day, completed: completedCount(on: day))
+        }
+    }
+
     // MARK: - Streak
 
     /// Consecutive complete days ending today (or yesterday, so the streak is

@@ -10,14 +10,26 @@ public struct SharedPrayerSnapshot: Codable, Sendable {
     public let methodID: Int
     public let days: [DayPrayerTimes]
 
+    // Added in a later revision. Both are optional so snapshots written by an
+    // older build still decode — do not make them non-optional.
+
+    /// `PrayerSource.rawValue` these times were resolved with, when known.
+    public let sourceID: String?
+    /// `true` when the days were computed on-device rather than fetched.
+    /// Widgets can use it to caption "offline".
+    public let isOfflineComputed: Bool?
+
     public init(fetchedAt: Date = Date(), latitude: Double, longitude: Double,
-                cityName: String, methodID: Int, days: [DayPrayerTimes]) {
+                cityName: String, methodID: Int, days: [DayPrayerTimes],
+                sourceID: String? = nil, isOfflineComputed: Bool? = nil) {
         self.fetchedAt = fetchedAt
         self.latitude = latitude
         self.longitude = longitude
         self.cityName = cityName
         self.methodID = methodID
         self.days = days
+        self.sourceID = sourceID
+        self.isOfflineComputed = isOfflineComputed
     }
 
     public func day(containing date: Date = Date()) -> DayPrayerTimes? {
@@ -44,6 +56,13 @@ public enum SharedPrayerCache {
     public static func load() -> SharedPrayerSnapshot? {
         guard let fileURL, let data = try? Data(contentsOf: fileURL) else { return nil }
         return try? JSONDecoder.prayerDecoder.decode(SharedPrayerSnapshot.self, from: data)
+    }
+
+    /// Drop a snapshot that failed to decode. Cheap self-heal for a truncated
+    /// file left behind by a killed background task.
+    public static func reset() {
+        guard let fileURL else { return }
+        try? FileManager.default.removeItem(at: fileURL)
     }
 }
 

@@ -25,6 +25,9 @@ struct PaywallView: View {
     @State private var didSucceed = false
     @State private var errorMessage: String?
 
+    /// ⚠️ **Placeholder.** Guideline 3.1.2 requires a *functioning* privacy
+    /// policy link on the paywall. The owner must publish the policy and put
+    /// the real URL here before submission — this domain is not live yet.
     private static let privacyURL = URL(string: "https://mihrab.app/privacy")!
     private static let termsURL = URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!
 
@@ -36,9 +39,11 @@ struct PaywallView: View {
             ScrollView {
                 VStack(spacing: MihrabSpace.unit * 3) {
                     hero
+                    statusBanner
                     benefits
                     planCards
                     callToAction
+                    subscriptionTerms
                     footer
                 }
                 .padding(.horizontal, MihrabSpace.unit * 2.5)
@@ -140,11 +145,18 @@ struct PaywallView: View {
             Benefit(icon: "circle.hexagongrid.fill", title: L10n.paywallBenefitDhikrTitle, body: L10n.paywallBenefitDhikrBody),
             Benefit(icon: "book.closed.fill", title: L10n.paywallBenefitEsmaTitle, body: L10n.paywallBenefitEsmaBody),
             Benefit(icon: "moon.stars.fill", title: L10n.paywallBenefitRamadanTitle, body: L10n.paywallBenefitRamadanBody),
+            Benefit(icon: "icloud.fill", title: L10n.paywallBenefitCitiesTitle, body: L10n.paywallBenefitCitiesBody),
         ]
     }
 
     private var benefits: some View {
         VStack(spacing: MihrabSpace.unit * 1.75) {
+            // Guideline 3.1.2: say what the subscription actually provides.
+            Text(L10n.paywallIncludedHeading)
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(MihrabColor.textSecondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
             ForEach(Array(benefitList.enumerated()), id: \.element.id) { index, benefit in
                 HStack(alignment: .top, spacing: MihrabSpace.unit * 1.75) {
                     ZStack {
@@ -328,6 +340,108 @@ struct PaywallView: View {
             : L10n.paywallDirectFootnote(price, period: period)
     }
 
+    // MARK: - Status banner
+
+    /// Honest current state: days left in the free week, or — once it has run
+    /// out — a plain statement that nothing was deleted.
+    @ViewBuilder
+    private var statusBanner: some View {
+        if subscriptions.hasPaidEntitlement {
+            banner(icon: "checkmark.seal.fill", title: L10n.paywallAlreadyMember, body: nil)
+        } else if subscriptions.isInTrial {
+            banner(
+                icon: "hourglass",
+                title: L10n.paywallTrialDaysLeft(subscriptions.trialDaysRemaining),
+                body: nil
+            )
+        } else if subscriptions.trialHasExpired {
+            banner(
+                icon: "lock.open.trianglebadge.exclamationmark",
+                title: L10n.paywallTrialEndedTitle,
+                body: L10n.paywallTrialEndedBody
+            )
+        }
+    }
+
+    private func banner(icon: String, title: String, body: String?) -> some View {
+        HStack(alignment: .top, spacing: MihrabSpace.unit * 1.5) {
+            Image(systemName: icon)
+                .foregroundStyle(MihrabColor.brass)
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(MihrabColor.textPrimary)
+                if let body {
+                    Text(body)
+                        .font(.caption)
+                        .foregroundStyle(MihrabColor.textSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(MihrabSpace.unit * 1.75)
+        .mihrabCard(cornerRadius: MihrabSpace.rowRadius)
+        .accessibilityElement(children: .combine)
+    }
+
+    // MARK: - Subscription terms (Guideline 3.1.2 / Schedule 2 §3.8(b))
+
+    private var durationText: String {
+        switch selection {
+        case .yearly: L10n.paywallDurationYear
+        case .monthly: L10n.paywallDurationMonth
+        case .lifetime: L10n.paywallDurationLifetime
+        }
+    }
+
+    private var subscriptionTerms: some View {
+        VStack(alignment: .leading, spacing: MihrabSpace.unit) {
+            Text(L10n.paywallTermsHeading)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(MihrabColor.textSecondary)
+
+            // Name · length · price, then the auto-renewal statement.
+            Text(termsBody)
+                .font(.caption2)
+                .foregroundStyle(MihrabColor.textTertiary)
+                .fixedSize(horizontal: false, vertical: true)
+
+            if offersTrial, selection.isSubscription {
+                Text(L10n.paywallTrialTerms(
+                    price: subscriptions.displayPrice(for: selection),
+                    duration: durationText
+                ))
+                .font(.caption2)
+                .foregroundStyle(MihrabColor.textTertiary)
+                .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(MihrabSpace.unit * 1.75)
+        .mihrabCard(cornerRadius: MihrabSpace.rowRadius)
+        .accessibilityElement(children: .combine)
+        .cardEntrance(index: 8, appeared: appeared, reduceMotion: reduceMotion)
+    }
+
+    private var termsBody: String {
+        let name = "\(L10n.paywallTitle) · \(planName(for: selection))"
+        let price = subscriptions.displayPrice(for: selection)
+        if selection == .lifetime {
+            return L10n.paywallLifetimeTerms(name: name, price: price)
+        }
+        return L10n.paywallSubscriptionTerms(name: name, duration: durationText, price: price)
+    }
+
+    private func planName(for product: MihrabProduct) -> String {
+        switch product {
+        case .monthly: L10n.paywallPlanMonthly
+        case .yearly: L10n.paywallPlanYearly
+        case .lifetime: L10n.paywallPlanLifetime
+        }
+    }
+
     // MARK: - Footer
 
     private var footer: some View {
@@ -363,7 +477,7 @@ struct PaywallView: View {
                     .frame(minHeight: MihrabSpace.hit)
             }
         }
-        .cardEntrance(index: 8, appeared: appeared, reduceMotion: reduceMotion)
+        .cardEntrance(index: 9, appeared: appeared, reduceMotion: reduceMotion)
     }
 
     private var closeButton: some View {

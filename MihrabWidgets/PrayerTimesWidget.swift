@@ -43,8 +43,8 @@ struct PrayerTimesWidget: Widget {
             PrayerTimesWidgetView(entry: entry)
                 .containerBackground(MihrabColor.abyss, for: .widget)
         }
-        .configurationDisplayName("Prayer Times")
-        .description("Next prayer countdown and today's schedule.")
+        .configurationDisplayName("Today's Prayer Times")
+        .description("Tells you which prayer is next and how long is left.")
         .supportedFamilies([.systemSmall, .systemMedium])
     }
 }
@@ -52,9 +52,15 @@ struct PrayerTimesWidget: Widget {
 struct PrayerTimesWidgetView: View {
     let entry: PrayerEntry
     @Environment(\.widgetFamily) private var family
+    @ScaledMetric(relativeTo: .title) private var clockSize: CGFloat = 28
 
+    /// Rolls over to tomorrow's Fajr after Isha, so the tile is never blank
+    /// for the six hours that matter least but are noticed most.
     private var next: (prayer: Prayer, date: Date)? {
-        entry.snapshot?.day(containing: entry.date)?.nextPrayer(after: entry.date)
+        guard let today = entry.snapshot?.day(containing: entry.date) else { return nil }
+        let tomorrowDate = Calendar.current.date(byAdding: .day, value: 1, to: entry.date)
+        let tomorrow = tomorrowDate.flatMap { entry.snapshot?.day(containing: $0) }
+        return today.nextPrayer(after: entry.date, tomorrow: tomorrow)
     }
 
     var body: some View {
@@ -70,8 +76,11 @@ struct PrayerTimesWidgetView: View {
                 Text(next.prayer.localizedNamazName.uppercased())
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(MihrabColor.brass)
+                    .widgetAccentable()
                 Text(next.date, format: .dateTime.hour().minute())
-                    .font(.system(size: 28, weight: .bold, design: .rounded).monospacedDigit())
+                    .font(.system(size: clockSize, weight: .bold, design: .rounded).monospacedDigit())
+                    .minimumScaleFactor(0.6)
+                    .lineLimit(1)
                     .foregroundStyle(MihrabColor.mint)
                 if let range = SafeCountdown.range(from: entry.date, to: next.date) {
                     Text(timerInterval: range, countsDown: true)
@@ -84,13 +93,13 @@ struct PrayerTimesWidgetView: View {
                         .foregroundStyle(MihrabColor.textTertiary)
                 }
             } else {
-                Text("Open Mihrab")
+                Text(L10n.wgtOpenAppHint)
                     .font(.caption)
                     .foregroundStyle(MihrabColor.textSecondary)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .widgetURL(URL(string: "mihrab://times"))
+        .widgetURL(MihrabDeepLink.url(for: .times))
     }
 
     private var mediumView: some View {
@@ -117,6 +126,6 @@ struct PrayerTimesWidgetView: View {
                 }
             }
         }
-        .widgetURL(URL(string: "mihrab://times"))
+        .widgetURL(MihrabDeepLink.url(for: .times))
     }
 }

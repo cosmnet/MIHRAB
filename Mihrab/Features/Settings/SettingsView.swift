@@ -61,11 +61,22 @@ struct SettingsView: View {
                     if matches([L10n.settingsPrayer, L10n.calculationMethod, L10n.madhab, L10n.madhabAsr]) {
                         prayerSection
                     }
-                    if matches([L10n.setSectionNotifications, L10n.setNotificationsMaster, L10n.alertsOn]) {
-                        notificationSection
+                    if !isSearching {
+                        // Owned by the prayer-engine surface: calculation source
+                        // (Diyanet / Fazilet / Türkiye Takvimi) and per-prayer offsets.
+                        PrayerSourceSettingsSection()
+                        NotificationSettingsSection()
+                        AdhanSettingsSection()
                     }
                     if matches([L10n.settingsLocation, L10n.settingsCurrent, L10n.usePreciseLocation]) {
                         locationSection
+                    }
+                    if !isSearching {
+                        CitiesSettingsSection()
+                        SyncSettingsSection()
+                        QadaSettingsSection()
+                        ZakatSettingsSection()
+                        CalendarSettingsSection()
                     }
                     if matches([L10n.dhkPrefs, L10n.tabDhikr, L10n.dhkPrefGoal, L10n.dhkPrefSound, L10n.dhkPrefHaptics]) {
                         dhikrSection

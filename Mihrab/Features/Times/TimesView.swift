@@ -21,6 +21,10 @@ struct TimesView: View {
     @State private var appeared = false
     @State private var isLoadingDay = false
     @State private var mode: Mode = .day
+    /// The prayer whose transparency panel is open.
+    @State private var detailPrayer: Prayer?
+    /// The day after `displayedDate`, for the night divisions.
+    @State private var followingDay: DayPrayerTimes?
 
     private var displayedDate: Date {
         Calendar.current.date(byAdding: .day, value: dayOffset, to: Date()) ?? Date()
@@ -46,10 +50,32 @@ struct TimesView: View {
                             dayPager
 
                             if let displayedDay {
+                                if isFriday { fridayBanner }
                                 nextUpBanner(for: displayedDay)
                                 prayerRows(for: displayedDay)
+                                TimesFreshnessBadge(
+                                    isOffline: repository.isUsingOfflineEngine,
+                                    lastRefresh: repository.lastSuccessfulRefresh
+                                )
                                 SunArcView(times: displayedDay, date: displayedDate)
                                     .padding(.top, 4)
+                                if let coordinate = locationManager.effectiveCoordinate {
+                                    MakruhTimesCard(day: displayedDay,
+                                                    coordinate: coordinate,
+                                                    highlightsNow: dayOffset == 0)
+                                }
+                                NightDivisionsCard(day: displayedDay,
+                                                   tomorrow: nightFollowingDay)
+                            } else if repository.engineUnavailable {
+                                // Polar day / polar night: the engine has no
+                                // sunrise to anchor to. Say that, do not spin.
+                                MihrabEmptyState(
+                                    symbol: "sun.horizon",
+                                    title: L10n.tmxEngineUnavailableTitle,
+                                    message: L10n.tmxEngineUnavailableBody,
+                                    retryTitle: L10n.settings
+                                ) { showSettings = true }
+                                .padding(.top, 24)
                             } else if isLoadingDay || repository.isLoading {
                             MihrabEmptyState(
                                 symbol: "clock.arrow.2.circlepath",
@@ -106,6 +132,24 @@ struct TimesView: View {
             }
             .sheet(isPresented: $showSettings) {
                 SettingsView()
+            }
+            .sheet(item: $detailPrayer) { prayer in
+                if let displayedDay {
+                    PrayerDetailSheet(
+                        prayer: prayer,
+                        day: displayedDay,
+                        resolution: repository.resolution(for: displayedDate)
+                    ) {
+                        // Source or ± correction changed: everything downstream
+                        // (this day, the widgets, the notifications) has to be
+                        // rebuilt, not just re-rendered.
+                        Task {
+                            await repository.refresh()
+                            await loadDay()
+                            await NotificationEngine.shared.rescheduleAll()
+                        }
+                    }
+                }
             }
         }
         .task(id: dayOffset) { await loadDay() }
@@ -379,15 +423,52 @@ struct TimesView: View {
                     time: day.time(for: prayer),
                     isCurrent: isCurrent(prayer),
                     isNext: isNext(prayer),
-                    isPassed: isPassed(prayer)
+                    isPassed: isPassed(prayer),
+                    onOpenDetail: { detailPrayer = prayer }
                 )
                 .cardEntrance(index: index, appeared: appeared, reduceMotion: reduceMotion)
             }
+
+            Text(L10n.tmxDetailHint)
+                .font(.caption2)
+                .foregroundStyle(MihrabColor.textTertiary)
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.top, 2)
         }
         .padding(12)
         .mihrabCardScene("times-bg", opacity: 0.4)
         .id(dayOffset)
         .transition(.opacity.combined(with: .offset(y: 8)))
+    }
+
+    // MARK: - Friday
+
+    private var isFriday: Bool {
+        Calendar.current.component(.weekday, from: displayedDate) == 6
+    }
+
+    /// Cuma is the one day of the week whose öğle means something different.
+    private var fridayBanner: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "star.circle.fill")
+                .font(.title3)
+                .symbolRenderingMode(.hierarchical)
+                .foregroundStyle(MihrabColor.brass)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(L10n.tmxFridayBadge)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(MihrabColor.brass)
+                Text(L10n.tmxJumuah)
+                    .font(.caption)
+                    .foregroundStyle(MihrabColor.textSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(14)
+        .mihrabSolidCard(cornerRadius: MihrabSpace.rowRadius,
+                         stroke: MihrabColor.brass.opacity(0.4))
+        .accessibilityElement(children: .combine)
     }
 
     private func isCurrent(_ prayer: Prayer) -> Bool {
@@ -405,14 +486,23 @@ struct TimesView: View {
         return time <= Date() && !isCurrent(prayer)
     }
 
+    /// The night after the displayed day ends at *its* imsak, so the thirds
+    /// need tomorrow relative to the page, not to the wall clock.
+    private var nightFollowingDay: DayPrayerTimes? {
+        dayOffset == 0 ? repository.tomorrow : followingDay
+    }
+
     private func loadDay() async {
         isLoadingDay = displayedDay == nil
         if dayOffset == 0, let today = repository.today {
             displayedDay = today
+            followingDay = repository.tomorrow
             isLoadingDay = false
             return
         }
         displayedDay = await repository.day(for: displayedDate)
+        let next = Calendar.current.date(byAdding: .day, value: 1, to: displayedDate) ?? displayedDate
+        followingDay = await repository.day(for: next)
         isLoadingDay = false
     }
 }
@@ -425,6 +515,9 @@ struct PrayerRow: View {
     let isCurrent: Bool
     let isNext: Bool
     let isPassed: Bool
+    /// Opens the transparency panel. The row used to swallow the whole tap for
+    /// the bell, which left "where did this time come from?" unreachable.
+    var onOpenDetail: () -> Void = {}
 
     @Environment(AppSettings.self) private var settings
     @State private var bellRinging = false
@@ -434,19 +527,15 @@ struct PrayerRow: View {
     }
 
     var body: some View {
-        Group {
-            if prayer.isNotifiable {
-                Button(action: toggleNotification) {
-                    rowContent
-                }
-                .buttonStyle(.plain)
-            } else {
-                rowContent
+        rowContent
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel(rowAccessibility)
+            .accessibilityHint(Text(L10n.tmxDetailHint))
+            .accessibilityAddTraits(.isButton)
+            .accessibilityAction(named: Text(L10n.tmxNotificationToggle)) {
+                guard prayer.isNotifiable else { return }
+                toggleNotification()
             }
-        }
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel(rowAccessibility)
-        .accessibilityHint(prayer.isNotifiable ? L10n.toggleAlertsHint : "")
     }
 
     private var rowContent: some View {
@@ -488,17 +577,26 @@ struct PrayerRow: View {
                 .frame(width: MihrabSpace.timeColumn, alignment: .trailing)
                 .layoutPriority(1)
 
-            Image(systemName: notificationOn ? "bell.fill" : "bell.slash")
-                .font(.body)
-                .foregroundStyle(notificationOn ? MihrabColor.brass : MihrabColor.textTertiary)
-                .symbolEffect(.wiggle, options: .speed(3), value: bellRinging)
-                .frame(width: MihrabSpace.hit, height: MihrabSpace.hit)
-                .opacity(prayer.isNotifiable ? 1 : 0)
+            // Two targets, both ≥ 44pt: the bell toggles the alert, the rest of
+            // the row opens the provenance panel.
+            Button(action: toggleNotification) {
+                Image(systemName: notificationOn ? "bell.fill" : "bell.slash")
+                    .font(.body)
+                    .foregroundStyle(notificationOn ? MihrabColor.brass : MihrabColor.textTertiary)
+                    .symbolEffect(.wiggle, options: .speed(3), value: bellRinging)
+                    .frame(width: MihrabSpace.hit, height: MihrabSpace.hit)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .opacity(prayer.isNotifiable ? 1 : 0)
+            .disabled(!prayer.isNotifiable)
+            .accessibilityHidden(true)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
         .frame(minHeight: MihrabSpace.rowHeight)
         .contentShape(Rectangle())
+        .onTapGesture(perform: onOpenDetail)
         .opacity(isPassed ? 0.72 : 1)
         .mihrabSolidCard(
             cornerRadius: MihrabSpace.rowRadius,

@@ -53,15 +53,20 @@ extension L10n {
         )
     }
 
+    // NOTE: this used to advertise "a choice of muezzins". The adhan-sound
+    // library is not in the binary yet (it is W2's `AdhanLibrary`), and the
+    // paywall must not sell what the app cannot do — Guideline 2.3.1. Once
+    // `AdhanLibrary` ships and `PremiumFeature.customAdhan` is wired, put the
+    // voices back into this line.
     static var paywallBenefitThemesTitle: String {
-        string(en: "Themes & adhan voices", tr: "Temalar ve ezan sesleri", ar: "السمات وأصوات الأذان")
+        string(en: "Themes & backdrops", tr: "Temalar ve arka planlar", ar: "السمات والخلفيات")
     }
 
     static var paywallBenefitThemesBody: String {
         string(
-            en: "Emerald, Ramadan and night palettes, plus a choice of muezzins.",
-            tr: "Zümrüt, Ramazan ve gece paletleri; dilediğin müezzin sesi.",
-            ar: "ألوان الزمرد ورمضان والليل، مع اختيار صوت المؤذن."
+            en: "Emerald, Ramadan and night palettes, with living shader backdrops.",
+            tr: "Zümrüt, Ramazan ve gece paletleri; canlı shader arka planları.",
+            ar: "ألوان الزمرد ورمضان والليل، مع خلفيات حيّة."
         )
     }
 
@@ -95,9 +100,9 @@ extension L10n {
 
     static var paywallBenefitRamadanBody: String {
         string(
-            en: "Plan your month, find the qibla through the camera, sync across devices.",
-            tr: "Ayını planla, kıbleyi kamerayla bul, cihazların arasında yedekle.",
-            ar: "خطّط لشهرك، وجد القبلة عبر الكاميرا، وزامن بين أجهزتك."
+            en: "Plan your month and find the qibla through the camera.",
+            tr: "Ayını planla, kıbleyi kamerayla bul.",
+            ar: "خطّط لشهرك وجد القبلة عبر الكاميرا."
         )
     }
 
@@ -402,6 +407,111 @@ extension L10n {
             en: "Prayer times, qibla and adhan alerts continue free as always.",
             tr: "Namaz vakitleri, kıble ve ezan bildirimleri her zamanki gibi ücretsiz devam eder.",
             ar: "تستمر المواقيت والقبلة وتنبيهات الأذان مجانًا كالمعتاد."
+        )
+    }
+}
+
+// MARK: - W4 additions
+//
+// Copy required for App Store Guideline 3.1.2 and Schedule 2 §3.8(b): the
+// paywall must show, on screen, the subscription name, its length, its price
+// (with the billed amount as the most prominent price on the layout), what the
+// subscription provides, working Terms of Use and Privacy Policy links, and a
+// way to restore purchases.
+extension L10n {
+
+    // MARK: Real features added in this wave
+
+    static var paywallBenefitCitiesTitle: String {
+        string(en: "Multiple cities & iCloud", tr: "Çoklu şehir ve iCloud", ar: "مدن متعددة وiCloud")
+    }
+
+    static var paywallBenefitCitiesBody: String {
+        string(
+            en: "Follow as many cities as you like, and keep your dhikr, saved hadith and prayer marks in your private iCloud.",
+            tr: "Dilediğin kadar şehri takip et; zikirlerin, kaydettiğin hadisler ve namaz işaretlerin özel iCloud'unda dursun.",
+            ar: "تابع ما شئت من المدن، واحفظ أذكارك وأحاديثك وعلامات صلاتك في iCloud الخاص بك."
+        )
+    }
+
+    // MARK: Subscription terms (must be visible on the paywall)
+
+    static var paywallTermsHeading: String {
+        string(en: "Subscription details", tr: "Abonelik ayrıntıları", ar: "تفاصيل الاشتراك")
+    }
+
+    static var paywallDurationYear: String {
+        string(en: "1 year", tr: "1 yıl", ar: "سنة واحدة")
+    }
+
+    static var paywallDurationMonth: String {
+        string(en: "1 month", tr: "1 ay", ar: "شهر واحد")
+    }
+
+    static var paywallDurationLifetime: String {
+        string(en: "one-time purchase", tr: "tek seferlik satın alma", ar: "شراء لمرة واحدة")
+    }
+
+    /// Name · length · price, followed by the auto-renewal statement.
+    static func paywallSubscriptionTerms(name: String, duration: String, price: String) -> String {
+        string(
+            en: "\(name) · \(duration) · \(price), billed to your Apple Account. It renews automatically for the same price each period unless you cancel at least 24 hours before the period ends. Manage or cancel in Settings › Apple Account › Subscriptions.",
+            tr: "\(name) · \(duration) · \(price), Apple Hesabı'ndan tahsil edilir. Dönem bitiminden en az 24 saat önce iptal etmezsen her dönem aynı fiyattan otomatik yenilenir. Ayarlar › Apple Hesabı › Abonelikler'den yönetebilir veya iptal edebilirsin.",
+            ar: "\(name) · \(duration) · \(price)، تُخصم من حساب Apple. يتجدد تلقائيًا بالسعر نفسه كل فترة ما لم تُلغِ قبل انتهائها بـ24 ساعة على الأقل. يمكنك الإدارة أو الإلغاء من الإعدادات › حساب Apple › الاشتراكات."
+        )
+    }
+
+    static func paywallLifetimeTerms(name: String, price: String) -> String {
+        string(
+            en: "\(name) · one-time purchase · \(price). Not a subscription — nothing renews and there is nothing to cancel.",
+            tr: "\(name) · tek seferlik satın alma · \(price). Abonelik değildir — yenilenmez, iptal edilecek bir şey yoktur.",
+            ar: "\(name) · شراء لمرة واحدة · \(price). ليس اشتراكًا — لا تجديد ولا شيء لإلغائه."
+        )
+    }
+
+    static func paywallTrialTerms(price: String, duration: String) -> String {
+        string(
+            en: "The first 7 days are free. After that it is \(price) per \(duration) unless you cancel during the free week.",
+            tr: "İlk 7 gün ücretsiz. Ücretsiz hafta içinde iptal etmezsen sonrasında \(duration) başına \(price).",
+            ar: "الأيام السبعة الأولى مجانية. بعدها \(price) لكل \(duration) ما لم تُلغِ خلال الأسبوع المجاني."
+        )
+    }
+
+    static var paywallIncludedHeading: String {
+        string(
+            en: "What your subscription includes",
+            tr: "Aboneliğinle neler geliyor",
+            ar: "ما يشمله اشتراكك"
+        )
+    }
+
+    // MARK: Trial / member state
+
+    static func paywallTrialDaysLeft(_ days: Int) -> String {
+        string(
+            en: days == 1 ? "1 day left in your free week" : "\(days) days left in your free week",
+            tr: "Ücretsiz haftandan \(days) gün kaldı",
+            ar: "بقي \(days) يومًا من أسبوعك المجاني"
+        )
+    }
+
+    static var paywallTrialEndedTitle: String {
+        string(en: "Your free week has ended", tr: "Ücretsiz haftan bitti", ar: "انتهى أسبوعك المجاني")
+    }
+
+    static var paywallTrialEndedBody: String {
+        string(
+            en: "Nothing was deleted. Your dhikr, cities, saved hadith and prayer marks are all still here — the Plus surfaces are simply locked until you subscribe.",
+            tr: "Hiçbir şey silinmedi. Zikirlerin, şehirlerin, kaydettiğin hadisler ve namaz işaretlerin duruyor — sadece Plus bölümleri abone olana kadar kilitli.",
+            ar: "لم يُحذف شيء. أذكارك ومدنك وأحاديثك وعلامات صلاتك ما زالت هنا — مزايا «بلس» مقفلة فقط حتى تشترك."
+        )
+    }
+
+    static var paywallAlreadyMember: String {
+        string(
+            en: "You already have Mihrab Plus.",
+            tr: "Mihrab Plus'a zaten sahipsin.",
+            ar: "لديك محراب بلس بالفعل."
         )
     }
 }

@@ -1,5 +1,6 @@
 import SwiftData
 import SwiftUI
+import WidgetKit
 
 @main
 struct MihrabApp: App {
@@ -8,6 +9,21 @@ struct MihrabApp: App {
     @State private var repository = PrayerTimesRepository.shared
     @State private var theme = Theme.shared
     @State private var splashFinished = false
+
+    /// Kept alive for the process lifetime — see `KeyValueSync.startObserving`.
+    private nonisolated(unsafe) static var cloudObserver: NSObjectProtocol?
+
+    init() {
+        // Background prayer refresh must register its handlers before the app
+        // finishes launching, or BGTaskScheduler rejects them.
+        BackgroundRefresh.registerHandlers()
+        _ = KeyValueSync.pull()
+        // Token must outlive the initialiser; the app runs for the process
+        // lifetime, so holding it in a static is the right scope.
+        Self.cloudObserver = KeyValueSync.startObserving {
+            WidgetCenter.shared.reloadAllTimelines()
+        }
+    }
 
     var body: some Scene {
         WindowGroup {

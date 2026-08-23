@@ -229,7 +229,7 @@ struct EsmaHomeView: View {
                 Text(L10n.esmaCollectionsCaps)
                     .ornamentalCaps()
                 // Soft signpost only — every collection stays open to everyone.
-                if !SubscriptionManager.shared.isPremium {
+                if !SubscriptionManager.shared.hasAccess(to: .esmaCollections) {
                     PremiumLockBadge(compact: true)
                 }
                 Spacer()

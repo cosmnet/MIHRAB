@@ -606,6 +606,7 @@ struct DhikrView: View {
         guard !celebrating else { return }
         count += 1
         todayTotal += 1
+        MihrabIntentBridge.publishDhikrTotal(todayTotal, phraseID: selected.id)
         DhikrFeedback.tap(countInSet: count, target: target > 0 ? target : 33)
         playTapMotion()
         refreshIdleTimer()
@@ -725,12 +726,25 @@ struct DhikrView: View {
 
     private func onAppear() {
         strandMode = store.opensInStrandMode
-        if let last = store.item(id: store.lastPhraseID) {
+        // A Siri phrase, a widget button or a Control Center tap can add counts
+        // while this view is not on screen; fold them in before anything reads
+        // the totals. The SwiftData store is not in the App Group, so the
+        // bridge is the only path back.
+        if let pending = MihrabIntentBridge.consumePendingDhikrSession() {
+            selected = pending.item
+            target = pending.target
+        } else if let last = store.item(id: store.lastPhraseID) {
             selected = last
             target = last.target
         }
         loadOrCreateSession()
+        let outside = MihrabIntentBridge.drainOutsideTaps()
+        if outside > 0 {
+            count += outside
+            persist()
+        }
         recomputeTodayTotal()
+        MihrabIntentBridge.publishDhikrTotal(todayTotal, phraseID: selected.id)
         DhikrAchievements.inscribeExisting(from: fetchSessions())
         Task {
             try? await Task.sleep(for: .seconds(3.5))

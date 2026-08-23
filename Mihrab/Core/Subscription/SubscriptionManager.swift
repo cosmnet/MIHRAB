@@ -74,8 +74,6 @@ enum PremiumFeature: String, CaseIterable, Sendable {
     case iCloudBackup
     case shareCards
 
-    /// Features that are *never* gated live outside this enum — this list is
-    /// deliberately empty of anything worship-critical.
     var localizedTitle: String {
         switch self {
         case .advancedWidgets: L10n.premiumFeatureWidgets
@@ -92,6 +90,120 @@ enum PremiumFeature: String, CaseIterable, Sendable {
         case .shareCards: L10n.premiumFeatureShare
         }
     }
+}
+
+// MARK: - Gate audit
+//
+// App Store Guideline 2.3.1 ("hidden or undocumented features") cuts both ways:
+// a paywall must not advertise anything the binary cannot do. Every case below
+// therefore records *where* it is enforced. `.live` means the check exists in
+// shipped code today; `.awaitingWiring` names the file and the exact one-line
+// call that still has to be added, and is surfaced by `SubscriptionGateTests`
+// so it cannot quietly rot.
+//
+// Nothing required to *practise* is in this enum: prayer times, qibla, adhan
+// notifications, the daily verse, dhikr counting and the fasting log are free
+// and ungated, forever.
+
+extension PremiumFeature {
+    enum Enforcement: Equatable, Sendable {
+        /// Enforced in shipped code. The payload is the call site.
+        case live(String)
+        /// Declared, owner named, call site specified — not yet wired.
+        case awaitingWiring(owner: String, site: String, call: String)
+
+        var isLive: Bool { if case .live = self { return true }; return false }
+
+        var siteDescription: String {
+            switch self {
+            case .live(let site): site
+            case .awaitingWiring(let owner, let site, let call): "\(site) — \(call) (\(owner))"
+            }
+        }
+    }
+
+    var enforcement: Enforcement {
+        switch self {
+        case .multipleCities:
+            .live("CityStore.canAddMore()/add(_:)/isLocked(_:) + CityListView row tap → PaywallView(source: .feature)")
+        case .iCloudBackup:
+            .live("CloudSyncManager.refresh()/syncNow(), SyncSettingsSection toggle, CloudSyncPreference.isEntitled → Persistence.container")
+        case .qiblaAR:
+            .awaitingWiring(
+                owner: "Qibla surface",
+                site: "Mihrab/Features/Qibla/QiblaCompassView.swift (the button that presents QiblaARView)",
+                call: ".premiumRequired(.qiblaAR) — the ready-made modifier in PremiumGate.swift"
+            )
+        case .customAdhan:
+            .awaitingWiring(
+                owner: "W2",
+                site: "Mihrab/Core/Adhan/AdhanSettingsSection.swift",
+                call: "SubscriptionManager.shared.hasAccess(to: .customAdhan) around AdhanLibrary.setSound/importSound"
+            )
+        case .advancedWidgets:
+            .awaitingWiring(
+                owner: "W3",
+                site: "MihrabWidgets/*.swift",
+                call: "PremiumEntitlement.isPremium (App Group mirror; the widget target cannot import SubscriptionManager)"
+            )
+        case .themes:
+            .awaitingWiring(
+                owner: "W6",
+                site: "Mihrab/Core/Backdrop/AppearanceSettingsSection.swift",
+                call: "SubscriptionManager.shared.hasAccess(to: .themes) around AccentTheme / ShaderStyle pickers"
+            )
+        case .dhikrUnlimitedGoals:
+            .awaitingWiring(
+                owner: "Dhikr surface",
+                site: "Mihrab/Features/Dhikr/DhikrLibrarySheet.swift:155",
+                call: "replace the bare `isPremium` read with hasAccess(to: .dhikrUnlimitedGoals)"
+            )
+        case .dhikrFullHistory:
+            .awaitingWiring(
+                owner: "Dhikr surface",
+                site: "Mihrab/Features/Dhikr/DhikrStatsView.swift:290",
+                call: "replace the bare `isPremium` read with hasAccess(to: .dhikrFullHistory)"
+            )
+        case .esmaCollections:
+            .awaitingWiring(
+                owner: "Deen surface",
+                site: "Mihrab/Features/Deen/EsmaHomeView.swift:232",
+                call: "replace the bare `isPremium` read with hasAccess(to: .esmaCollections)"
+            )
+        case .tafakkurContent:
+            .awaitingWiring(
+                owner: "Deen surface",
+                site: "Mihrab/Features/Deen/EsmaCommentary.swift",
+                call: "hasAccess(to: .tafakkurContent) around the long-form commentary body"
+            )
+        case .ramadanPlanner:
+            .awaitingWiring(
+                owner: "Ramadan surface",
+                site: "Mihrab/Features/Ramadan/RamadanHubView.swift",
+                call: "hasAccess(to: .ramadanPlanner) around the planner section"
+            )
+        case .shareCards:
+            .awaitingWiring(
+                owner: "Share surface",
+                site: "Mihrab/Core/ShareImage.swift call sites",
+                call: "hasAccess(to: .shareCards) before presenting the share sheet"
+            )
+        }
+    }
+
+    /// Every case is premium-only today. Kept as a hook so a feature can be
+    /// *un*-gated later without deleting the case (and the analytics with it).
+    var isPremiumOnly: Bool { true }
+
+    #if DEBUG
+    /// One-line-per-feature table. Handy in a breakpoint or a test failure.
+    static func auditReport() -> String {
+        allCases.map { feature in
+            let mark = feature.enforcement.isLive ? "✅" : "⏳"
+            return "\(mark) \(feature.rawValue): \(feature.enforcement.siteDescription)"
+        }.joined(separator: "\n")
+    }
+    #endif
 }
 
 // MARK: - Paywall entry points
@@ -189,6 +301,8 @@ final class SubscriptionManager {
         static let highWater = "mihrab.subscription.highWaterDate"
         static let trialBurned = "mihrab.subscription.trialBurned"
         static let cachedEntitlement = "mihrab.subscription.cachedEntitlement"
+        /// Read by extension targets through `PremiumEntitlement`.
+        static let mirroredTrialEnd = "mihrab.subscription.trialEndsAt"
     }
 
     #if DEBUG
@@ -212,6 +326,7 @@ final class SubscriptionManager {
         hasPaidEntitlement = defaults.bool(forKey: Key.cachedEntitlement)
         if defaults.bool(forKey: Key.trialBurned) { trialStartedAt = distantTrialStart }
 
+        mirrorEntitlement()
         startTransactionListener()
     }
 
@@ -250,6 +365,7 @@ final class SubscriptionManager {
         stampClock()
         await loadProducts()
         await verifyEntitlements()
+        mirrorEntitlement()
     }
 
     /// Starts the local 7-day trial. Idempotent — a second call is ignored.
@@ -260,6 +376,7 @@ final class SubscriptionManager {
         defaults.set(now, forKey: Key.trialStart)
         defaults.set(now, forKey: Key.highWater)
         defaults.set(false, forKey: Key.trialBurned)
+        mirrorEntitlement()
         TrialReminder.scheduleTrialReminders(trialStart: now, duration: Self.trialDuration)
     }
 
@@ -317,10 +434,31 @@ final class SubscriptionManager {
         }
     }
 
-    /// The gate every premium surface should call.
+    /// The gate every premium surface must call.
+    ///
+    /// One entitlement unlocks the whole Plus layer, but the gate is still
+    /// per-feature so that (a) a feature can be released from the gate later
+    /// without touching its call sites, and (b) `PremiumFeature.enforcement`
+    /// documents exactly where each case is checked.
+    ///
+    /// **Graceful downgrade:** when a trial ends or a subscription lapses this
+    /// starts returning `false` — and that is *all* it does. No data is deleted,
+    /// no city is removed, no dhikr session is dropped. Premium surfaces lock;
+    /// everything the user recorded stays theirs.
     func hasAccess(to feature: PremiumFeature) -> Bool {
-        _ = feature // Single-tier product: one entitlement unlocks the whole layer.
+        guard feature.isPremiumOnly else { return true }
         return isPremium
+    }
+
+    /// Inverse of `hasAccess`, for the common "show the lock badge" branch.
+    func requiresUpgrade(_ feature: PremiumFeature) -> Bool { !hasAccess(to: feature) }
+
+    /// Mirrors the entitlement into the App Group so extension targets — which
+    /// cannot import StoreKit state from the app — and `Persistence` (built
+    /// before any object exists) can read it. See `PremiumEntitlement`.
+    private func mirrorEntitlement() {
+        defaults.set(isPremium, forKey: CloudSyncPreference.entitlementKey)
+        defaults.set(trialEndsAt, forKey: Key.mirroredTrialEnd)
     }
 
     // MARK: - Display helpers
@@ -414,6 +552,7 @@ final class SubscriptionManager {
         activeProduct = owned
         hasPaidEntitlement = owned != nil
         defaults.set(hasPaidEntitlement, forKey: Key.cachedEntitlement)
+        mirrorEntitlement()
         if hasPaidEntitlement { TrialReminder.cancelTrialReminders() }
     }
 

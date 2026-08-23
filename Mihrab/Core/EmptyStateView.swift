@@ -8,11 +8,12 @@ struct MihrabEmptyState: View {
     var retryTitle: String = L10n.tryAgain
     var retry: (() -> Void)? = nil
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @ScaledMetric(relativeTo: .largeTitle) private var symbolSize: CGFloat = 40
 
     var body: some View {
         VStack(spacing: 14) {
             Image(systemName: symbol)
-                .font(.system(size: 40))
+                .font(.system(size: symbolSize))
                 .foregroundStyle(MihrabColor.brass)
                 .symbolRenderingMode(.hierarchical)
                 .symbolEffect(.pulse, options: .repeating.speed(0.4), isActive: !reduceMotion && retry == nil)

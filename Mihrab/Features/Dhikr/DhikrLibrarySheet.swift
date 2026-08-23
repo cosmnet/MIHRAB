@@ -18,7 +18,7 @@ struct DhikrLibrarySheet: View {
 
     private var accent: Color { theme.accent }
 
-    private var isPremium: Bool { SubscriptionManager.shared.isPremium }
+    private var isPremium: Bool { SubscriptionManager.shared.hasAccess(to: .dhikrUnlimitedGoals) }
 
     private func matches(_ item: DhikrItem) -> Bool {
         guard !query.isEmpty else { return true }

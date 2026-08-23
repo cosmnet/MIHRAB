@@ -1,5 +1,13 @@
 import SwiftUI
 
+/// Today, at six blocks instead of eleven.
+///
+/// The old screen stacked every card at the same `mihrabCard` weight, so there
+/// was no hierarchy — only reading. Now there is exactly one primary card (the
+/// hero, which carries the day's single action), one secondary strip, and a
+/// short tail of quiet rows. Everything that was a card but is really a
+/// destination (month grid, mosques) moved into the toolbar; the sun arc lives
+/// on the Times tab, where it was already drawn.
 struct TodayView: View {
     @Binding var selectedTab: AppTab
 
@@ -15,6 +23,7 @@ struct TodayView: View {
     @State private var showHadith = false
     @State private var showRamadan = false
     @State private var showMonthly = false
+    @State private var log = PrayerLogStore.shared
 
     /// "Vakit girdi" celebration — the prayer that just came in, if any.
     @State private var enteredPrayer: Prayer?
@@ -32,70 +41,50 @@ struct TodayView: View {
         return name.isEmpty ? base : "\(base), \(name)"
     }
 
+    /// Only true before the very first schedule ever lands. A cached day plus a
+    /// network error is *not* loading — it is a working screen with a stale
+    /// badge on it.
     private var isLoadingFirstTimes: Bool {
-        repository.today == nil && repository.lastError == nil
+        repository.today == nil && repository.lastError == nil && !repository.engineUnavailable
     }
 
     var body: some View {
         NavigationStack {
             ZStack {
-                MihrabBackdrop(surface: .today, ramadanMode: theme.isRamadanMode)
+                backdrop
 
                 ScrollView {
                     VStack(spacing: 20) {
                         homeHeader
                             .cardEntrance(index: 0, appeared: appeared, reduceMotion: reduceMotion)
 
-                        if isLoadingFirstTimes {
-                            TodaySkeleton()
-                                .padding(.horizontal, 16)
-                                .transition(.opacity)
-                        } else {
-                            HeroCountdownCard(onTap: { selectedTab = .times })
-                                .padding(.horizontal, 16)
-                                .cardEntrance(index: 1, appeared: appeared, reduceMotion: reduceMotion)
+                        // 1 · seasonal band (only when it is actually the season)
+                        seasonalBand
+                            .cardEntrance(index: 1, appeared: appeared, reduceMotion: reduceMotion)
 
-                            DaySummaryRow()
-                                .padding(.horizontal, 16)
-                                .cardEntrance(index: 2, appeared: appeared, reduceMotion: reduceMotion)
+                        // 2 · hero — the only primary-weight card on the screen
+                        heroBlock
+                            .padding(.horizontal, 16)
+                            .cardEntrance(index: 2, appeared: appeared, reduceMotion: reduceMotion)
 
-                            PrayerStrip()
-                                .cardEntrance(index: 3, appeared: appeared, reduceMotion: reduceMotion)
+                        // 3 · schedule strip + one-line day summary + provenance
+                        TodayScheduleBlock()
+                            .cardEntrance(index: 3, appeared: appeared, reduceMotion: reduceMotion)
 
-                            PrayerLogCard()
-                                .padding(.horizontal, 16)
-                                .cardEntrance(index: 4, appeared: appeared, reduceMotion: reduceMotion)
-                        }
+                        // 4 · prayer log & streak
+                        PrayerLogCard()
+                            .padding(.horizontal, 16)
+                            .cardEntrance(index: 4, appeared: appeared, reduceMotion: reduceMotion)
 
-                        quickActions
+                        // 5 · hadith of the day
+                        DailyHadithCard(onTap: { showHadith = true })
                             .padding(.horizontal, 16)
                             .cardEntrance(index: 5, appeared: appeared, reduceMotion: reduceMotion)
 
-                        if repository.today != nil {
-                            SunArcView(times: repository.today, date: Date())
-                                .padding(.horizontal, 16)
-                                .cardEntrance(index: 6, appeared: appeared, reduceMotion: reduceMotion)
-                        }
-
-                        DailyHadithCard(onTap: { showHadith = true })
-                            .padding(.horizontal, 16)
-                            .cardEntrance(index: 7, appeared: appeared, reduceMotion: reduceMotion)
-
-                        if isRamadanSeason {
-                            RamadanCard(onTap: { showRamadan = true })
-                                .padding(.horizontal, 16)
-                                .cardEntrance(index: 8, appeared: appeared, reduceMotion: reduceMotion)
-                        }
-
-                        if let upcoming = upcomingReligiousDay {
-                            ReligiousDayBanner(day: upcoming.day, daysUntil: upcoming.daysUntil)
-                                .padding(.horizontal, 16)
-                                .cardEntrance(index: 9, appeared: appeared, reduceMotion: reduceMotion)
-                        }
-
+                        // 6 · quiet tail row
                         DhikrSummaryCard(onTap: { selectedTab = .dhikr })
                             .padding(.horizontal, 16)
-                            .cardEntrance(index: 10, appeared: appeared, reduceMotion: reduceMotion)
+                            .cardEntrance(index: 6, appeared: appeared, reduceMotion: reduceMotion)
 
                         prayerEntryWatcher
                     }
@@ -120,6 +109,20 @@ struct TodayView: View {
             .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItemGroup(placement: .topBarLeading) {
+                    Button { showMonthly = true } label: {
+                        Image(systemName: "calendar")
+                    }
+                    .tint(MihrabColor.textSecondary)
+                    .accessibilityLabel(Text(L10n.homeMonthlyTimes))
+
+                    Button { showMosques = true } label: {
+                        Image(systemName: "map")
+                    }
+                    .tint(MihrabColor.textSecondary)
+                    .accessibilityLabel(Text(L10n.mosques))
+                }
+
                 ToolbarItem(placement: .topBarTrailing) {
                     Button { showSettings = true } label: {
                         Image(systemName: "gearshape.fill")
@@ -140,6 +143,71 @@ struct TodayView: View {
         }
     }
 
+    // MARK: - Backdrop
+
+    /// The day's tone, recomputed every five minutes. Deliberately not a
+    /// per-second clock: the veil crossfades over seconds anyway, and the drift
+    /// underneath is still a single Core Animation keyframe.
+    private var backdrop: some View {
+        TimelineView(.periodic(from: .now, by: 300)) { context in
+            MihrabBackdrop(
+                surface: .today,
+                segment: DaySegment.resolve(
+                    now: context.date,
+                    today: repository.today,
+                    tomorrow: repository.tomorrow
+                ),
+                ramadanMode: theme.isRamadanMode
+            )
+        }
+    }
+
+    // MARK: - Hero
+
+    @ViewBuilder
+    private var heroBlock: some View {
+        if isLoadingFirstTimes {
+            TodayHeroSkeleton()
+                .transition(.opacity)
+        } else if repository.today == nil {
+            // The error is confined to this card. Everything below — the log,
+            // the hadith, dhikr, and both other tabs — keeps working offline.
+            MihrabEmptyState(
+                symbol: repository.engineUnavailable ? "sun.max.trianglebadge.exclamationmark" : "wifi.slash",
+                title: repository.engineUnavailable
+                    ? L10n.timesUnavailableShort
+                    : L10n.homeTimesErrorTitle,
+                message: repository.engineUnavailable
+                    ? L10n.homeTimesUnavailableHere
+                    : L10n.homeTimesErrorBody,
+                retry: repository.engineUnavailable ? nil : { Task { await repository.refresh() } }
+            )
+        } else {
+            HeroCountdownCard(
+                onOpenTimes: { selectedTab = .times },
+                onPrimary: perform(_:)
+            )
+        }
+    }
+
+    private func perform(_ action: TodayPrimaryAction) {
+        switch action {
+        case .markPrayed(let prayer):
+            let nowLogged = log.toggle(prayer)
+            if nowLogged, log.completedCount() == PrayerLogStore.fardPrayers.count {
+                HapticsEngine.shared.setComplete()
+            } else {
+                HapticsEngine.shared.success()
+            }
+        case .showQibla:
+            HapticsEngine.shared.light()
+            selectedTab = .qibla
+        case .startDhikr:
+            HapticsEngine.shared.light()
+            selectedTab = .dhikr
+        }
+    }
+
     // MARK: - Header
 
     private var homeHeader: some View {
@@ -151,7 +219,7 @@ struct TodayView: View {
                 .minimumScaleFactor(0.85)
 
             HStack(spacing: 8) {
-                Text(Date.now.formatted(date: .abbreviated, time: .omitted))
+                Text(Date.now.formatted(Date.FormatStyle(date: .abbreviated, time: .omitted).locale(L10n.appLocale)))
                 if let hijri = repository.today?.hijriDate {
                     Circle()
                         .fill(MihrabColor.brass.opacity(0.8))
@@ -194,7 +262,7 @@ struct TodayView: View {
             .foregroundStyle(MihrabColor.textSecondary)
             .padding(.horizontal, 12)
             .padding(.vertical, 7)
-            .frame(minHeight: 34)
+            .frame(minHeight: MihrabSpace.hit * 0.78)
             .background(Capsule().fill(MihrabColor.moss.opacity(0.85)))
             .overlay {
                 Capsule().strokeBorder(MihrabColor.mint.opacity(0.2), lineWidth: 1)
@@ -204,35 +272,19 @@ struct TodayView: View {
         .accessibilityHint(Text(L10n.settings))
     }
 
-    // MARK: - Quick actions
+    // MARK: - Seasonal band
 
-    private var quickActions: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text(L10n.homeQuickCaps)
-                .ornamentalCaps()
-                .padding(.leading, 4)
-
-            LazyVGrid(
-                columns: [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10)],
-                spacing: 10
-            ) {
-                QuickActionTile(icon: "map.fill", label: L10n.mosques) {
-                    HapticsEngine.shared.light()
-                    showMosques = true
-                }
-                QuickActionTile(icon: "camera.viewfinder", label: L10n.qiblaAR) {
-                    HapticsEngine.shared.light()
-                    selectedTab = .qibla
-                }
-                QuickActionTile(icon: "calendar", label: L10n.homeMonthlyTimes) {
-                    HapticsEngine.shared.light()
-                    showMonthly = true
-                }
-                QuickActionTile(icon: "circle.grid.3x3.fill", label: L10n.dhikr) {
-                    HapticsEngine.shared.light()
-                    selectedTab = .dhikr
-                }
-            }
+    /// One seasonal slot, at the top where the season belongs. Ramadan wins; a
+    /// religious day inside the week takes the slot otherwise. Nothing shows
+    /// when neither is true.
+    @ViewBuilder
+    private var seasonalBand: some View {
+        if isRamadanSeason {
+            RamadanBand(onTap: { showRamadan = true })
+                .padding(.horizontal, 16)
+        } else if let upcoming = upcomingReligiousDay {
+            ReligiousDayBanner(day: upcoming.day, daysUntil: upcoming.daysUntil)
+                .padding(.horizontal, 16)
         }
     }
 
@@ -281,96 +333,145 @@ struct TodayView: View {
 
 // MARK: - Hero countdown card
 
+/// The one primary-weight card on Today: how long is left, and the single
+/// thing worth doing about it.
 struct HeroCountdownCard: View {
-    var onTap: () -> Void = {}
+    var onOpenTimes: () -> Void = {}
+    var onPrimary: (TodayPrimaryAction) -> Void = { _ in }
 
     @Environment(PrayerTimesRepository.self) private var repository
     @Environment(Theme.self) private var theme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var ringReveal: Double = 0
+    @State private var log = PrayerLogStore.shared
+
+    @ScaledMetric(relativeTo: .title) private var prayerNameSize: CGFloat = 28
+    @ScaledMetric(relativeTo: .title2) private var arabicNameSize: CGFloat = 22
+    @ScaledMetric(relativeTo: .largeTitle) private var ringDiameter: CGFloat = 216
 
     var body: some View {
-        Button(action: onTap) {
-            TimelineView(.periodic(from: .now, by: 1)) { context in
-                let now = context.date
-                let next = repository.today?.nextPrayer(after: now, tomorrow: repository.tomorrow)
-                let previous = repository.today?.previousPrayer(before: now)
-                let remaining = next.map { remainingHoursMinutes(from: now, to: $0.date) }
-                    ?? (hours: 0, minutes: 0)
+        TimelineView(.periodic(from: .now, by: 1)) { context in
+            let now = context.date
+            let next = repository.today?.nextPrayer(after: now, tomorrow: repository.tomorrow)
+            let previous = repository.today?.previousPrayer(before: now)
+            let remaining = next.map { remainingHoursMinutes(from: now, to: $0.date) }
+                ?? (hours: 0, minutes: 0)
+            let action = TodayPrimaryAction.resolve(
+                now: now,
+                today: repository.today,
+                tomorrow: repository.tomorrow,
+                log: log
+            )
 
-                VStack(spacing: 14) {
-                    if let next {
-                        VStack(spacing: 4) {
-                            Text(next.prayer.localizedNamazName)
-                                .font(.system(size: 28, weight: .semibold, design: .rounded))
-                                .foregroundStyle(MihrabColor.textPrimary)
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.8)
-                                .contentTransition(.opacity)
+            VStack(spacing: 16) {
+                Button(action: onOpenTimes) {
+                    VStack(spacing: 14) {
+                        if let next {
+                            VStack(spacing: 4) {
+                                Text(next.prayer.localizedNamazName)
+                                    .font(.system(size: prayerNameSize, weight: .semibold, design: .rounded))
+                                    .foregroundStyle(MihrabColor.textPrimary)
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.8)
+                                    .contentTransition(.opacity)
 
-                            if !L10n.isArabic {
-                                Text(next.prayer.arabicName)
-                                    .font(MihrabFont.arabic(22))
-                                    .foregroundStyle(MihrabColor.textSecondary)
+                                if !L10n.isArabic {
+                                    Text(next.prayer.arabicName)
+                                        .font(MihrabFont.arabic(arabicNameSize))
+                                        .foregroundStyle(MihrabColor.textSecondary)
+                                }
+
+                                Text(next.prayer.countdownLabel)
+                                    .ornamentalCaps(theme.isRamadanMode ? MihrabColor.ramadanGold : MihrabColor.brass)
+                                    .padding(.top, 4)
                             }
+                            .animation(reduceMotion ? nil : MihrabMotion.standardAnimation, value: next.prayer)
 
-                            Text(next.prayer.countdownLabel)
-                                .ornamentalCaps(theme.isRamadanMode ? MihrabColor.ramadanGold : MihrabColor.brass)
-                                .padding(.top, 4)
-                        }
-                        .animation(reduceMotion ? nil : MihrabMotion.standardAnimation, value: next.prayer)
-
-                        ZStack {
-                            BreathingRing(
-                                progress: progress(now: now, previous: previous, next: next) * ringReveal,
-                                accent: theme.accent,
-                                reduceMotion: reduceMotion
+                            ZStack {
+                                BreathingRing(
+                                    progress: progress(now: now, previous: previous, next: next) * ringReveal,
+                                    diameter: ringDiameter,
+                                    accent: theme.accent,
+                                    reduceMotion: reduceMotion
+                                )
+                                HeroRemainingTime(
+                                    hours: remaining.hours,
+                                    minutes: remaining.minutes,
+                                    reduceMotion: reduceMotion
+                                )
+                            }
+                            .frame(
+                                width: ringDiameter + BreathingRing.lineWidth,
+                                height: ringDiameter + BreathingRing.lineWidth
                             )
-                            HeroRemainingTime(
-                                hours: remaining.hours,
-                                minutes: remaining.minutes,
-                                reduceMotion: reduceMotion
-                            )
-                        }
-                        .frame(
-                            width: BreathingRing.diameter + BreathingRing.lineWidth,
-                            height: BreathingRing.diameter + BreathingRing.lineWidth
-                        )
 
-                        Text(next.date, format: .dateTime.hour().minute())
-                            .font(.subheadline.weight(.semibold).monospacedDigit())
-                            .foregroundStyle(MihrabColor.textSecondary)
-                            .contentTransition(.numericText())
-                    } else {
-                        ProgressView()
-                            .tint(MihrabColor.mint)
-                            .frame(height: 148)
-                        Text(repository.lastError == nil ? L10n.locating : L10n.timesUnavailableShort)
-                            .font(.subheadline)
-                            .foregroundStyle(MihrabColor.textSecondary)
+                            Text(next.date, format: .dateTime.hour().minute())
+                                .font(.subheadline.weight(.semibold).monospacedDigit())
+                                .foregroundStyle(MihrabColor.textSecondary)
+                                .contentTransition(.numericText())
+                        } else {
+                            ProgressView()
+                                .tint(MihrabColor.mint)
+                                .frame(height: ringDiameter * 0.68)
+                            Text(repository.lastError == nil ? L10n.locating : L10n.timesUnavailableShort)
+                                .font(.subheadline)
+                                .foregroundStyle(MihrabColor.textSecondary)
+                        }
                     }
+                    .frame(maxWidth: .infinity)
+                    // VoiceOver reads the hero as one sentence, then finds the
+                    // action button beneath it as a separate element.
+                    .accessibilityElement(children: .combine)
+                    .accessibilityLabel(next.map {
+                        "\($0.prayer.localizedNamazName), \(L10n.remainingHoursMinutes(remaining.hours, remaining.minutes)), \($0.date.formatted(date: .omitted, time: .shortened))"
+                    } ?? L10n.loadingTimes)
+                    .accessibilityAddTraits(.isButton)
+                    .accessibilityHint(Text(L10n.tabTimes))
                 }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 32)
-                .padding(.horizontal, 16)
-                .mihrabShaderPanel(.ripple, cornerRadius: MihrabSpace.cardRadius, opacity: 0.28)
-                .mihrabSolidCard(cornerRadius: MihrabSpace.cardRadius)
-                .accessibilityElement(children: .combine)
-                .accessibilityLabel(next.map {
-                    "\($0.prayer.localizedNamazName) \(L10n.remainingHoursMinutes(remaining.hours, remaining.minutes))"
-                } ?? L10n.loadingTimes)
-                .accessibilityAddTraits(.isButton)
-                .accessibilityHint(Text(L10n.tabTimes))
+                .pressable(reduceMotion)
+
+                if next != nil {
+                    primaryActionBar(action)
+                }
             }
+            .padding(.vertical, 28)
+            .padding(.horizontal, 16)
+            .mihrabShaderPanel(.ripple, cornerRadius: MihrabSpace.cardRadius, opacity: 0.28)
+            .mihrabSolidCard(cornerRadius: MihrabSpace.cardRadius)
         }
-        .pressable(reduceMotion)
         .onAppear {
-            if reduceMotion {
+            if reduceMotion || MihrabPower.isLowPowerMode {
                 ringReveal = 1
             } else {
                 withAnimation(.easeOut(duration: 1.1)) { ringReveal = 1 }
             }
         }
+    }
+
+    /// Full-width capsule under the ring — the most valuable pixels on the
+    /// screen finally carry a verb.
+    private func primaryActionBar(_ action: TodayPrimaryAction) -> some View {
+        Button {
+            onPrimary(action)
+        } label: {
+            HStack(spacing: 8) {
+                Image(systemName: action.symbolName)
+                    .font(.subheadline.weight(.semibold))
+                Text(action.title)
+                    .font(.subheadline.weight(.semibold))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.75)
+            }
+            .foregroundStyle(.white)
+            .frame(maxWidth: .infinity)
+            .frame(minHeight: MihrabSpace.hit)
+            .background(Capsule().fill(theme.accent))
+            .overlay {
+                Capsule().strokeBorder(MihrabColor.sprout.opacity(0.35), lineWidth: 1)
+            }
+        }
+        .pressable(reduceMotion)
+        .accessibilityLabel(Text(action.title))
     }
 
     private func progress(now: Date, previous: (prayer: Prayer, date: Date)?,
@@ -395,12 +496,16 @@ private struct HeroRemainingTime: View {
     let minutes: Int
     let reduceMotion: Bool
 
+    @ScaledMetric(relativeTo: .largeTitle) private var digitSize: CGFloat = 52
+    @ScaledMetric(relativeTo: .largeTitle) private var colonSize: CGFloat = 40
+    @ScaledMetric(relativeTo: .caption2) private var unitSize: CGFloat = 11
+
     var body: some View {
         HStack(alignment: .top, spacing: 6) {
             if hours > 0 {
                 unit(hours, L10n.hourShort, padded: false)
                 Text(":")
-                    .font(MihrabFont.countdown(40))
+                    .font(MihrabFont.countdown(colonSize))
                     .foregroundStyle(MihrabColor.mint.opacity(0.55))
                     .padding(.top, 6)
             }
@@ -412,14 +517,14 @@ private struct HeroRemainingTime: View {
     private func unit(_ value: Int, _ label: String, padded: Bool) -> some View {
         VStack(spacing: 2) {
             Text(padded ? String(format: "%02d", value) : "\(value)")
-                .font(MihrabFont.countdown(52))
+                .font(MihrabFont.countdown(digitSize))
                 .foregroundStyle(MihrabColor.mint)
                 .lineLimit(1)
-                .minimumScaleFactor(0.8)
+                .minimumScaleFactor(0.7)
                 .contentTransition(.numericText(countsDown: true))
                 .animation(reduceMotion ? nil : .snappy(duration: 0.35), value: value)
             Text(label)
-                .font(.system(size: 11, weight: .semibold, design: .rounded))
+                .font(.system(size: unitSize, weight: .semibold, design: .rounded))
                 .tracking(0.8)
                 .textCase(.uppercase)
                 .foregroundStyle(MihrabColor.brass)
@@ -430,10 +535,10 @@ private struct HeroRemainingTime: View {
 /// Flat Fitness-style ring. No glass, no scale — the stroke must stay a clean circle.
 private struct BreathingRing: View {
     let progress: Double
+    var diameter: CGFloat = 216
     var accent: Color = MihrabColor.emerald
     let reduceMotion: Bool
 
-    static let diameter: CGFloat = 216
     static let lineWidth: CGFloat = 10
 
     var body: some View {
@@ -459,23 +564,24 @@ private struct BreathingRing: View {
                 Circle()
                     .fill(MihrabColor.sprout)
                     .frame(width: Self.lineWidth - 2.5, height: Self.lineWidth - 2.5)
-                    .offset(y: -Self.diameter / 2)
+                    .offset(y: -diameter / 2)
                     .rotationEffect(.degrees(progress * 360))
                     .shadow(color: MihrabColor.sprout.opacity(0.7), radius: 5)
             }
         }
-        .frame(width: Self.diameter, height: Self.diameter)
+        .frame(width: diameter, height: diameter)
         .padding(Self.lineWidth / 2)
         .animation(reduceMotion ? nil : .easeOut(duration: 0.9), value: progress)
         .allowsHitTesting(false)
     }
 }
 
-// MARK: - Day summary
+// MARK: - Schedule block
 
-/// Two calm facts under the hero: how much of the day is left, and how long
-/// the daylight actually is. Both derived — never invented.
-struct DaySummaryRow: View {
+/// Secondary weight by design: a horizontal strip of prayers, one line of
+/// summary, and — only when it has something honest to say — a provenance
+/// badge. No card, no glass; the hero above it must stay the loudest thing.
+struct TodayScheduleBlock: View {
     @Environment(PrayerTimesRepository.self) private var repository
 
     private var remainingPrayers: Int {
@@ -495,47 +601,82 @@ struct DaySummaryRow: View {
     }
 
     var body: some View {
-        HStack(spacing: 10) {
-            tile(
-                symbol: "checklist",
-                caption: L10n.homeSummaryCaps,
-                value: remainingPrayers > 0
-                    ? L10n.homePrayersLeft(remainingPrayers)
-                    : L10n.homeAllPrayersDone
-            )
+        VStack(spacing: 10) {
+            PrayerStrip()
 
-            if let daylight {
-                tile(
-                    symbol: "sun.horizon.fill",
-                    caption: L10n.homeDaylightCaps,
-                    value: L10n.homeDaylight(daylight.hours, daylight.minutes)
-                )
+            if repository.today != nil {
+                summaryLine
+                    .padding(.horizontal, 22)
             }
+
+            TodayProvenanceBadge()
+                .padding(.horizontal, 22)
         }
     }
 
-    private func tile(symbol: String, caption: String, value: String) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack(spacing: 6) {
-                Image(systemName: symbol)
-                    .font(.caption)
-                    .symbolRenderingMode(.hierarchical)
-                    .foregroundStyle(MihrabColor.brass)
-                Text(caption)
-                    .ornamentalCaps()
+    private var summaryLine: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "checklist")
+                .font(.caption2)
+                .symbolRenderingMode(.hierarchical)
+                .foregroundStyle(MihrabColor.brass)
+
+            Text(remainingPrayers > 0
+                 ? L10n.homePrayersLeft(remainingPrayers)
+                 : L10n.homeAllPrayersDone)
+
+            if let daylight {
+                Circle()
+                    .fill(MihrabColor.textTertiary)
+                    .frame(width: 2.5, height: 2.5)
+                Text(L10n.homeDaylight(daylight.hours, daylight.minutes))
                     .lineLimit(1)
+                    .minimumScaleFactor(0.8)
             }
-            Text(value)
-                .font(.footnote.weight(.medium))
-                .foregroundStyle(MihrabColor.textPrimary)
-                .lineLimit(2)
-                .minimumScaleFactor(0.85)
-                .fixedSize(horizontal: false, vertical: true)
+
+            Spacer(minLength: 0)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(14)
-        .mihrabSolidCard(cornerRadius: MihrabSpace.rowRadius)
+        .font(.footnote.weight(.medium))
+        .foregroundStyle(MihrabColor.textSecondary)
         .accessibilityElement(children: .combine)
+    }
+}
+
+/// "Calculated on device" / "Last updated …". Shown only when it changes what
+/// the user should believe — never as decoration, never as a warning.
+struct TodayProvenanceBadge: View {
+    @Environment(PrayerTimesRepository.self) private var repository
+
+    /// Anything fresher than this is simply current; saying so would be noise.
+    private static let staleAfter: TimeInterval = 12 * 60 * 60
+
+    private var isStale: Bool {
+        guard let last = repository.lastSuccessfulRefresh else { return repository.today != nil }
+        return Date().timeIntervalSince(last) > Self.staleAfter
+    }
+
+    private var caption: String? {
+        guard repository.today != nil else { return nil }
+        if repository.isUsingOfflineEngine { return L10n.homeOnDeviceBadge }
+        guard isStale else { return nil }
+        guard let last = repository.lastSuccessfulRefresh else { return nil }
+        return L10n.homeLastUpdated(last.formatted(.relative(presentation: .named)))
+    }
+
+    var body: some View {
+        if let caption {
+            HStack(spacing: 6) {
+                Image(systemName: repository.isUsingOfflineEngine ? "cpu" : "clock.arrow.circlepath")
+                    .font(.caption2)
+                    .symbolRenderingMode(.hierarchical)
+                Text(caption)
+                    .lineLimit(2)
+                Spacer(minLength: 0)
+            }
+            .font(.caption)
+            .foregroundStyle(MihrabColor.textTertiary)
+            .accessibilityElement(children: .combine)
+        }
     }
 }
 
@@ -545,6 +686,9 @@ struct PrayerStrip: View {
     @Environment(PrayerTimesRepository.self) private var repository
     @Environment(Theme.self) private var theme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+    @ScaledMetric(relativeTo: .caption) private var pillWidth: CGFloat = 78
+    @ScaledMetric(relativeTo: .caption) private var pillHeight: CGFloat = 88
 
     private var nextPrayer: Prayer? {
         repository.today?.nextPrayer(after: Date(), tomorrow: repository.tomorrow)?.prayer
@@ -604,7 +748,7 @@ struct PrayerStrip: View {
             }
         }
         .foregroundStyle(isNext ? .white : MihrabColor.textPrimary)
-        .frame(width: 78, height: 88)
+        .frame(width: pillWidth, height: pillHeight)
         .background {
             RoundedRectangle(cornerRadius: 20, style: .continuous)
                 .fill(isNext ? theme.accent : MihrabColor.moss)
@@ -621,13 +765,17 @@ struct PrayerStrip: View {
 
 // MARK: - Prayer log
 
-/// Five taps a day. The streak is the reward, so it sits on the same card and
-/// only ever counts *complete* days.
+/// Five taps a day, the week behind them, and the streak they build. The week
+/// strip turns the streak from a number into a pattern — and an empty day
+/// stays empty, never a reproach.
 struct PrayerLogCard: View {
     @Environment(PrayerTimesRepository.self) private var repository
     @Environment(Theme.self) private var theme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var store = PrayerLogStore.shared
+
+    @ScaledMetric(relativeTo: .body) private var markerSize: CGFloat = 40
+    @ScaledMetric(relativeTo: .caption2) private var markerLabelSize: CGFloat = 10
 
     private var done: Int { store.completedCount() }
     private var total: Int { PrayerLogStore.fardPrayers.count }
@@ -650,6 +798,10 @@ struct PrayerLogCard: View {
                 }
             }
 
+            mihrabHairline()
+
+            WeekStreakStrip(days: store.recentDays(), accent: theme.accent)
+
             HStack(spacing: 8) {
                 Image(systemName: store.streak > 0 ? "flame.fill" : "flame")
                     .font(.footnote)
@@ -659,6 +811,17 @@ struct PrayerLogCard: View {
                     .font(.footnote.weight(.medium))
                     .foregroundStyle(store.streak > 0 ? MihrabColor.textPrimary : MihrabColor.textSecondary)
                 Spacer()
+
+                // Quiet brass chip — only once there is a real number to show.
+                let owed = QadaStore.shared.totalRemaining
+                if owed > 0 {
+                    Text(L10n.homeQadaOwed(owed))
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(MihrabColor.brass)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Capsule().fill(MihrabColor.brass.opacity(0.14)))
+                }
             }
         }
         .padding(20)
@@ -692,15 +855,15 @@ struct PrayerLogCard: View {
                             lineWidth: 1
                         )
                     Image(systemName: isLogged ? "checkmark" : prayer.symbolName)
-                        .font(.system(size: isLogged ? 15 : 13, weight: .semibold))
+                        .font(.system(size: markerSize * (isLogged ? 0.375 : 0.325), weight: .semibold))
                         .foregroundStyle(isLogged ? .white : MihrabColor.textSecondary)
                         .symbolRenderingMode(.hierarchical)
                         .contentTransition(.symbolEffect)
                 }
-                .frame(width: 40, height: 40)
+                .frame(width: markerSize, height: markerSize)
 
                 Text(prayer.shortName)
-                    .font(.system(size: 10, weight: .semibold))
+                    .font(.system(size: markerLabelSize, weight: .semibold))
                     .foregroundStyle(isLogged ? MihrabColor.textPrimary : MihrabColor.textTertiary)
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
@@ -719,6 +882,67 @@ struct PrayerLogCard: View {
     }
 }
 
+/// Seven days as seven small bars. Full days fill; partial days fill by the
+/// fraction actually prayed; empty days are just an outline.
+struct WeekStreakStrip: View {
+    let days: [PrayerLogStore.DaySummary]
+    var accent: Color = MihrabColor.emerald
+
+    @ScaledMetric(relativeTo: .caption2) private var barHeight: CGFloat = 26
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(L10n.homeWeekCaps)
+                .ornamentalCaps()
+
+            HStack(spacing: 6) {
+                ForEach(days) { day in
+                    bar(for: day)
+                }
+            }
+        }
+    }
+
+    private func bar(for day: PrayerLogStore.DaySummary) -> some View {
+        let fraction = day.total > 0 ? Double(day.completed) / Double(day.total) : 0
+        let weekday = day.date.formatted(
+            .dateTime.weekday(.narrow).locale(Locale(identifier: L10n.localeIdentifier))
+        )
+
+        return VStack(spacing: 5) {
+            GeometryReader { geo in
+                ZStack(alignment: .bottom) {
+                    RoundedRectangle(cornerRadius: 6, style: .continuous)
+                        .fill(MihrabColor.moss.opacity(0.7))
+                    RoundedRectangle(cornerRadius: 6, style: .continuous)
+                        .fill(day.isComplete ? accent : accent.opacity(0.55))
+                        .frame(height: max(geo.size.height * fraction, fraction > 0 ? 4 : 0))
+                }
+                .overlay {
+                    RoundedRectangle(cornerRadius: 6, style: .continuous)
+                        .strokeBorder(MihrabColor.mint.opacity(day.isComplete ? 0.45 : 0.16), lineWidth: 1)
+                }
+            }
+            .frame(height: barHeight)
+
+            Text(weekday)
+                .font(.caption2)
+                .foregroundStyle(MihrabColor.textTertiary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+        }
+        .frame(maxWidth: .infinity)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text(L10n.homeWeekDayA11y(
+            day.date.formatted(
+                .dateTime.weekday(.wide).locale(Locale(identifier: L10n.localeIdentifier))
+            ),
+            day.completed,
+            day.total
+        )))
+    }
+}
+
 // MARK: - "Vakit girdi" overlay
 
 /// A short, quiet celebration. Reduce Motion keeps the banner and drops the
@@ -730,7 +954,7 @@ private struct PrayerEnteredOverlay: View {
 
     var body: some View {
         ZStack {
-            if !reduceMotion {
+            if !reduceMotion && !MihrabPower.isLowPowerMode {
                 ParticleBurst(trigger: trigger)
                     .frame(width: 320, height: 320)
             }
@@ -757,40 +981,39 @@ private struct PrayerEnteredOverlay: View {
 
 // MARK: - Skeleton
 
-/// Shown only before the very first schedule lands. Shapes match the real
-/// cards so nothing jumps when the data arrives.
-struct TodaySkeleton: View {
+/// Shown only before the very first schedule lands, and only where the schedule
+/// actually goes — the log, the hadith and dhikr do not wait for the network.
+struct TodayHeroSkeleton: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var shimmer = false
 
+    @ScaledMetric(relativeTo: .largeTitle) private var ringDiameter: CGFloat = 216
+
+    private var motionOff: Bool { reduceMotion || MihrabPower.isLowPowerMode }
+
     var body: some View {
-        VStack(spacing: 20) {
-            block(height: 300, radius: MihrabSpace.cardRadius)
-            HStack(spacing: 10) {
-                block(height: 78, radius: MihrabSpace.rowRadius)
-                block(height: 78, radius: MihrabSpace.rowRadius)
-            }
-            block(height: 150, radius: MihrabSpace.cardRadius)
+        VStack(spacing: 18) {
+            // A ring silhouette, so even the skeleton is recognisably Mihrab.
+            Circle()
+                .strokeBorder(MihrabColor.mint.opacity(shimmer ? 0.22 : 0.10), lineWidth: 10)
+                .frame(width: ringDiameter, height: ringDiameter)
+
+            RoundedRectangle(cornerRadius: MihrabSpace.pillRadius, style: .continuous)
+                .fill(MihrabColor.moss.opacity(shimmer ? 0.75 : 0.45))
+                .frame(height: MihrabSpace.hit)
         }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 28)
+        .padding(.horizontal, 16)
+        .mihrabSolidCard(cornerRadius: MihrabSpace.cardRadius)
         .onAppear {
-            guard !reduceMotion else { return }
+            guard !motionOff else { return }
             withAnimation(.easeInOut(duration: 1.1).repeatForever(autoreverses: true)) {
                 shimmer = true
             }
         }
         .accessibilityElement()
         .accessibilityLabel(Text(L10n.loadingTimes))
-    }
-
-    private func block(height: CGFloat, radius: CGFloat) -> some View {
-        RoundedRectangle(cornerRadius: radius, style: .continuous)
-            .fill(MihrabColor.moss.opacity(shimmer ? 0.75 : 0.45))
-            .frame(maxWidth: .infinity)
-            .frame(height: height)
-            .overlay {
-                RoundedRectangle(cornerRadius: radius, style: .continuous)
-                    .strokeBorder(MihrabColor.mint.opacity(0.14), lineWidth: 1)
-            }
     }
 }
 
@@ -800,6 +1023,8 @@ struct DailyHadithCard: View {
     let onTap: () -> Void
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var hadith = BundledContent.hadith()
+
+    @ScaledMetric(relativeTo: .title3) private var quoteSize: CGFloat = 24
 
     var body: some View {
         Button(action: onTap) {
@@ -823,7 +1048,7 @@ struct DailyHadithCard: View {
                         .accessibilityLabel(Text(L10n.shareHadith))
                     }
                     Text(hadith.localizedTranslation)
-                        .font(MihrabFont.quoteItalic(24))
+                        .font(MihrabFont.quoteItalic(quoteSize))
                         .foregroundStyle(MihrabColor.textPrimary)
                         .lineSpacing(7)
                         .lineLimit(4)
@@ -841,7 +1066,7 @@ struct DailyHadithCard: View {
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(28)
+            .padding(24)
             .mihrabShaderPanel(.lantern, cornerRadius: MihrabSpace.cardRadius, opacity: 0.22)
             .mihrabCard(interactive: true)
         }
@@ -851,6 +1076,8 @@ struct DailyHadithCard: View {
 
 // MARK: - Quick action tile
 
+/// Kept as a component even though Today no longer stacks a 2×2 grid of them —
+/// sheets elsewhere still want a plain, tappable row.
 struct QuickActionTile: View {
     let icon: String
     let label: String
@@ -880,49 +1107,70 @@ struct QuickActionTile: View {
     }
 }
 
-// MARK: - Ramadan card
+// MARK: - Ramadan band
 
-struct RamadanCard: View {
+/// During Ramadan this sits at the very top of Today — the season's own line,
+/// above the greeting's fold, instead of an eighth card halfway down.
+struct RamadanBand: View {
     let onTap: () -> Void
     @Environment(PrayerTimesRepository.self) private var repository
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         Button(action: onTap) {
             TimelineView(.periodic(from: .now, by: 1)) { context in
-                HStack(spacing: 16) {
+                HStack(spacing: 12) {
                     Image(systemName: "moon.stars.fill")
-                        .font(.largeTitle)
+                        .font(.title3)
                         .foregroundStyle(MihrabColor.ramadanGold)
                         .symbolRenderingMode(.hierarchical)
 
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(L10n.ramadan)
-                            .ornamentalCaps(MihrabColor.ramadanGold)
+                    VStack(alignment: .leading, spacing: 2) {
+                        HStack(spacing: 6) {
+                            Text(L10n.ramadan)
+                                .ornamentalCaps(MihrabColor.ramadanGold)
+                            if let hijri = repository.today?.hijriDate, hijri.month == 9 {
+                                Text("· \(hijri.day)")
+                                    .ornamentalCaps(MihrabColor.ramadanGold)
+                            }
+                        }
+
                         if let maghrib = repository.today?.time(for: .maghrib), maghrib > context.date {
                             HStack(spacing: 4) {
                                 Text(L10n.iftarLeft(maghrib.formatted(date: .omitted, time: .shortened)))
                                 CountdownText(from: context.date, to: maghrib, finished: "0:00")
                                 Text(L10n.left)
                             }
-                            .font(.subheadline.weight(.medium))
+                            .font(.footnote.weight(.medium))
+                            .foregroundStyle(MihrabColor.textPrimary)
                         } else if let fajr = repository.tomorrow?.time(for: .fajr) {
                             Text(L10n.suhoorEnds(fajr.formatted(date: .omitted, time: .shortened)))
-                                .font(.subheadline.weight(.medium))
+                                .font(.footnote.weight(.medium))
+                                .foregroundStyle(MihrabColor.textPrimary)
                         }
                     }
-                    Spacer()
+
+                    Spacer(minLength: 0)
+
                     Image(systemName: "chevron.right")
+                        .font(.footnote)
                         .foregroundStyle(MihrabColor.textTertiary)
                 }
-                .padding(20)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 12)
+                .frame(minHeight: MihrabSpace.hit)
                 .background {
-                    RoundedRectangle(cornerRadius: 28, style: .continuous)
-                        .fill(MihrabColor.ramadanViolet.opacity(0.5))
+                    RoundedRectangle(cornerRadius: MihrabSpace.rowRadius, style: .continuous)
+                        .fill(MihrabColor.ramadanViolet.opacity(0.62))
                 }
-                .mihrabCard(interactive: true)
+                .overlay {
+                    RoundedRectangle(cornerRadius: MihrabSpace.rowRadius, style: .continuous)
+                        .strokeBorder(MihrabColor.ramadanGold.opacity(0.42), lineWidth: 1)
+                }
+                .accessibilityElement(children: .combine)
             }
         }
-        .buttonStyle(.plain)
+        .pressable(reduceMotion)
     }
 }
 
@@ -933,19 +1181,19 @@ struct ReligiousDayBanner: View {
     let daysUntil: Int
 
     var body: some View {
-        HStack(spacing: 14) {
+        HStack(spacing: 12) {
             Image(systemName: "star.fill")
+                .font(.footnote)
                 .foregroundStyle(MihrabColor.brass)
             Text(L10n.inDays(day.localizedName, daysUntil))
-                .font(.subheadline.weight(.medium))
-            Spacer()
+                .font(.footnote.weight(.medium))
+                .foregroundStyle(MihrabColor.textPrimary)
+            Spacer(minLength: 0)
         }
-        .padding(16)
-        .mihrabCard(cornerRadius: 20)
-        .overlay {
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .strokeBorder(MihrabColor.brass.opacity(0.5), lineWidth: 1)
-        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .frame(minHeight: MihrabSpace.hit)
+        .mihrabSolidCard(cornerRadius: MihrabSpace.rowRadius, stroke: MihrabColor.brass.opacity(0.45))
         .accessibilityElement(children: .combine)
     }
 }
@@ -975,8 +1223,9 @@ struct DhikrSummaryCard: View {
                     .foregroundStyle(MihrabColor.textTertiary)
             }
             .padding(.horizontal, 16)
-            .frame(height: 56)
-            .mihrabCard(cornerRadius: 20, interactive: true)
+            .padding(.vertical, 12)
+            .frame(minHeight: 56)
+            .mihrabSolidCard(cornerRadius: MihrabSpace.rowRadius)
         }
         .pressable(reduceMotion)
     }
