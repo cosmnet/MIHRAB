@@ -86,6 +86,7 @@ targets:
       - path: MihrabTests
       - path: Mihrab/Core/Shared
       - path: Mihrab/Data/BundledContent.swift
+      - path: Mihrab/Data/AladhanClient.swift
     resources:
       - path: Mihrab/Data/Bundled
     settings:

@@ -88,6 +88,7 @@
 		B70BEE9300B46A2DF66CA981 /* times-bg.png in Resources */ = {isa = PBXBuildFile; fileRef = EC14784CFD3C7BCF7017796F /* times-bg.png */; };
 		B70D53AB0D63F7E9CBBCB7E3 /* DesignTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3650D86821E8BB544540EA14 /* DesignTokens.swift */; };
 		B859D6E1B6291AF507B2E7C6 /* L10n.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CA84027688D980DEE6A1F54 /* L10n.swift */; };
+		B9E9BB2235640AB7B885FF45 /* AladhanClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53DF395934CCF70263F2E0A4 /* AladhanClient.swift */; };
 		BFCD1CBDF888ECBEE3EB57DF /* AmiriQuran-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4D876755F4C81992441FCB68 /* AmiriQuran-Regular.ttf */; };
 		C25A530184483A9B7BC43C63 /* L10n+Deen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1E6BD1A0C8ED289D41456E7 /* L10n+Deen.swift */; };
 		C7B5BCD021C3965B4D573867 /* SharedPrayerCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C14EBC7AF467CEA1B890458 /* SharedPrayerCache.swift */; };
@@ -795,6 +796,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B9E9BB2235640AB7B885FF45 /* AladhanClient.swift in Sources */,
 				B523FDD4C0EF7A9018350207 /* BundledContent.swift in Sources */,
 				3D71AD96CD9A0148A4E90784 /* CountdownText.swift in Sources */,
 				F520B99F1CBB09B3C29F1443 /* DesignTokens.swift in Sources */,

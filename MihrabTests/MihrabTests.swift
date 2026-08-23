@@ -124,3 +124,72 @@ final class BundledContentTests: XCTestCase {
         }
     }
 }
+
+/// Regression cover for the calendar-response date anchoring. The mapper used to
+/// recompute `startOfDay(for: Date())` inside the loop, collapsing every day of a
+/// month response onto today — which silently reduced notification scheduling to
+/// "today only" and made `tomorrow` carry today's times.
+final class AladhanMappingTests: XCTestCase {
+    private func fixture(gregorian: String, fajr: String, isha: String) -> Data {
+        Data("""
+        {
+          "timings": {
+            "Fajr": "\(fajr)", "Sunrise": "06:15", "Dhuhr": "13:12",
+            "Asr": "17:58", "Maghrib": "19:58 (TRT)", "Isha": "\(isha)"
+          },
+          "date": {
+            "gregorian": { "date": "\(gregorian)" },
+            "hijri": { "day": "10", "year": "1448",
+                       "month": { "number": 3, "en": "Rabi al-Awwal", "ar": "ربيع الأول" } }
+          }
+        }
+        """.utf8)
+    }
+
+    private func decode(_ data: Data) throws -> DayPrayerTimes {
+        try JSONDecoder().decode(TimingsData.self, from: data).toDomain()
+    }
+
+    func testDayAnchorsToApiDateNotToday() throws {
+        let day = try decode(fixture(gregorian: "05-03-2027", fajr: "04:41", isha: "21:30"))
+        let comps = Calendar.current.dateComponents([.year, .month, .day], from: day.date)
+        XCTAssertEqual(comps.year, 2027)
+        XCTAssertEqual(comps.month, 3)
+        XCTAssertEqual(comps.day, 5)
+    }
+
+    func testPrayerTimesLandOnTheApiDay() throws {
+        let day = try decode(fixture(gregorian: "05-03-2027", fajr: "04:41", isha: "21:30"))
+        let calendar = Calendar.current
+        for time in day.times.values {
+            XCTAssertTrue(
+                calendar.isDate(time, inSameDayAs: day.date),
+                "prayer time drifted off the response's own day"
+            )
+        }
+    }
+
+    func testConsecutiveDaysStayDistinct() throws {
+        let first = try decode(fixture(gregorian: "05-03-2027", fajr: "04:41", isha: "21:30"))
+        let second = try decode(fixture(gregorian: "06-03-2027", fajr: "04:39", isha: "21:32"))
+        XCTAssertNotEqual(first.date, second.date)
+        XCTAssertEqual(
+            Calendar.current.dateComponents([.day], from: first.date, to: second.date).day, 1
+        )
+    }
+
+    func testTimezoneSuffixIsStripped() throws {
+        let day = try decode(fixture(gregorian: "05-03-2027", fajr: "04:41", isha: "21:30"))
+        let maghrib = try XCTUnwrap(day.times[.maghrib])
+        let comps = Calendar.current.dateComponents([.hour, .minute], from: maghrib)
+        XCTAssertEqual(comps.hour, 19)
+        XCTAssertEqual(comps.minute, 58)
+    }
+
+    func testOutOfOrderTimingsAreRejected() {
+        // Isha before Fajr must not decode into a "valid" day.
+        XCTAssertThrowsError(
+            try decode(fixture(gregorian: "05-03-2027", fajr: "20:00", isha: "03:00"))
+        )
+    }
+}

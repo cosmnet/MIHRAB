@@ -40,6 +40,8 @@ struct RootView: View {
             await repository.refresh()
             theme.update(hijri: repository.today?.hijriDate)
             await NotificationEngine.shared.rescheduleAll()
+            // rescheduleAll() clears every pending request, trial reminders included.
+            TrialReminder.ensureScheduled(trialStart: SubscriptionManager.shared.trialStartedAt)
             await LiveActivityManager.shared.update(for: repository.today, tomorrow: repository.tomorrow)
         }
         .onChange(of: locationManager.location) { _, _ in
@@ -52,6 +54,7 @@ struct RootView: View {
             Task {
                 await repository.refresh()
                 await NotificationEngine.shared.rescheduleAll()
+                TrialReminder.ensureScheduled(trialStart: SubscriptionManager.shared.trialStartedAt)
             }
         }
     }

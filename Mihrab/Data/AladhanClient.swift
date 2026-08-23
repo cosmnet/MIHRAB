@@ -95,7 +95,8 @@ private struct QiblaResponse: Decodable {
     let data: QiblaData
 }
 
-private struct TimingsData: Decodable {
+/// Internal (not private) so tests can exercise the date-anchoring logic directly.
+struct TimingsData: Decodable {
     let timings: [String: String]
     let date: DateInfo
 
@@ -140,14 +141,12 @@ private struct TimingsData: Decodable {
             let clean = String(raw.prefix(5))
             guard let parsed = timeFormatter.date(from: clean) else { throw AladhanError.decodingFailed }
             let comps = calendar.dateComponents([.hour, .minute], from: parsed)
-            let dayStart = calendar.startOfDay(for: Date())
             guard let combined = calendar.date(bySettingHour: comps.hour ?? 0,
                                                minute: comps.minute ?? 0,
-                                               second: 0, of: dayStart) else {
+                                               second: 0, of: dayDate) else {
                 throw AladhanError.decodingFailed
             }
             result[prayer] = combined
-            dayDate = dayStart
         }
 
         // Correctness: verify ordering Fajr < Sunrise < Dhuhr < Asr < Maghrib < Isha.

@@ -1,5 +1,6 @@
 import CoreLocation
 import Foundation
+import WidgetKit
 
 /// Resolves prayer times: fresh cache → network → stale cache (stale-while-error).
 /// Publishes results to the App Group cache for widgets.
@@ -116,5 +117,7 @@ final class PrayerTimesRepository: @unchecked Sendable {
             days: days
         )
         SharedPrayerCache.save(snapshot)
+        // Writing the App Group file is not enough — WidgetKit only re-reads on request.
+        WidgetCenter.shared.reloadAllTimelines()
     }
 }
