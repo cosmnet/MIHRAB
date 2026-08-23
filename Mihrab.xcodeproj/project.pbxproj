@@ -26,6 +26,7 @@
 		1997FC247BB9D45CD8D9AC3A /* PrayerLogStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BE37E454B4EE45AF5602047 /* PrayerLogStore.swift */; };
 		1C4C2DF8383E6509BBBC3561 /* AladhanClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53DF395934CCF70263F2E0A4 /* AladhanClient.swift */; };
 		1C79982CCE391F366FAD5BD6 /* GlassModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEE285ABF10F4BCB2D5DAAA7 /* GlassModifiers.swift */; };
+		1D7158B8FD61AF75776938F3 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 0942AC934154A367DE2D367D /* PrivacyInfo.xcprivacy */; };
 		258A098224980544B1510E0C /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 716642CEC339E6436A40A397 /* EmptyStateView.swift */; };
 		2A566CBA83EC07A68B7121A7 /* MosquesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D68E82A706D9DD54FCF15DBD /* MosquesView.swift */; };
 		2B77B7B8615D47A682C05939 /* adhkar.json in Resources */ = {isa = PBXBuildFile; fileRef = DA397F5F596FA6BCF701D0B1 /* adhkar.json */; };
@@ -91,6 +92,7 @@
 		B9E9BB2235640AB7B885FF45 /* AladhanClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53DF395934CCF70263F2E0A4 /* AladhanClient.swift */; };
 		BFCD1CBDF888ECBEE3EB57DF /* AmiriQuran-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4D876755F4C81992441FCB68 /* AmiriQuran-Regular.ttf */; };
 		C25A530184483A9B7BC43C63 /* L10n+Deen.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1E6BD1A0C8ED289D41456E7 /* L10n+Deen.swift */; };
+		C67D5801861AC3588C12D1C6 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = D5BFC74AD6FF9B6B5B12D05F /* PrivacyInfo.xcprivacy */; };
 		C7B5BCD021C3965B4D573867 /* SharedPrayerCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C14EBC7AF467CEA1B890458 /* SharedPrayerCache.swift */; };
 		C7D5556959E5F731DCD6C612 /* qibla-bg.png in Resources */ = {isa = PBXBuildFile; fileRef = 95C4901FC084FD05D1C11825 /* qibla-bg.png */; };
 		C8344FFB5C8239B82FACDD18 /* PrayerModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9FD0466F6CBB450EE0D595E /* PrayerModels.swift */; };
@@ -111,6 +113,7 @@
 		D9FEECA03A08AE357040C533 /* DeenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6E993E40627B3B91F3EE167 /* DeenView.swift */; };
 		DC17E49DCAC4954FC7485886 /* L10n+Dhikr.swift in Sources */ = {isa = PBXBuildFile; fileRef = 948A066DE25B356202F016FB /* L10n+Dhikr.swift */; };
 		E71B2EB4ADD55F5B02B6BA37 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13B1C9A316E9EB8390CDFD79 /* RootView.swift */; };
+		E8E2E6FE5CC61374D4019DEE /* Adhan in Frameworks */ = {isa = PBXBuildFile; productRef = D9C9BEFD2326F67701C44E76 /* Adhan */; };
 		E979A7869D4F302077A35F8F /* QiblaCompassView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 204B321A6D55E124C12F5E3D /* QiblaCompassView.swift */; };
 		E9F1AF16A1CAE6F925DF33D0 /* DhikrAchievements.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9E0B074524DCCEA21D6AC831 /* DhikrAchievements.swift */; };
 		ED74C7AC066C7BBF60A9BB9A /* PrayerLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 066DB10CD1854117613E9B71 /* PrayerLiveActivity.swift */; };
@@ -160,10 +163,12 @@
 		0591A8236F9CE0CDCBD55367 /* MihrabWidgets.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = MihrabWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		066DB10CD1854117613E9B71 /* PrayerLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerLiveActivity.swift; sourceTree = "<group>"; };
 		08F81C4E8577D177DC297AE6 /* SacredMarks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SacredMarks.swift; sourceTree = "<group>"; };
+		0942AC934154A367DE2D367D /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		0C4983836E730ECEF541E8E5 /* dhikr-bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "dhikr-bg.png"; sourceTree = "<group>"; };
 		0EA3AECD4E4F15A9B08C47F7 /* hadiths.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = hadiths.json; sourceTree = "<group>"; };
 		125D7F2D0C5207279D574C89 /* L10n+Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "L10n+Settings.swift"; sourceTree = "<group>"; };
 		13B1C9A316E9EB8390CDFD79 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		19F962EBF24607D65D2FBE04 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		1B91E486A20D7EF1EDBCC4C0 /* ShaderPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderPanel.swift; sourceTree = "<group>"; };
 		1DF16B83B4DB647F2CFC9827 /* DhikrCounterViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DhikrCounterViews.swift; sourceTree = "<group>"; };
 		204B321A6D55E124C12F5E3D /* QiblaCompassView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QiblaCompassView.swift; sourceTree = "<group>"; };
@@ -230,6 +235,7 @@
 		CBE8B6B05DCD5C4079E7C3D8 /* PrayerTimesWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerTimesWidget.swift; sourceTree = "<group>"; };
 		CBF42654462EDEB7ECAD24CC /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
 		D1AC810AC36E00BB67493B01 /* TimesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimesView.swift; sourceTree = "<group>"; };
+		D5BFC74AD6FF9B6B5B12D05F /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		D68E82A706D9DD54FCF15DBD /* MosquesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MosquesView.swift; sourceTree = "<group>"; };
 		D7C3E9BF072E9851CA894773 /* ReligiousDaysListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReligiousDaysListView.swift; sourceTree = "<group>"; };
 		DA397F5F596FA6BCF701D0B1 /* adhkar.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = adhkar.json; sourceTree = "<group>"; };
@@ -257,6 +263,17 @@
 		FA7C89560AD0F3295C2DCD47 /* EsmaHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EsmaHomeView.swift; sourceTree = "<group>"; };
 		FE520AB9EB81FDEE273B738F /* SunArcView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SunArcView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		BF0848BB61C32D820190BB3D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E8E2E6FE5CC61374D4019DEE /* Adhan in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		02AE0B04B73A69C34D0C2846 /* MihrabTests */ = {
@@ -292,6 +309,7 @@
 				918C18ADDB58D3E23461A632 /* MihrabWidgetsBundle.swift */,
 				066DB10CD1854117613E9B71 /* PrayerLiveActivity.swift */,
 				CBE8B6B05DCD5C4079E7C3D8 /* PrayerTimesWidget.swift */,
+				0942AC934154A367DE2D367D /* PrivacyInfo.xcprivacy */,
 			);
 			path = MihrabWidgets;
 			sourceTree = "<group>";
@@ -516,6 +534,7 @@
 				77DD3ECF0E4CB8A8E3AADCD3 /* InfoPlist.xcstrings */,
 				823FF0B8D8A5A47582151104 /* Localizable.xcstrings */,
 				A53E8AFAB1A58BFFAF92871E /* Mihrab.storekit */,
+				D5BFC74AD6FF9B6B5B12D05F /* PrivacyInfo.xcprivacy */,
 				FC22B2C6F12E09B91CDC8963 /* Fonts */,
 				7C1BFA8412432F4426FEB509 /* Generated */,
 			);
@@ -525,6 +544,7 @@
 		D955AE0BEEB31F2AD9CA6543 /* Mihrab */ = {
 			isa = PBXGroup;
 			children = (
+				19F962EBF24607D65D2FBE04 /* Info.plist */,
 				EC43B35BD4208BFA0D5D1E54 /* Mihrab.entitlements */,
 				3A1ADDCE581B71DCDB091A1B /* App */,
 				B3E5E8C2CA329428B48B9A9D /* Core */,
@@ -600,6 +620,7 @@
 			buildPhases = (
 				22C5AA931349D3D48DE51CA2 /* Sources */,
 				EE67E6187E34EDEBBA516FF1 /* Resources */,
+				BF0848BB61C32D820190BB3D /* Frameworks */,
 				BA06A7F48FBE3C47296ACCFE /* Embed Foundation Extensions */,
 			);
 			buildRules = (
@@ -609,6 +630,7 @@
 			);
 			name = Mihrab;
 			packageProductDependencies = (
+				D9C9BEFD2326F67701C44E76 /* Adhan */,
 			);
 			productName = Mihrab;
 			productReference = 36A19D2F2BBDBAD439A0A761 /* Mihrab.app */;
@@ -637,6 +659,7 @@
 			buildConfigurationList = FF078FF07F8A5424C407F3D2 /* Build configuration list for PBXNativeTarget "MihrabWidgets" */;
 			buildPhases = (
 				ADE9B41CDC3BC917F2981A08 /* Sources */,
+				94FE7A5603B016E349E6D2E7 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -671,6 +694,9 @@
 			);
 			mainGroup = A4DE89B77624E59E27A3B579;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				6E6DA5DBA99638C4188FD472 /* XCRemoteSwiftPackageReference "adhan-swift" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 3657101CD4265C3496555564 /* Products */;
 			projectDirPath = "";
@@ -684,6 +710,14 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		94FE7A5603B016E349E6D2E7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1D7158B8FD61AF75776938F3 /* PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		EE67E6187E34EDEBBA516FF1 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -694,6 +728,7 @@
 				582C09BE8CEE1F54BCADC2A3 /* InfoPlist.xcstrings in Resources */,
 				3DD7C208EB8CFE3232D9A08F /* Localizable.xcstrings in Resources */,
 				0A72A41E074CEC7C32C307C1 /* Mihrab.storekit in Resources */,
+				C67D5801861AC3588C12D1C6 /* PrivacyInfo.xcprivacy in Resources */,
 				2B77B7B8615D47A682C05939 /* adhkar.json in Resources */,
 				EFB06DFD6416855D10A52334 /* dhikr-bg.png in Resources */,
 				6624AD18A08CB85B1AF9919D /* esma-bg.png in Resources */,
@@ -908,13 +943,13 @@
 				CODE_SIGN_ENTITLEMENTS = Mihrab/Mihrab.entitlements;
 				DEFINES_MODULE = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Mihrab/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Mihrab;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Camera is used only to show Qibla direction in AR. Nothing is recorded or uploaded.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Mihrab uses your location to calculate precise prayer times, Qibla direction, and nearby mosques.";
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_NSSupportsLiveActivitiesFrequentUpdates = YES;
-				INFOPLIST_KEY_UIAppFonts = "AmiriQuran-Regular.ttf";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -942,13 +977,13 @@
 				CODE_SIGN_ENTITLEMENTS = Mihrab/Mihrab.entitlements;
 				DEFINES_MODULE = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Mihrab/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Mihrab;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Camera is used only to show Qibla direction in AR. Nothing is recorded or uploaded.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Mihrab uses your location to calculate precise prayer times, Qibla direction, and nearby mosques.";
 				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
 				INFOPLIST_KEY_NSSupportsLiveActivitiesFrequentUpdates = YES;
-				INFOPLIST_KEY_UIAppFonts = "AmiriQuran-Regular.ttf";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
@@ -999,6 +1034,25 @@
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		6E6DA5DBA99638C4188FD472 /* XCRemoteSwiftPackageReference "adhan-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/batoulapps/adhan-swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.5.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		D9C9BEFD2326F67701C44E76 /* Adhan */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6E6DA5DBA99638C4188FD472 /* XCRemoteSwiftPackageReference "adhan-swift" */;
+			productName = Adhan;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = F6D97564E32D75514304FE02 /* Project object */;
 }
