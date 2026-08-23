@@ -301,6 +301,9 @@ final class PrayerTimesRepository: @unchecked Sendable {
         SharedPrayerCache.save(snapshot)
         // Writing the App Group file is not enough — WidgetKit only re-reads on request.
         WidgetCenter.shared.reloadAllTimelines()
+        // App Group containers are not shared with the watch; the settings it
+        // needs to compute its own times travel over WatchConnectivity.
+        PhoneWatchBridge.shared.syncSettings()
     }
 
     // MARK: - Helpers

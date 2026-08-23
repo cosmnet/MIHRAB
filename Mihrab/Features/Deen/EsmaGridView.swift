@@ -150,7 +150,7 @@ struct EsmaBrowserView: View {
         HStack(spacing: 10) {
             Image(systemName: "magnifyingglass")
                 .font(.body.weight(.semibold))
-                .foregroundStyle(MihrabColor.textTertiary)
+                .foregroundStyle(MihrabColor.textSecondary)
             TextField(L10n.searchEsma, text: $query)
                 .textFieldStyle(.plain)
                 .foregroundStyle(MihrabColor.textPrimary)
@@ -161,7 +161,7 @@ struct EsmaBrowserView: View {
                     query = ""
                 } label: {
                     Image(systemName: "xmark.circle.fill")
-                        .foregroundStyle(MihrabColor.textTertiary)
+                        .foregroundStyle(MihrabColor.textSecondary)
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel(Text(L10n.clear))
@@ -317,25 +317,26 @@ struct EsmaListRow: View {
 
                 VStack(alignment: .leading, spacing: 5) {
                     HStack(spacing: 8) {
-                        Text(String(format: "%02d", entry.number))
-                            .font(.system(size: 13, weight: .bold, design: .rounded).monospacedDigit())
+                        Text(L10n.esmaOrdinal(entry.number))
+                            .mihrabTime(13, relativeTo: .footnote, ceiling: .accessibility3)
                             .foregroundStyle(MihrabColor.brass)
                         if library.hasVisited(entry.name) {
                             Image(systemName: "checkmark.seal.fill")
                                 .font(.caption2)
                                 .foregroundStyle(MihrabColor.emerald.opacity(0.8))
+                                .accessibilityHidden(true)
                         }
                     }
 
                     Text(entry.name.localizedMeaning)
-                        .font(.system(size: 19, weight: .semibold))
+                        .font(.title3.weight(.semibold))
                         .foregroundStyle(MihrabColor.textPrimary)
                         .multilineTextAlignment(.leading)
                         .fixedSize(horizontal: false, vertical: true)
 
                     Text(entry.name.transliteration)
                         .font(.caption.weight(.medium))
-                        .foregroundStyle(MihrabColor.textTertiary)
+                        .foregroundStyle(MihrabColor.textSecondary)
                 }
 
                 Spacer(minLength: 8)
@@ -357,8 +358,21 @@ struct EsmaListRow: View {
             .contentShape(RoundedRectangle(cornerRadius: MihrabSpace.rowRadius, style: .continuous))
         }
         .pressable(reduceMotion)
+        // `.combine` flattens the row into one element, which also swallows the
+        // nested star button — with VoiceOver on there was no way to favourite a
+        // Name from the list. The action puts it back.
         .accessibilityElement(children: .combine)
-        .accessibilityLabel(Text("\(entry.number). \(entry.name.transliteration), \(entry.name.localizedMeaning)"))
+        .accessibilityLabel(Text(rowLabel))
+        .accessibilityValue(Text(library.isFavorite(entry.name) ? L10n.esmaFavoritedValue : ""))
+        .accessibilityAction(named: Text(
+            library.isFavorite(entry.name) ? L10n.esmaRemoveFavorite : L10n.esmaAddFavorite
+        )) {
+            _ = library.toggleFavorite(entry.name)
+        }
+    }
+
+    private var rowLabel: String {
+        "\(L10n.esmaOrdinal(entry.number)). \(entry.name.transliteration), \(entry.name.localizedMeaning)"
     }
 }
 
@@ -376,14 +390,15 @@ struct EsmaGridCell: View {
         Button(action: action) {
             VStack(spacing: 8) {
                 HStack {
-                    Text(String(format: "%02d", entry.number))
-                        .font(.system(size: 12, weight: .bold, design: .rounded).monospacedDigit())
+                    Text(L10n.esmaOrdinal(entry.number))
+                        .mihrabTime(12, relativeTo: .caption, ceiling: .accessibility2)
                         .foregroundStyle(MihrabColor.brass)
                     Spacer()
                     if library.isFavorite(entry.name) {
                         Image(systemName: "star.fill")
                             .font(.caption2)
                             .foregroundStyle(MihrabColor.brass)
+                            .accessibilityHidden(true)
                     }
                 }
 
@@ -409,11 +424,13 @@ struct EsmaGridCell: View {
 
                 Text(entry.name.transliteration)
                     .font(.caption2)
-                    .foregroundStyle(MihrabColor.textTertiary)
+                    .foregroundStyle(MihrabColor.textSecondary)
                     .lineLimit(1)
             }
             .padding(14)
-            .frame(height: 172)
+            // `minHeight`, not `height`: at accessibility sizes the meaning and
+            // transliteration need the room, and a hard height clipped them.
+            .frame(minHeight: 172)
             .frame(maxWidth: .infinity)
             .background {
                 RoundedRectangle(cornerRadius: 24, style: .continuous)
@@ -438,7 +455,17 @@ struct EsmaGridCell: View {
         }
         .pressable(reduceMotion)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel(Text("\(entry.number). \(entry.name.transliteration), \(entry.name.localizedMeaning)"))
+        .accessibilityLabel(Text(
+            "\(L10n.esmaOrdinal(entry.number)). \(entry.name.transliteration), \(entry.name.localizedMeaning)"
+        ))
+        // The favourite star is a bare glyph inside the tile; `.combine` would
+        // drop it silently.
+        .accessibilityValue(Text(library.isFavorite(entry.name) ? L10n.esmaFavoritedValue : ""))
+        .accessibilityAction(named: Text(
+            library.isFavorite(entry.name) ? L10n.esmaRemoveFavorite : L10n.esmaAddFavorite
+        )) {
+            _ = library.toggleFavorite(entry.name)
+        }
     }
 }
 
@@ -470,7 +497,10 @@ struct EsmaStarButton: View {
         } label: {
             Image(systemName: isFavorite ? "star.fill" : "star")
                 .font(.system(size: size, weight: .semibold))
-                .foregroundStyle(isFavorite ? MihrabColor.brass : MihrabColor.textTertiary)
+                .dynamicTypeSize(...DynamicTypeSize.accessibility2)
+                // An unstarred star at textTertiary is 2.9:1 — below even the
+                // 3:1 floor for a control glyph.
+                .foregroundStyle(isFavorite ? MihrabColor.brass : MihrabColor.textSecondary)
                 .symbolEffect(.bounce, value: isFavorite)
                 .scaleEffect(pop ? 1.35 : 1)
                 .frame(width: MihrabSpace.hit, height: MihrabSpace.hit)

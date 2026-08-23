@@ -120,7 +120,9 @@ struct DhikrLibrarySheet: View {
                                 .fill(MihrabColor.brass.opacity(0.16))
                                 .frame(width: 42, height: 42)
                             Image(systemName: "list.bullet.rectangle.portrait.fill")
-                                .font(.system(size: 16, weight: .semibold))
+                                // Inside a fixed 42pt disc.
+                                .font(.callout.weight(.semibold))
+                                .dynamicTypeSize(...DynamicTypeSize.accessibility1)
                                 .foregroundStyle(MihrabColor.brass)
                         }
                         VStack(alignment: .leading, spacing: 3) {
@@ -134,7 +136,7 @@ struct DhikrLibrarySheet: View {
                         Spacer(minLength: 6)
                         Text(L10n.dhkRoutineTotal(routine.totalCount))
                             .font(.caption2.monospacedDigit())
-                            .foregroundStyle(MihrabColor.textTertiary)
+                            .foregroundStyle(MihrabColor.textSecondary)
                     }
                     .padding(14)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -287,10 +289,10 @@ struct DhikrComposerSheet: View {
                                     Button {
                                         target = value
                                     } label: {
-                                        Text("\(value)")
+                                        Text(value.formatted(.number.grouping(.never)))
                                             .font(.caption.weight(.semibold).monospacedDigit())
                                             .padding(.horizontal, 14)
-                                            .frame(height: 34)
+                                            .frame(minHeight: 34)
                                             .foregroundStyle(target == value ? Color.white : MihrabColor.textSecondary)
                                             .background {
                                                 Capsule().fill(

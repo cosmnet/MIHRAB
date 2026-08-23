@@ -1,15 +1,19 @@
 import StoreKit
 import SwiftUI
 import UIKit
-import UserNotifications
 
-/// Settings, rebuilt as a searchable, grouped Form.
+/// Settings, as seven doors rather than one long scroll.
 ///
-/// Two sections are owned by other surfaces and embedded whole:
-/// `SubscriptionSettingsSection` (Mihrab Plus) sits at the very top, because
-/// account state is what people come here to check, and
-/// `AppearanceSettingsSection` right below it, because looks are what they come
-/// here to change.
+/// Fifteen `Section`s had accumulated in a single `Form` — most of them owned by
+/// other surfaces and embedded whole — and the screen had stopped being
+/// scannable. The sections themselves are untouched; they now live behind seven
+/// `NavigationLink`s grouped by what a person is actually trying to change.
+/// `SubscriptionSettingsSection` stays at the top, above the doors, because
+/// account state is what people come here to *check* rather than change.
+///
+/// Searching flattens all of it: every group is a search candidate, so nothing
+/// can hide behind a link. Previously eight sections were rendered only under
+/// `!isSearching` and so vanished the moment you typed their own name.
 struct SettingsView: View {
     @Environment(AppSettings.self) private var settings
     @Environment(LocationManager.self) private var locationManager
@@ -20,7 +24,82 @@ struct SettingsView: View {
 
     @State private var store = DhikrStore.shared
     @State private var query = ""
-    @State private var notificationsAuthorized = true
+
+    /// One door in the root list. `keywords` is what `.searchable` matches on,
+    /// and it must name everything the group contains — that is the contract
+    /// that keeps a section findable once it is a link away.
+    private enum SettingsGroup: String, CaseIterable, Identifiable {
+        case prayer, reminders, location, worship, appearance, account, app
+
+        var id: String { rawValue }
+
+        var title: String {
+            switch self {
+            case .prayer: L10n.setGroupPrayer
+            case .reminders: L10n.setGroupReminders
+            case .location: L10n.setGroupLocation
+            case .worship: L10n.setGroupWorship
+            case .appearance: L10n.setGroupAppearance
+            case .account: L10n.setGroupAccount
+            case .app: L10n.setGroupApp
+            }
+        }
+
+        var subtitle: String {
+            switch self {
+            case .prayer: L10n.setGroupPrayerSub
+            case .reminders: L10n.setGroupRemindersSub
+            case .location: L10n.setGroupLocationSub
+            case .worship: L10n.setGroupWorshipSub
+            case .appearance: L10n.setGroupAppearanceSub
+            case .account: L10n.setGroupAccountSub
+            case .app: L10n.setGroupAppSub
+            }
+        }
+
+        var symbol: String {
+            switch self {
+            case .prayer: "moon.stars.fill"
+            case .reminders: "bell.badge.fill"
+            case .location: "mappin.and.ellipse"
+            case .worship: "hands.and.sparkles.fill"
+            case .appearance: "paintpalette.fill"
+            case .account: "icloud.fill"
+            case .app: "gearshape.fill"
+            }
+        }
+
+        var keywords: [String] {
+            switch self {
+            case .prayer:
+                [title, subtitle, L10n.settingsPrayer, L10n.calculationMethod,
+                 L10n.madhab, L10n.madhabAsr, L10n.sourceSectionTitle]
+            case .reminders:
+                [title, subtitle, L10n.setSectionNotifications, L10n.setNotificationsSystem,
+                 L10n.adhSectionSound, L10n.adhSectionPerPrayer, L10n.adhSectionLibrary]
+            case .location:
+                [title, subtitle, L10n.settingsLocation, L10n.settingsCurrent,
+                 L10n.usePreciseLocation, L10n.citiesTitle]
+            case .worship:
+                [title, subtitle, L10n.quranTitle, L10n.hatimTitle,
+                 L10n.qadaTitle, L10n.zakatTitle, L10n.zakatSectionTitle,
+                 L10n.calendarTitle, L10n.dhkPrefs, L10n.tabDhikr, L10n.dhkPrefGoal,
+                 L10n.dhkPrefSound, L10n.dhkPrefHaptics, L10n.dhkPrefFocusDim]
+            case .appearance:
+                [title, subtitle, L10n.apprBackdropSection, L10n.apprTextureSection,
+                 L10n.apprColourSection, L10n.setSectionLanguage, L10n.setLanguageCurrent,
+                 L10n.setLanguageName]
+            case .account:
+                [title, subtitle, L10n.syncSectionTitle, L10n.syncToggleTitle]
+            case .app:
+                [title, subtitle, L10n.setSectionGuide, L10n.setReplayTour,
+                 L10n.setReplayOnboarding, L10n.setSectionData, L10n.setDataOnDevice,
+                 L10n.setPrivacyPolicy, L10n.setSectionFeedback, L10n.setRateApp,
+                 L10n.setSendFeedback, L10n.settingsAbout, L10n.settingsVersion,
+                 L10n.setSectionCredits, L10n.setCreditsTitle]
+            }
+        }
+    }
 
     private var accent: Color {
         theme.isRamadanMode ? MihrabColor.ramadanGold : settings.accentTheme.color
@@ -53,48 +132,23 @@ struct SettingsView: View {
                 MihrabBackdrop(surface: .sheet, ramadanMode: theme.isRamadanMode)
 
                 Form {
-                    if !isSearching {
+                    if isSearching {
+                        let hits = SettingsGroup.allCases.filter { matches($0.keywords) }
+                        if hits.isEmpty {
+                            Section {
+                                Text(L10n.setNoResults)
+                                    .foregroundStyle(MihrabColor.textSecondary)
+                            }
+                            .listRowBackground(MihrabColor.moss.opacity(0.72))
+                        }
+                        ForEach(hits) { sections(for: $0) }
+                    } else {
                         SubscriptionSettingsSection()
-                        AppearanceSettingsSection()
-                    }
 
-                    if matches([L10n.settingsPrayer, L10n.calculationMethod, L10n.madhab, L10n.madhabAsr]) {
-                        prayerSection
-                    }
-                    if !isSearching {
-                        // Owned by the prayer-engine surface: calculation source
-                        // (Diyanet / Fazilet / Türkiye Takvimi) and per-prayer offsets.
-                        PrayerSourceSettingsSection()
-                        NotificationSettingsSection()
-                        AdhanSettingsSection()
-                    }
-                    if matches([L10n.settingsLocation, L10n.settingsCurrent, L10n.usePreciseLocation]) {
-                        locationSection
-                    }
-                    if !isSearching {
-                        CitiesSettingsSection()
-                        SyncSettingsSection()
-                        QadaSettingsSection()
-                        ZakatSettingsSection()
-                        CalendarSettingsSection()
-                    }
-                    if matches([L10n.dhkPrefs, L10n.tabDhikr, L10n.dhkPrefGoal, L10n.dhkPrefSound, L10n.dhkPrefHaptics]) {
-                        dhikrSection
-                    }
-                    if matches([L10n.setSectionLanguage, L10n.setLanguageCurrent, L10n.setLanguageName]) {
-                        languageSection
-                    }
-                    if matches([L10n.setSectionGuide, L10n.setReplayTour, L10n.setReplayOnboarding]) {
-                        guideSection
-                    }
-                    if matches([L10n.setSectionData, L10n.setDataOnDevice, L10n.setPrivacyPolicy]) {
-                        dataSection
-                    }
-                    if matches([L10n.setSectionFeedback, L10n.setRateApp, L10n.setSendFeedback]) {
-                        feedbackSection
-                    }
-                    if matches([L10n.settingsAbout, L10n.settingsVersion, L10n.setSectionCredits, L10n.setCreditsTitle]) {
-                        aboutSection
+                        Section {
+                            ForEach(SettingsGroup.allCases) { groupRow($0) }
+                        }
+                        .listRowBackground(MihrabColor.moss.opacity(0.72))
                     }
                 }
                 .scrollContentBackground(.hidden)
@@ -110,9 +164,74 @@ struct SettingsView: View {
                         .foregroundStyle(MihrabColor.textPrimary)
                 }
             }
-            .task { await refreshNotificationStatus() }
         }
         .presentationBackground(.ultraThinMaterial)
+    }
+
+    // MARK: - Groups
+
+    private func groupRow(_ group: SettingsGroup) -> some View {
+        NavigationLink {
+            SettingsGroupPage(title: group.title) {
+                sections(for: group)
+            }
+        } label: {
+            HStack(spacing: 14) {
+                Image(systemName: group.symbol)
+                    .font(.body)
+                    .foregroundStyle(accent)
+                    .frame(width: 28)
+                    .accessibilityHidden(true)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(group.title)
+                    Text(group.subtitle)
+                        .font(.caption)
+                        // textSecondary, not textTertiary: tertiary sits at
+                        // 2.9:1 on the moss row background, under 4.5:1.
+                        .foregroundStyle(MihrabColor.textSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+            .padding(.vertical, 2)
+        }
+        .accessibilityLabel(Text(group.title))
+        .accessibilityHint(Text(group.subtitle))
+    }
+
+    /// The real content of each group. Used twice — inside the group's page and,
+    /// flattened, in search results — so a section can never be reachable from
+    /// only one of the two.
+    @ViewBuilder
+    private func sections(for group: SettingsGroup) -> some View {
+        switch group {
+        case .prayer:
+            prayerSection
+            // Owned by the prayer-engine surface: calculation source
+            // (Diyanet / Fazilet / Türkiye Takvimi) and per-prayer offsets.
+            PrayerSourceSettingsSection()
+        case .reminders:
+            NotificationSettingsSection()
+            AdhanSettingsSection()
+        case .location:
+            locationSection
+            CitiesSettingsSection()
+        case .worship:
+            QuranSettingsSection()
+            QadaSettingsSection()
+            ZakatSettingsSection()
+            CalendarSettingsSection()
+            dhikrSection
+        case .appearance:
+            AppearanceSettingsSection()
+            languageSection
+        case .account:
+            SyncSettingsSection()
+        case .app:
+            guideSection
+            dataSection
+            feedbackSection
+            aboutSection
+        }
     }
 
     // MARK: - Prayer
@@ -134,53 +253,6 @@ struct SettingsView: View {
             )) {
                 ForEach(Madhab.allCases) { Text($0.localizedName).tag($0) }
             }
-        }
-        .listRowBackground(MihrabColor.moss.opacity(0.72))
-    }
-
-    // MARK: - Notifications
-
-    private var notificationSection: some View {
-        Section {
-            if !notificationsAuthorized {
-                Button(L10n.setNotificationsAllow) {
-                    Task {
-                        _ = await NotificationEngine.shared.requestAuthorization()
-                        await refreshNotificationStatus()
-                        await NotificationEngine.shared.rescheduleAll()
-                    }
-                }
-            }
-
-            ForEach(Prayer.allCases.filter(\.isNotifiable)) { prayer in
-                Toggle(prayer.localizedName, isOn: Binding(
-                    get: { settings.isNotificationEnabled(for: prayer) },
-                    set: { _ in
-                        settings.toggleNotification(for: prayer)
-                        HapticsEngine.shared.light()
-                        Task { await NotificationEngine.shared.rescheduleAll() }
-                    }
-                ))
-            }
-
-            Button {
-                if let url = URL(string: UIApplication.openSettingsURLString) {
-                    openURL(url)
-                }
-            } label: {
-                HStack {
-                    Text(L10n.setNotificationsSystem)
-                    Spacer()
-                    Image(systemName: "arrow.up.forward.app")
-                        .font(.caption)
-                        .foregroundStyle(MihrabColor.textTertiary)
-                }
-            }
-        } header: {
-            Text(L10n.setSectionNotifications)
-        } footer: {
-            Text(L10n.setNotificationsFooter + "\n" + L10n.setNotificationsSystemHint)
-                .font(.caption2)
         }
         .listRowBackground(MihrabColor.moss.opacity(0.72))
     }
@@ -219,7 +291,7 @@ struct SettingsView: View {
     // MARK: - Dhikr
 
     private var dhikrSection: some View {
-        Section(L10n.dhkPrefs) {
+        Section {
             Stepper(value: Binding(
                 get: { settings.dailyDhikrGoal },
                 set: { settings.dailyDhikrGoal = $0 }
@@ -227,7 +299,7 @@ struct SettingsView: View {
                 HStack {
                     Text(L10n.dhkPrefGoal)
                     Spacer()
-                    Text("\(settings.dailyDhikrGoal)")
+                    Text(settings.dailyDhikrGoal.formatted(.number.grouping(.never)))
                         .monospacedDigit()
                         .foregroundStyle(MihrabColor.textSecondary)
                 }
@@ -249,6 +321,14 @@ struct SettingsView: View {
                 get: { store.opensInStrandMode },
                 set: { store.opensInStrandMode = $0 }
             ))
+            Toggle(L10n.dhkPrefFocusDim, isOn: Binding(
+                get: { store.dimsInFocusMode },
+                set: { store.dimsInFocusMode = $0 }
+            ))
+        } header: {
+            Text(L10n.dhkPrefs)
+        } footer: {
+            Text(L10n.dhkPrefFocusDimFooter).font(.caption2)
         }
         .listRowBackground(MihrabColor.moss.opacity(0.72))
     }
@@ -273,7 +353,7 @@ struct SettingsView: View {
                     Spacer()
                     Image(systemName: "arrow.up.forward.app")
                         .font(.caption)
-                        .foregroundStyle(MihrabColor.textTertiary)
+                        .foregroundStyle(MihrabColor.textSecondary)
                 }
             }
         } header: {
@@ -328,7 +408,7 @@ struct SettingsView: View {
                     Spacer()
                     Image(systemName: "arrow.up.forward.app")
                         .font(.caption)
-                        .foregroundStyle(MihrabColor.textTertiary)
+                        .foregroundStyle(MihrabColor.textSecondary)
                 }
             }
         } header: {
@@ -384,7 +464,7 @@ struct SettingsView: View {
             VStack(alignment: .leading, spacing: 6) {
                 Text(L10n.settingsAboutBody)
                     .font(.caption)
-                    .foregroundStyle(MihrabColor.textTertiary)
+                    .foregroundStyle(MihrabColor.textSecondary)
                 Text(L10n.setMadeWith)
                     .font(.caption2)
                     .foregroundStyle(MihrabColor.brass)
@@ -395,11 +475,6 @@ struct SettingsView: View {
         .listRowBackground(MihrabColor.moss.opacity(0.72))
     }
 
-    private func refreshNotificationStatus() async {
-        let settings = await UNUserNotificationCenter.current().notificationSettings()
-        notificationsAuthorized = settings.authorizationStatus == .authorized
-            || settings.authorizationStatus == .provisional
-    }
 }
 
 // MARK: - Credits
@@ -444,7 +519,7 @@ struct SettingsCreditsView: View {
 
                     Text(L10n.setCreditsDisclaimer)
                         .font(.caption)
-                        .foregroundStyle(MihrabColor.textTertiary)
+                        .foregroundStyle(MihrabColor.textSecondary)
                         .padding(.horizontal, 4)
                         .padding(.top, 4)
                 }
@@ -461,9 +536,10 @@ struct SettingsCreditsView: View {
     private func creditCard(index: Int, symbol: String, title: String, body: String) -> some View {
         HStack(alignment: .top, spacing: 14) {
             Image(systemName: symbol)
-                .font(.system(size: 17, weight: .semibold))
+                .font(.headline)
                 .foregroundStyle(MihrabColor.brass)
                 .frame(width: 26)
+                .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 6) {
                 Text(title)
                     .font(.subheadline.weight(.semibold))
@@ -478,5 +554,34 @@ struct SettingsCreditsView: View {
         .padding(18)
         .mihrabCard()
         .cardEntrance(index: index, appeared: appeared, reduceMotion: reduceMotion)
+    }
+}
+
+// MARK: - Group page
+
+/// A settings group opened from the root list. Carries the same backdrop and
+/// `Form` chrome the root has, so a link never feels like leaving the screen.
+private struct SettingsGroupPage<Content: View>: View {
+    let title: String
+    @ViewBuilder let content: Content
+
+    @Environment(Theme.self) private var theme
+    @Environment(AppSettings.self) private var settings
+
+    private var accent: Color {
+        theme.isRamadanMode ? MihrabColor.ramadanGold : settings.accentTheme.color
+    }
+
+    var body: some View {
+        ZStack {
+            MihrabBackdrop(surface: .sheet, ramadanMode: theme.isRamadanMode)
+
+            Form { content }
+                .scrollContentBackground(.hidden)
+                .scrollEdgeEffectStyle(.soft, for: .top)
+                .tint(accent)
+        }
+        .navigationTitle(title)
+        .navigationBarTitleDisplayMode(.inline)
     }
 }

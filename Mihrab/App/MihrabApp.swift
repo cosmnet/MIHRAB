@@ -12,6 +12,7 @@ struct MihrabApp: App {
 
     /// Kept alive for the process lifetime — see `KeyValueSync.startObserving`.
     private nonisolated(unsafe) static var cloudObserver: NSObjectProtocol?
+    private nonisolated(unsafe) static var quranObserver: NSObjectProtocol?
 
     init() {
         // Background prayer refresh must register its handlers before the app
@@ -23,6 +24,9 @@ struct MihrabApp: App {
         Self.cloudObserver = KeyValueSync.startObserving {
             WidgetCenter.shared.reloadAllTimelines()
         }
+        Self.quranObserver = QuranSync.startObserving {}
+        // The watch computes its own times; this pushes the settings it needs.
+        PhoneWatchBridge.shared.activate()
     }
 
     var body: some Scene {

@@ -55,14 +55,16 @@ struct DhikrAchievementSheet: View {
                     )
                     .frame(width: 72, height: 72)
                 Image(systemName: "seal.fill")
-                    .font(.system(size: 28, weight: .medium))
+                    // Sits inside a fixed 72pt rosette — semantic style, capped.
+                    .font(.title.weight(.medium))
+                    .dynamicTypeSize(...DynamicTypeSize.accessibility1)
                     .foregroundStyle(MihrabColor.brass)
                     .symbolRenderingMode(.hierarchical)
             }
             Text(L10n.achievementsLexicon)
                 .ornamentalCaps()
             Text(L10n.achievementsInscribed(inscribedCount, items.count))
-                .font(MihrabFont.quote(17))
+                .mihrabQuote(17)
                 .foregroundStyle(MihrabColor.textSecondary)
         }
         .frame(maxWidth: .infinity)
@@ -102,12 +104,16 @@ private struct AchievementLemmaRow: View {
             VStack(alignment: .leading, spacing: 4) {
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
                     Text(item.title)
-                        .font(MihrabFont.quote(20))
-                        .foregroundStyle(item.unlocked ? MihrabColor.textPrimary : MihrabColor.textTertiary)
+                        .mihrabQuote(20)
+                        // A locked title still has to be readable: textTertiary
+                        // is 2.9:1 on moss, so dim textSecondary instead.
+                        .foregroundStyle(item.unlocked
+                                         ? MihrabColor.textPrimary
+                                         : MihrabColor.textSecondary.opacity(0.75))
                     Spacer(minLength: 8)
                     if item.unlocked {
                         Text(L10n.achievementInscribedMark)
-                            .font(.system(size: 10, weight: .medium))
+                            .font(.caption2.weight(.medium))
                             .tracking(1.2)
                             .textCase(.uppercase)
                             .foregroundStyle(MihrabColor.brass)
@@ -116,7 +122,7 @@ private struct AchievementLemmaRow: View {
 
                 Text(item.unlocked ? item.detail : item.lemma)
                     .font(.caption)
-                    .foregroundStyle(item.unlocked ? MihrabColor.textSecondary : MihrabColor.textTertiary)
+                    .foregroundStyle(item.unlocked ? MihrabColor.textSecondary : MihrabColor.textSecondary)
                     .fixedSize(horizontal: false, vertical: true)
 
                 if !item.unlocked {
@@ -125,7 +131,7 @@ private struct AchievementLemmaRow: View {
                         .padding(.top, 4)
                     Text(L10n.achievementProgress(item.current, item.goal))
                         .font(.caption2.monospacedDigit())
-                        .foregroundStyle(MihrabColor.textTertiary)
+                        .foregroundStyle(MihrabColor.textSecondary)
                 }
             }
         }
@@ -198,12 +204,12 @@ struct DhikrAchievementToast: View {
             AchievementSeal(item: item, size: 36)
             VStack(alignment: .leading, spacing: 2) {
                 Text(L10n.achievementUnlocked)
-                    .font(.system(size: 10, weight: .medium))
+                    .font(.caption2.weight(.medium))
                     .tracking(1.2)
                     .textCase(.uppercase)
                     .foregroundStyle(MihrabColor.brass)
                 Text(item.title)
-                    .font(MihrabFont.quote(17))
+                    .mihrabQuote(17)
                     .foregroundStyle(MihrabColor.textPrimary)
             }
             Spacer(minLength: 0)

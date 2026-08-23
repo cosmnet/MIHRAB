@@ -30,19 +30,19 @@ struct HadithDetailSheet: View {
                             .environment(\.layoutDirection, .rightToLeft)
 
                         Text(hadith.localizedTranslation)
-                            .font(MihrabFont.quoteItalic(20))
+                            .mihrabQuote(20, italic: true)
                             .foregroundStyle(MihrabColor.textPrimary)
                             .lineSpacing(6)
                             .frame(maxWidth: .infinity, alignment: .leading)
 
                         if Locale.mihrabIsTurkish {
                             Text(hadith.en)
-                                .font(MihrabFont.quote(17))
+                                .mihrabQuote(17, relativeTo: .callout)
                                 .foregroundStyle(MihrabColor.textSecondary)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                         } else {
                             Text(hadith.tr)
-                                .font(MihrabFont.quote(17))
+                                .mihrabQuote(17, relativeTo: .callout)
                                 .foregroundStyle(MihrabColor.textSecondary)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                         }
@@ -55,7 +55,7 @@ struct HadithDetailSheet: View {
                                     .font(.subheadline.weight(.semibold))
                                 Text(hadith.source)
                                     .font(.caption)
-                                    .foregroundStyle(MihrabColor.textTertiary)
+                                    .foregroundStyle(MihrabColor.textSecondary)
                             }
                             Spacer()
                             Text(hadith.grade)
@@ -80,12 +80,17 @@ struct HadithDetailSheet: View {
                         Image(systemName: isFavorite ? "bookmark.fill" : "bookmark")
                             .foregroundStyle(MihrabColor.brass)
                     }
+                    .accessibilityLabel(Text(
+                        isFavorite ? L10n.esmaRemoveFavorite : L10n.esmaAddFavorite
+                    ))
+                    .accessibilityAddTraits(isFavorite ? [.isSelected, .isButton] : .isButton)
                 }
                 ToolbarItemGroup(placement: .topBarTrailing) {
                     ShareLink(item: ShareImage(image: renderedShareImage()),
                               preview: SharePreview(L10n.shareHadith, image: Image(uiImage: renderedShareImage()))) {
                         Image(systemName: "square.and.arrow.up")
                     }
+                    .accessibilityLabel(Text(L10n.shareHadith))
                     Button(L10n.done) { dismiss() }
                 }
             }
@@ -115,6 +120,9 @@ struct HadithDetailSheet: View {
 
     /// 1080×1350 share card rendered off-screen (§9 #13).
     @MainActor
+    /// Rendered off-screen by `ImageRenderer`. Fixed point sizes and the dimmer
+    /// tertiary tone are correct here: there is no Dynamic Type inside a
+    /// renderer, and the card composes at one exact pixel size.
     private func renderedShareImage() -> UIImage {
         let renderer = ImageRenderer(content:
             ZStack {

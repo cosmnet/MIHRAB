@@ -133,6 +133,7 @@ final class DhikrStore {
         static let haptics = "mihrab.dhikr.haptics"
         static let keepAwake = "mihrab.dhikr.keepAwake"
         static let strandDefault = "mihrab.dhikr.strandDefault"
+        static let focusDim = "mihrab.dhikr.focusDim"
         static let lastPhrase = "mihrab.dhikr.lastPhrase"
     }
 
@@ -157,6 +158,11 @@ final class DhikrStore {
         didSet { defaults.set(opensInStrandMode, forKey: Key.strandDefault) }
     }
 
+    /// Whether focus mode also takes the display brightness down.
+    var dimsInFocusMode: Bool {
+        didSet { defaults.set(dimsInFocusMode, forKey: Key.focusDim) }
+    }
+
     /// Id of the phrase the counter was last left on, so returning feels continuous.
     var lastPhraseID: String {
         didSet { defaults.set(lastPhraseID, forKey: Key.lastPhrase) }
@@ -168,6 +174,7 @@ final class DhikrStore {
         hapticsEnabled = defaults.object(forKey: Key.haptics) as? Bool ?? true
         keepAwakeWhileCounting = defaults.object(forKey: Key.keepAwake) as? Bool ?? true
         opensInStrandMode = defaults.object(forKey: Key.strandDefault) as? Bool ?? false
+        dimsInFocusMode = defaults.object(forKey: Key.focusDim) as? Bool ?? true
         lastPhraseID = defaults.string(forKey: Key.lastPhrase) ?? DhikrCatalog.subhanallah.id
 
         if let data = defaults.data(forKey: Key.custom),

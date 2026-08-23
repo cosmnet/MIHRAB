@@ -2,12 +2,18 @@ import CoreLocation
 import SwiftUI
 import UserNotifications
 
-/// Seven-step first run: welcome → name → location → method → notifications →
-/// feature tour → Mihrab Plus. Every step is skippable, every step is reversible,
-/// and Reduce Motion collapses the spring page slide into a plain cross-fade.
+/// Eight-step first run: welcome → name → location → method → **asr** →
+/// notifications → feature tour → Mihrab Plus. Every step is skippable, every
+/// step is reversible, and Reduce Motion collapses the spring page slide into a
+/// plain cross-fade.
+///
+/// The `asr` step is the one deliberate addition (W2). See `AsrMadhabPreview`
+/// for why a madhab question earns its own screen: with "Diyanet" selected and
+/// the Turkish default madhab, the app's Asr does *not* match the Diyanet
+/// calendar, and the gap can reach ~58 minutes.
 struct OnboardingView: View {
     enum Step: Int, CaseIterable, Identifiable {
-        case welcome, name, location, method, notifications, tour, plus
+        case welcome, name, location, method, asr, notifications, tour, plus
         var id: Int { rawValue }
     }
 
@@ -22,6 +28,7 @@ struct OnboardingView: View {
     @State private var notificationsGranted: Bool?
     @State private var showCityPicker = false
     @State private var showPaywall = false
+    @State private var asrPreview: AsrMadhabPreview?
     @FocusState private var nameFocused: Bool
 
     private var stepCount: Int { Step.allCases.count }
@@ -97,6 +104,7 @@ struct OnboardingView: View {
             case .name: namePage.transition(pageTransition)
             case .location: locationPage.transition(pageTransition)
             case .method: methodPage.transition(pageTransition)
+            case .asr: asrPage.transition(pageTransition)
             case .notifications: notificationsPage.transition(pageTransition)
             case .tour: tourPage.transition(pageTransition)
             case .plus: plusPage.transition(pageTransition)
@@ -162,6 +170,7 @@ struct OnboardingView: View {
         case .name: name.trimmingCharacters(in: .whitespaces).isEmpty ? L10n.obNameSkip : L10n.obNext
         case .location: locationAuthorized ? L10n.obNext : L10n.obAllowLocationNow
         case .method: L10n.obNext
+        case .asr: L10n.obNext
         case .notifications: notificationsGranted == nil ? L10n.enableNotifications : L10n.obNext
         case .tour: L10n.obNext
         case .plus: L10n.obPlusSeeOptions
@@ -191,6 +200,8 @@ struct OnboardingView: View {
             }
             advance()
         case .method:
+            advance()
+        case .asr:
             advance()
         case .notifications:
             if notificationsGranted == nil {
@@ -387,8 +398,7 @@ struct OnboardingView: View {
     // MARK: - 4 · Method
 
     private var methodPage: some View {
-        @Bindable var settings = settings
-        return OnboardingScaffold {
+        OnboardingScaffold {
             VStack(spacing: 18) {
                 OnboardingHeadline(
                     systemImage: "sun.horizon.fill",
@@ -403,18 +413,14 @@ struct OnboardingView: View {
                     }
                 }
 
-                VStack(spacing: 8) {
-                    Picker(L10n.madhab, selection: $settings.madhab) {
-                        ForEach(Madhab.allCases) { Text($0.localizedName).tag($0) }
-                    }
-                    .pickerStyle(.segmented)
-                    .colorScheme(.dark)
-
-                    Text(L10n.obMadhabHint)
-                        .font(.caption)
-                        .foregroundStyle(MihrabColor.textTertiary)
-                }
-                .padding(.top, 4)
+                // The madhab used to be a bare segmented control here. It now
+                // has its own step, because the choice changes Asr by up to
+                // ~an hour and deserves the two real times, not a label.
+                Text(L10n.obMadhabHint)
+                    .font(.caption)
+                    .foregroundStyle(MihrabColor.textTertiary)
+                    .multilineTextAlignment(.center)
+                    .padding(.top, 4)
             }
         }
     }
@@ -466,7 +472,152 @@ struct OnboardingView: View {
         L10n.isTurkish || Locale.autoupdatingCurrent.region?.identifier == "TR" ? .diyanet : .mwl
     }
 
-    // MARK: - 5 · Notifications
+    // MARK: - 5 · Asr rule (madhab)
+
+    /// The product decision this screen encodes: never pick a madhab silently.
+    ///
+    /// Diyanet publishes Asr with the majority (Shafi) rule while the app
+    /// hands a Turkish device the Hanafi default, so "Diyanet" + untouched
+    /// settings does *not* reproduce the Diyanet calendar — İstanbul, 12 April
+    /// 2026: 16:51 vs 17:49. Rather than explain shadow ratios, we compute
+    /// both times for today, here, and let the user point at one.
+    private var asrPage: some View {
+        OnboardingScaffold {
+            VStack(spacing: 16) {
+                OnboardingHeadline(
+                    systemImage: "sun.horizon.fill",
+                    tint: MihrabColor.brass,
+                    title: L10n.obAsrTitle,
+                    message: L10n.obAsrBody
+                )
+
+                VStack(spacing: 10) {
+                    asrOption(
+                        .shafi,
+                        title: settings.calculationMethod == .diyanet
+                            ? L10n.obAsrOptionDiyanetTitle
+                            : L10n.obAsrOptionMajorityTitle,
+                        detail: settings.calculationMethod == .diyanet
+                            ? L10n.obAsrOptionMajorityDetail
+                            : L10n.obAsrOptionMajorityDetailNonDiyanet
+                    )
+                    asrOption(
+                        .hanafi,
+                        title: L10n.obAsrOptionHanafiTitle,
+                        detail: L10n.obAsrOptionHanafiDetail
+                    )
+                }
+
+                VStack(spacing: 6) {
+                    if let preview = asrPreview, preview.hasTimes {
+                        if let minutes = preview.differenceMinutes {
+                            Text(minutes == 0 ? L10n.obAsrSameToday : L10n.obAsrDifference(minutes))
+                                .font(.footnote.weight(.semibold))
+                                .foregroundStyle(MihrabColor.brass)
+                                .multilineTextAlignment(.center)
+                        }
+                        if preview.isReferenceLocation, let city = preview.referenceName {
+                            Text(L10n.obAsrReferenceNote(city))
+                                .font(.caption)
+                                .foregroundStyle(MihrabColor.textTertiary)
+                                .multilineTextAlignment(.center)
+                        }
+                    } else {
+                        Text(L10n.obAsrUnavailable)
+                            .font(.caption)
+                            .foregroundStyle(MihrabColor.textTertiary)
+                            .multilineTextAlignment(.center)
+                    }
+
+                    Text(L10n.obAsrChangeLater)
+                        .font(.caption)
+                        .foregroundStyle(MihrabColor.textTertiary)
+                        .multilineTextAlignment(.center)
+                }
+                .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .task(id: asrPreviewKey) {
+            asrPreview = AsrMadhabPreview.make(
+                coordinate: locationManager.effectiveCoordinate,
+                method: settings.calculationMethod,
+                source: PrayerSourcePreferences.shared.source,
+                offsets: PrayerSourcePreferences.shared.offsets
+            )
+        }
+    }
+
+    /// Recompute only when something that can actually move Asr changes.
+    private var asrPreviewKey: String {
+        let coordinate = locationManager.effectiveCoordinate
+        let latitude = coordinate.map { String(format: "%.2f", $0.latitude) } ?? "-"
+        let longitude = coordinate.map { String(format: "%.2f", $0.longitude) } ?? "-"
+        return "\(settings.calculationMethod.rawValue)|\(PrayerSourcePreferences.shared.source.rawValue)|\(latitude),\(longitude)"
+    }
+
+    private func asrOption(_ madhab: Madhab, title: String, detail: String) -> some View {
+        let selected = settings.madhab == madhab
+        let time = asrPreview?.time(for: madhab)
+        return Button {
+            guard settings.madhab != madhab else { return }
+            HapticsEngine.shared.light()
+            withAnimation(reduceMotion ? nil : MihrabMotion.snappyAnimation) {
+                settings.madhab = madhab
+            }
+        } label: {
+            HStack(alignment: .top, spacing: 12) {
+                Image(systemName: selected ? "checkmark.circle.fill" : "circle")
+                    .font(.body)
+                    .foregroundStyle(selected ? MihrabColor.mint : MihrabColor.textTertiary)
+                    .symbolEffect(.bounce, value: selected)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(title)
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(MihrabColor.textPrimary)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Text(detail)
+                        .font(.caption)
+                        .foregroundStyle(MihrabColor.textSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                Spacer(minLength: 8)
+
+                // Derived, never invented: `PrayerEngine` with the user's own
+                // method, source and offsets — only the madhab differs.
+                VStack(alignment: .trailing, spacing: 2) {
+                    if let time {
+                        Text(time, format: .dateTime.hour().minute())
+                            .font(.title3.weight(.bold))
+                            .monospacedDigit()
+                            .foregroundStyle(selected ? MihrabColor.mint : MihrabColor.textPrimary)
+                            .lineLimit(1)
+                        Text(L10n.obAsrTodayLabel)
+                            .font(.caption2)
+                            .foregroundStyle(MihrabColor.textTertiary)
+                            .lineLimit(1)
+                    } else {
+                        Text("—")
+                            .font(.title3.weight(.bold))
+                            .foregroundStyle(MihrabColor.textTertiary)
+                    }
+                }
+            }
+            .padding(16)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .mihrabSolidCard(
+                cornerRadius: MihrabSpace.cardRadius,
+                fill: selected ? MihrabColor.emerald.opacity(0.34) : MihrabColor.moss,
+                stroke: selected ? MihrabColor.mint : MihrabColor.mint.opacity(0.2)
+            )
+        }
+        .buttonStyle(.plain)
+        .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(selected ? [.isSelected] : [])
+    }
+
+    // MARK: - 6 · Notifications
 
     private var notificationsPage: some View {
         OnboardingScaffold {
@@ -513,7 +664,7 @@ struct OnboardingView: View {
         }
     }
 
-    // MARK: - 6 · Feature tour
+    // MARK: - 7 · Feature tour
 
     private var tourPage: some View {
         OnboardingScaffold {
@@ -542,11 +693,19 @@ struct OnboardingView: View {
                     title: L10n.obTourDhikrTitle,
                     message: L10n.obTourDhikrBody
                 )
+                // Wave 1 shipped four more surfaces. They get one named line
+                // rather than a fourth card — the tour stays three beats long.
+                OnboardingFeatureCard(
+                    systemImage: "square.stack.3d.up.fill",
+                    tint: MihrabColor.mint,
+                    title: L10n.obTourMoreTitle,
+                    message: L10n.obTourMoreBody
+                )
             }
         }
     }
 
-    // MARK: - 7 · Mihrab Plus
+    // MARK: - 8 · Mihrab Plus
 
     private var plusPage: some View {
         OnboardingScaffold {

@@ -8,6 +8,67 @@ extension L10n {
         string(en: "Search settings", tr: "Ayarlarda ara", ar: "ابحث في الإعدادات")
     }
 
+    // MARK: - Groups
+    //
+    // Settings grew to fifteen sections in one scroll. These are the seven
+    // doors that scroll is now behind; searching still flattens all of it.
+
+    static var setGroupPrayer: String {
+        string(en: "Prayer & times", tr: "Namaz ve vakitler", ar: "الصلاة والأوقات")
+    }
+
+    static var setGroupPrayerSub: String {
+        string(en: "Method, madhab, source, offsets", tr: "Yöntem, mezhep, kaynak, sapma", ar: "الطريقة والمذهب والمصدر والفروق")
+    }
+
+    static var setGroupReminders: String {
+        string(en: "Reminders & adhan", tr: "Hatırlatmalar ve ezan", ar: "التذكيرات والأذان")
+    }
+
+    static var setGroupRemindersSub: String {
+        string(en: "Notifications, sounds, quiet hours", tr: "Bildirimler, sesler, sessiz saatler", ar: "الإشعارات والأصوات وساعات الصمت")
+    }
+
+    static var setGroupLocation: String {
+        string(en: "Location & cities", tr: "Konum ve şehirler", ar: "الموقع والمدن")
+    }
+
+    static var setGroupLocationSub: String {
+        string(en: "Current place and saved cities", tr: "Bulunduğun yer ve kayıtlı şehirler", ar: "الموقع الحالي والمدن المحفوظة")
+    }
+
+    static var setGroupWorship: String {
+        string(en: "Worship tools", tr: "İbadet araçları", ar: "أدوات العبادة")
+    }
+
+    static var setGroupWorshipSub: String {
+        string(en: "Qur'an, make-up prayers, zakat, calendar", tr: "Kur'an, kaza, zekât, takvim", ar: "القرآن والقضاء والزكاة والتقويم")
+    }
+
+    static var setGroupAppearance: String {
+        string(en: "Appearance & language", tr: "Görünüm ve dil", ar: "المظهر واللغة")
+    }
+
+    static var setGroupAppearanceSub: String {
+        string(en: "Backdrop, colour, texture, language", tr: "Arka plan, renk, doku, dil", ar: "الخلفية واللون والملمس واللغة")
+    }
+
+    static var setGroupAccount: String {
+        string(en: "Account & sync", tr: "Hesap ve senkron", ar: "الحساب والمزامنة")
+    }
+
+    static var setGroupAccountSub: String {
+        string(en: "iCloud sync across your devices", tr: "Cihazların arasında iCloud senkronu", ar: "مزامنة iCloud بين أجهزتك")
+    }
+
+    static var setGroupApp: String {
+        string(en: "App", tr: "Uygulama", ar: "التطبيق")
+    }
+
+    static var setGroupAppSub: String {
+        string(en: "Guide, privacy, feedback, about", tr: "Rehber, gizlilik, geri bildirim, hakkında", ar: "الدليل والخصوصية والملاحظات وحول")
+    }
+
     static var setNoResults: String {
         string(en: "No settings match", tr: "Eşleşen ayar yok", ar: "لا توجد إعدادات مطابقة")
     }

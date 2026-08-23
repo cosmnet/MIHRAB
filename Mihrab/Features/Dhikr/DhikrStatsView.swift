@@ -194,12 +194,13 @@ struct DhikrStatsView: View {
                         .foregroundStyle(MihrabColor.textPrimary)
                     Text(L10n.achievementsInscribed(inscribedCount, DhikrAchievementID.allCases.count))
                         .font(.caption)
-                        .foregroundStyle(MihrabColor.textTertiary)
+                        // textTertiary is 2.9:1 on the card fill — under 4.5:1.
+                        .foregroundStyle(MihrabColor.textSecondary)
                 }
                 Spacer()
                 Image(systemName: "chevron.right")
                     .font(.caption.weight(.semibold))
-                    .foregroundStyle(MihrabColor.textTertiary)
+                    .foregroundStyle(MihrabColor.textSecondary)
             }
             .padding(18)
             .mihrabCard(interactive: true)
@@ -229,7 +230,7 @@ struct DhikrStatsView: View {
             .frame(height: 180)
             .chartYAxis {
                 AxisMarks { _ in
-                    AxisValueLabel().foregroundStyle(MihrabColor.textTertiary)
+                    AxisValueLabel().foregroundStyle(MihrabColor.textSecondary)
                 }
             }
             .chartXAxis {
@@ -256,9 +257,9 @@ struct DhikrStatsView: View {
                             .foregroundStyle(MihrabColor.textPrimary)
                             .lineLimit(1)
                         Spacer(minLength: 8)
-                        Text("\(row.total)")
+                        Text(row.total.formatted())
                             .font(.caption.monospacedDigit())
-                            .foregroundStyle(MihrabColor.textTertiary)
+                            .foregroundStyle(MihrabColor.textSecondary)
                     }
                     GeometryReader { geo in
                         ZStack(alignment: .leading) {
@@ -317,7 +318,7 @@ struct DhikrStatsView: View {
                 }
                 .frame(height: 160)
                 .chartYAxis {
-                    AxisMarks { _ in AxisValueLabel().foregroundStyle(MihrabColor.textTertiary) }
+                    AxisMarks { _ in AxisValueLabel().foregroundStyle(MihrabColor.textSecondary) }
                 }
                 .chartXAxis {
                     AxisMarks(values: .stride(by: .day, count: 7)) { _ in
@@ -392,15 +393,15 @@ private struct StatCard: View {
                     .minimumScaleFactor(0.8)
             }
             HStack(alignment: .firstTextBaseline, spacing: 4) {
-                Text("\(value)")
-                    .font(.system(size: 32, weight: .bold, design: .rounded).monospacedDigit())
+                Text(value.formatted())
+                    .mihrabCountdown(32, relativeTo: .title, ceiling: .accessibility3)
                     .foregroundStyle(accent)
                     .lineLimit(1)
                     .minimumScaleFactor(0.6)
                 if let suffix {
                     Text(suffix)
                         .font(.caption)
-                        .foregroundStyle(MihrabColor.textTertiary)
+                        .foregroundStyle(MihrabColor.textSecondary)
                 }
             }
         }

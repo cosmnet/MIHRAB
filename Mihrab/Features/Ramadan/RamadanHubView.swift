@@ -6,6 +6,7 @@ struct RamadanHubView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     @State private var khatam: KhatamProgress?
     @State private var fastingStore = FastingLogStore.shared
@@ -69,20 +70,21 @@ struct RamadanHubView: View {
 
                 if toIftar, let maghrib, let range = SafeCountdown.range(from: now, to: maghrib) {
                     Text(timerInterval: range, countsDown: true)
-                        .font(MihrabFont.countdown(56))
+                        .mihrabCountdown(56)
                         .foregroundStyle(MihrabColor.ramadanGold)
                 } else if let fajrTomorrow, let range = SafeCountdown.range(from: now, to: fajrTomorrow) {
                     Text(timerInterval: range, countsDown: true)
-                        .font(MihrabFont.countdown(56))
+                        .mihrabCountdown(56)
                         .foregroundStyle(MihrabColor.ramadanGold)
                 } else {
                     Text("–")
-                        .font(MihrabFont.countdown(56))
+                        .mihrabCountdown(56)
                         .foregroundStyle(MihrabColor.ramadanGold)
                 }
 
                 Text(microcopy[Calendar.current.component(.day, from: now) % microcopy.count])
-                    .font(MihrabFont.quoteItalic(15))
+                    .mihrabQuote(15, relativeTo: .subheadline, italic: true)
+                    .multilineTextAlignment(.center)
                     .foregroundStyle(MihrabColor.textSecondary)
             }
             .frame(maxWidth: .infinity)
@@ -95,11 +97,23 @@ struct RamadanHubView: View {
 
     // MARK: - Dual times
 
+    /// Two 30pt clocks cannot share a row at accessibility text sizes — they
+    /// stack instead of shrinking to illegibility. `ViewThatFits` cannot decide
+    /// this for us: both tiles are `maxWidth: .infinity`, so the row always
+    /// reports that it "fits".
+    @ViewBuilder
     private var dualTimes: some View {
-        HStack(spacing: 12) {
-            TimeTile(title: L10n.suhoorEndsCaps, time: repository.today?.time(for: .fajr))
-            TimeTile(title: L10n.iftarCaps, time: repository.today?.time(for: .maghrib))
+        if dynamicTypeSize.isAccessibilitySize {
+            VStack(spacing: 12) { timeTiles }
+        } else {
+            HStack(spacing: 12) { timeTiles }
         }
+    }
+
+    @ViewBuilder
+    private var timeTiles: some View {
+        TimeTile(title: L10n.suhoorEndsCaps, time: repository.today?.time(for: .fajr))
+        TimeTile(title: L10n.iftarCaps, time: repository.today?.time(for: .maghrib))
     }
 
     // MARK: - Fasting day counter with crescent fill
@@ -179,11 +193,15 @@ struct RamadanHubView: View {
             let nowFasted = fastingStore.toggle(date)
             if nowFasted { HapticsEngine.shared.success() } else { HapticsEngine.shared.light() }
         } label: {
-            Text("\(day)")
-                .font(.system(size: 11, weight: .semibold, design: .rounded).monospacedDigit())
+            Text(day.formatted(.number.grouping(.never)))
+                // A 30-cell grid: the type scales but stops before the cells
+                // start eating each other, and the cell grows with it.
+                .mihrabTime(11, relativeTo: .caption2, ceiling: .accessibility2)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
                 .foregroundStyle(isFasted ? MihrabColor.ramadanViolet : MihrabColor.textSecondary)
                 .frame(maxWidth: .infinity)
-                .frame(height: 28)
+                .frame(minHeight: 28)
                 .background {
                     RoundedRectangle(cornerRadius: 8, style: .continuous)
                         .fill(isFasted ? MihrabColor.ramadanGold : MihrabColor.moss)
@@ -319,15 +337,15 @@ private struct TimeTile: View {
                 .ornamentalCaps(MihrabColor.ramadanGold)
             if let time {
                 Text(time, format: .dateTime.hour().minute())
-                    .font(MihrabFont.timeDisplay(30))
+                    .mihrabTime(30)
                     .foregroundStyle(MihrabColor.textPrimary)
                     .monospacedDigit()
                     .lineLimit(1)
-                    .minimumScaleFactor(0.8)
+                    .minimumScaleFactor(0.6)
             } else {
                 Text("–")
-                    .font(MihrabFont.timeDisplay(30))
-                    .foregroundStyle(MihrabColor.textTertiary)
+                    .mihrabTime(30)
+                    .foregroundStyle(MihrabColor.textSecondary)
             }
         }
         .frame(maxWidth: .infinity)
@@ -345,11 +363,11 @@ private struct DuaRow: View {
             Text(title)
                 .font(.subheadline.weight(.semibold))
             Text(dua.arabic)
-                .font(MihrabFont.arabic(20))
+                .mihrabArabic(20)
                 .frame(maxWidth: .infinity, alignment: .trailing)
                 .environment(\.layoutDirection, .rightToLeft)
             Text(Locale.mihrabIsTurkish ? dua.tr : dua.en)
-                .font(MihrabFont.quoteItalic(15))
+                .mihrabQuote(15, relativeTo: .subheadline, italic: true)
                 .foregroundStyle(MihrabColor.textSecondary)
         }
     }

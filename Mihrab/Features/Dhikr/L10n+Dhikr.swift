@@ -30,6 +30,48 @@ extension L10n {
         string(en: "Hold to reset", tr: "Sıfırlamak için basılı tut", ar: "اضغط مطولاً للتصفير")
     }
 
+    static var dhkResetDone: String {
+        string(en: "Counter reset", tr: "Sayaç sıfırlandı", ar: "تم تصفير العدّاد")
+    }
+
+    // MARK: - Focus mode
+
+    static var dhkFocusEnter: String {
+        string(en: "Focus mode", tr: "Odak modu", ar: "وضع التركيز")
+    }
+
+    static var dhkFocusExit: String {
+        string(en: "Leave focus mode", tr: "Odak modundan çık", ar: "الخروج من وضع التركيز")
+    }
+
+    static var dhkFocusExitHint: String {
+        string(
+            en: "Tap the background or swipe down to leave",
+            tr: "Çıkmak için boşluğa dokun ya da aşağı kaydır",
+            ar: "انقر على الخلفية أو اسحب للأسفل للخروج"
+        )
+    }
+
+    static var dhkFocusEnterHint: String {
+        string(
+            en: "Hides everything but the dial",
+            tr: "Kadran dışındaki her şeyi gizler",
+            ar: "يخفي كل شيء ما عدا القرص"
+        )
+    }
+
+    static var dhkPrefFocusDim: String {
+        string(en: "Dim screen in focus mode", tr: "Odak modunda ekranı karart", ar: "خفض سطوع الشاشة في وضع التركيز")
+    }
+
+    static var dhkPrefFocusDimFooter: String {
+        string(
+            en: "Brightness is restored when you leave focus mode or the app.",
+            tr: "Odak modundan ya da uygulamadan çıkınca parlaklık geri yüklenir.",
+            ar: "تتم استعادة السطوع عند مغادرة وضع التركيز أو التطبيق."
+        )
+    }
+
     // MARK: - Library
 
     static var dhkLibrary: String {

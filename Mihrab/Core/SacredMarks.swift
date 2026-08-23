@@ -21,9 +21,11 @@ enum MihrabSpace {
 }
 
 extension View {
-    /// Brass ornamental caps — 11pt, tracking 1.5.
+    /// Brass ornamental caps — tracking 1.5. `.caption2` is 11pt at the default
+    /// text size, so this is the same mark it always was, except it now grows
+    /// with the reader.
     func ornamentalCaps(_ color: Color = MihrabColor.brass) -> some View {
-        font(.system(size: 11, weight: .medium))
+        font(.caption2.weight(.medium))
             .tracking(1.5)
             .textCase(.uppercase)
             .foregroundStyle(color)

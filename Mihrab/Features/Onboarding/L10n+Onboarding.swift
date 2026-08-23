@@ -148,11 +148,13 @@ extension L10n {
 
     static var obRecommended: String { string(en: "Recommended", tr: "Önerilen", ar: "موصى به") }
 
+    /// Now a hand-off to the dedicated Asr step rather than a caption under a
+    /// segmented madhab picker.
     static var obMadhabHint: String {
         string(
-            en: "The madhab only changes the Asr time.",
-            tr: "Mezhep yalnızca ikindi vaktini değiştirir.",
-            ar: "المذهب يغيّر وقت العصر فقط."
+            en: "The madhab changes only the Asr time — we'll ask about that next, with both real times.",
+            tr: "Mezhep yalnızca ikindi vaktini değiştirir — bunu sıradaki adımda iki gerçek saatle birlikte soracağız.",
+            ar: "المذهب يغيّر وقت العصر فقط — سنسألك عنه في الخطوة التالية مع الوقتين الحقيقيين."
         )
     }
 
@@ -299,6 +301,139 @@ extension L10n {
             en: "Count your dhikr with haptics, goals and streaks.",
             tr: "Zikrini titreşim, hedef ve serilerle say.",
             ar: "عُدّ أذكارك بالاهتزاز والأهداف والسلاسل."
+        )
+    }
+}
+
+// MARK: - W2 additions — the Asr / madhab question
+//
+// Wave 1 verified a real contradiction: Diyanet publishes Asr with the
+// majority (Shafi) rule, while the app hands a Turkish device the Hanafi
+// default. Picking one silently is where "the times are wrong" reviews start,
+// so we ask — with both real times on screen and without taking a side.
+extension L10n {
+
+    static var obAsrTitle: String {
+        string(
+            en: "When does Asr begin for you?",
+            tr: "İkindi senin için ne zaman başlar?",
+            ar: "متى يبدأ العصر عندك؟"
+        )
+    }
+
+    static var obAsrBody: String {
+        string(
+            en: "Scholars differ on the shadow length that marks Asr. Both readings are valid — pick the one you follow.",
+            tr: "İkindiyi belirleyen gölge uzunluğunda âlimler ihtilaf etmiştir. İkisi de meşrudur — takip ettiğini seç.",
+            ar: "اختلف العلماء في طول الظل الذي يبدأ به العصر. كلا القولين معتبر — اختر ما تتبعه."
+        )
+    }
+
+    /// Shown only when the user actually picked Diyanet on the previous step —
+    /// otherwise we must not claim the calendar match.
+    static var obAsrOptionDiyanetTitle: String {
+        string(
+            en: "Match the Diyanet calendar",
+            tr: "Diyanet takvimiyle birebir aynı olsun",
+            ar: "مطابقة تقويم ديانت"
+        )
+    }
+
+    static var obAsrOptionMajorityTitle: String {
+        string(
+            en: "Majority rule (shadow 1×)",
+            tr: "Çoğunluk kuralı (gölge 1×)",
+            ar: "قول الجمهور (الظل ١×)"
+        )
+    }
+
+    static var obAsrOptionMajorityDetail: String {
+        string(
+            en: "Asr starts when a shadow equals the object's own length. This is the rule the Diyanet calendar is printed with.",
+            tr: "Gölge, cismin kendi boyu kadar olduğunda ikindi girer. Diyanet takvimi bu kuralla yayımlanır.",
+            ar: "يبدأ العصر حين يصير ظل الشيء مثله. وبهذا القول يُطبع تقويم ديانت."
+        )
+    }
+
+    static var obAsrOptionMajorityDetailNonDiyanet: String {
+        string(
+            en: "Asr starts when a shadow equals the object's own length — the Shafi, Maliki and Hanbali position.",
+            tr: "Gölge, cismin kendi boyu kadar olduğunda ikindi girer — Şafi, Maliki ve Hanbeli görüşü.",
+            ar: "يبدأ العصر حين يصير ظل الشيء مثله — قول الشافعية والمالكية والحنابلة."
+        )
+    }
+
+    static var obAsrOptionHanafiTitle: String {
+        string(
+            en: "Hanafi Asr (shadow 2×)",
+            tr: "Hanefi ikindi (gölge 2×)",
+            ar: "العصر الحنفي (الظل ٢×)"
+        )
+    }
+
+    static var obAsrOptionHanafiDetail: String {
+        string(
+            en: "Asr starts when a shadow reaches twice the object's length, so it begins later.",
+            tr: "Gölge, cismin iki katına ulaştığında ikindi girer; yani daha geç başlar.",
+            ar: "يبدأ العصر حين يبلغ الظل مثليه، فيدخل متأخرًا."
+        )
+    }
+
+    static func obAsrDifference(_ minutes: Int) -> String {
+        string(
+            en: "Today the two are \(minutes) minutes apart.",
+            tr: "Bugün ikisi arasında \(minutes) dakika fark var.",
+            ar: "الفرق بينهما اليوم \(minutes) دقيقة."
+        )
+    }
+
+    static var obAsrSameToday: String {
+        string(
+            en: "Today both land on the same minute here.",
+            tr: "Bugün burada ikisi de aynı dakikaya denk geliyor.",
+            ar: "اليوم يقع القولان على الدقيقة نفسها هنا."
+        )
+    }
+
+    static func obAsrReferenceNote(_ city: String) -> String {
+        string(
+            en: "Example times for \(city) — we don't know your location yet. Once it's set you'll see your own.",
+            tr: "Örnek: \(city) için bugünkü saatler — konumun henüz belli değil. Belli olunca kendi saatlerini göreceksin.",
+            ar: "أوقات نموذجية لـ\(city) — موقعك غير معروف بعد. عند تحديده سترى أوقاتك."
+        )
+    }
+
+    static var obAsrUnavailable: String {
+        string(
+            en: "Times will appear here once your location is known.",
+            tr: "Konumun belli olduğunda saatler burada görünecek.",
+            ar: "ستظهر الأوقات هنا بعد تحديد موقعك."
+        )
+    }
+
+    static var obAsrChangeLater: String {
+        string(
+            en: "You can change this any time in Settings › Prayer times.",
+            tr: "Bunu istediğin an Ayarlar › Namaz vakitleri'nden değiştirebilirsin.",
+            ar: "يمكنك تغيير ذلك في أي وقت من الإعدادات › مواقيت الصلاة."
+        )
+    }
+
+    static var obAsrTodayLabel: String {
+        string(en: "Asr today", tr: "Bugün ikindi", ar: "العصر اليوم")
+    }
+
+    // MARK: Feature tour — the wave 1 features, named without adding a step
+
+    static var obTourMoreTitle: String {
+        string(en: "And more inside", tr: "Ve içinde dahası var", ar: "والمزيد بالداخل")
+    }
+
+    static var obTourMoreBody: String {
+        string(
+            en: "Qada prayer tracking, a zakat calculator, several cities at once, and your choice of adhan voice.",
+            tr: "Kaza namazı takibi, zekât hesaplayıcı, aynı anda birden fazla şehir ve ezan sesi seçimi.",
+            ar: "تتبّع الصلوات الفائتة، حاسبة الزكاة، عدة مدن في آنٍ واحد، واختيار صوت الأذان."
         )
     }
 }

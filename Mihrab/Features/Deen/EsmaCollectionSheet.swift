@@ -61,12 +61,12 @@ struct EsmaCollectionSheet: View {
             }
 
             Text(collection.localizedTitle)
-                .font(.system(size: 26, weight: .semibold))
+                .font(.title2.weight(.semibold))
                 .foregroundStyle(MihrabColor.textPrimary)
                 .fixedSize(horizontal: false, vertical: true)
 
             Text(collection.localizedNote)
-                .font(MihrabFont.quoteItalic(17))
+                .mihrabQuote(17, relativeTo: .callout, italic: true)
                 .foregroundStyle(MihrabColor.textSecondary)
                 .fixedSize(horizontal: false, vertical: true)
         }

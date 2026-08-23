@@ -117,6 +117,12 @@ extension L10n {
         string(en: "Add to favorites", tr: "Favorilere ekle", ar: "أضف إلى المفضلة")
     }
 
+    /// Spoken as the *value* of a Name that is favourited, where "Remove from
+    /// favorites" would describe the action rather than the state.
+    static var esmaFavoritedValue: String {
+        string(en: "Favorite", tr: "Favori", ar: "مفضّلة")
+    }
+
     static var esmaRemoveFavorite: String {
         string(en: "Remove from favorites", tr: "Favorilerden çıkar", ar: "أزل من المفضلة")
     }
@@ -187,5 +193,26 @@ extension L10n {
 
     static var deenHadithCaps: String {
         string(en: "Read & reflect", tr: "Oku & tefekkür et", ar: "اقرأ وتأمل")
+    }
+
+    // MARK: - Numerals
+    //
+    // `String(format: "%02d")` always produces Western digits. Arabic locales
+    // render ٠١٢…, and which set a reader sees is a device setting, not ours to
+    // decide — so every number that reaches the screen goes through
+    // `formatted()`.
+
+    /// A Name's position, zero-padded to two digits in the reader's numerals.
+    static func esmaOrdinal(_ number: Int) -> String {
+        number.formatted(.number.precision(.integerLength(2...)).grouping(.never))
+    }
+
+    /// "01 · 99" — position within the ninety-nine.
+    static func esmaPositionOf99(_ number: Int) -> String {
+        "\(esmaOrdinal(number)) · \(99.formatted(.number.grouping(.never)))"
+    }
+
+    static var deenToolsCaps: String {
+        string(en: "Worship tools", tr: "İbadet araçları", ar: "أدوات العبادة")
     }
 }

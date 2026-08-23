@@ -51,8 +51,8 @@ struct EsmaDetailSheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    Text(String(format: "%02d · 99", index + 1))
-                        .font(.system(size: 13, weight: .semibold, design: .rounded).monospacedDigit())
+                    Text(L10n.esmaPositionOf99(index + 1))
+                        .mihrabTime(13, relativeTo: .footnote, ceiling: .accessibility2)
                         .foregroundStyle(MihrabColor.textSecondary)
                 }
                 ToolbarItem(placement: .topBarLeading) {
@@ -129,7 +129,7 @@ struct EsmaDetailSheet: View {
 
             Text(L10n.esmaSwipeHint)
                 .font(.caption2)
-                .foregroundStyle(MihrabColor.textTertiary)
+                .foregroundStyle(MihrabColor.textSecondary)
         }
         .padding(.horizontal, 20)
         .padding(.top, 8)
@@ -177,7 +177,7 @@ struct EsmaDetailPage: View {
 
                 block(L10n.esmaMeaningCaps) {
                     Text(name.localizedMeaning)
-                        .font(.system(size: 30, weight: .semibold))
+                        .font(.title.weight(.semibold))
                         .foregroundStyle(MihrabColor.textPrimary)
                         .fixedSize(horizontal: false, vertical: true)
                 }
@@ -190,14 +190,14 @@ struct EsmaDetailPage: View {
 
                 block(L10n.esmaOtherLanguageCaps) {
                     Text(secondaryMeaning)
-                        .font(MihrabFont.quote(20))
+                        .mihrabQuote(20)
                         .foregroundStyle(MihrabColor.textSecondary)
                         .fixedSize(horizontal: false, vertical: true)
                 }
 
                 block(L10n.esmaReflectionCaps) {
                     Text(EsmaCommentary.reflection(for: number))
-                        .font(MihrabFont.quoteItalic(19))
+                        .mihrabQuote(19, relativeTo: .callout, italic: true)
                         .foregroundStyle(MihrabColor.textPrimary)
                         .lineSpacing(5)
                         .fixedSize(horizontal: false, vertical: true)
@@ -266,6 +266,10 @@ enum EsmaShareCard {
         return renderer.uiImage ?? UIImage()
     }
 
+    /// Rendered through `ImageRenderer` into a shareable PNG. Every point size
+    /// in here is deliberately fixed: there is no Dynamic Type environment
+    /// inside an off-screen render, and the card has to compose at one exact
+    /// pixel size whatever the reader's text setting is.
     @MainActor
     private static func card(number: Int, name: EsmaName) -> some View {
         ZStack {

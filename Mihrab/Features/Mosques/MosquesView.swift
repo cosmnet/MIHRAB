@@ -13,9 +13,19 @@ struct Mosque: Identifiable, Hashable {
     func hash(into hasher: inout Hasher) { hasher.combine(id) }
 
     var distanceText: String {
-        distance < 1000
-            ? "\(Int(distance)) m"
-            : String(format: "%.1f km", distance / 1000)
+        // `Measurement.formatted` rather than a hand-built string: it renders
+        // the reader's numerals (Arabic locales use ٠١٢…) and their unit
+        // separator. `.asProvided` keeps our own metre/kilometre choice.
+        let style = Measurement<UnitLength>.FormatStyle.measurement(
+            width: .abbreviated,
+            usage: .asProvided,
+            numberFormatStyle: .number.precision(.fractionLength(distance < 1000 ? 0 : 1))
+        )
+        .locale(L10n.appLocale)
+
+        return distance < 1000
+            ? Measurement(value: distance.rounded(), unit: UnitLength.meters).formatted(style)
+            : Measurement(value: distance / 1000, unit: UnitLength.kilometers).formatted(style)
     }
 
     var walkingMinutes: Int { Int(distance / 80) } // ~80 m/min
@@ -233,6 +243,8 @@ private struct MosquePin: View {
                                       lineWidth: isSelected ? 2.5 : 1.5)
                 }
             Image(systemName: "moon.fill")
+                // Map annotation glyph inside a fixed pin — not page type, and
+                // there is no Dynamic Type inside a MapKit annotation anyway.
                 .font(.system(size: isSelected ? 18 : 13))
                 .foregroundStyle(isSelected ? MihrabColor.brass : MihrabColor.mint)
         }

@@ -110,7 +110,10 @@ struct ShaderMotifPreview: View {
 
             if isSelected {
                 Image(systemName: "checkmark.circle.fill")
+                    // Badge on a fixed-size swatch: scales with type but stops
+                    // before it covers the swatch it is marking.
                     .font(.system(size: checkSize, weight: .bold))
+                    .dynamicTypeSize(...DynamicTypeSize.accessibility1)
                     .foregroundStyle(MihrabColor.textPrimary, accent)
                     .shadow(color: MihrabColor.abyss.opacity(0.6), radius: 3, y: 1)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)

@@ -140,7 +140,7 @@ public enum Madhab: Int, Codable, CaseIterable, Identifiable, Sendable {
 }
 
 /// A single day's prayer schedule, normalized to the device time zone.
-public struct DayPrayerTimes: Codable, Sendable, Identifiable {
+public struct DayPrayerTimes: Codable, Sendable, Identifiable, Equatable {
     public var id: String { ISO8601DateFormatter().string(from: date) }
     public let date: Date
     public let times: [Prayer: Date]

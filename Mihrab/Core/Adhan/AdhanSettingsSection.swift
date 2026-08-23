@@ -69,7 +69,7 @@ struct AdhanSettingsSection: View {
                         .foregroundStyle(MihrabColor.textSecondary)
                     Image(systemName: "chevron.right")
                         .font(.caption)
-                        .foregroundStyle(MihrabColor.textTertiary)
+                        .foregroundStyle(MihrabColor.textSecondary)
                 }
             }
             .frame(minHeight: 44)
@@ -136,13 +136,13 @@ struct AdhanSettingsSection: View {
                                 .foregroundStyle(
                                     library.hasOverride(for: prayer)
                                         ? MihrabColor.mint
-                                        : MihrabColor.textTertiary
+                                        : MihrabColor.textSecondary
                                 )
                                 .lineLimit(1)
                         }
                         Image(systemName: "chevron.right")
                             .font(.caption)
-                            .foregroundStyle(MihrabColor.textTertiary)
+                            .foregroundStyle(MihrabColor.textSecondary)
                     }
                 }
                 .frame(minHeight: 44)
@@ -309,7 +309,7 @@ struct AdhanSoundPickerSheet: View {
                 HStack(spacing: 10) {
                     Image(systemName: sound.id == selectedID ? "checkmark.circle.fill" : "circle")
                         .foregroundStyle(
-                            sound.id == selectedID ? MihrabColor.mint : MihrabColor.textTertiary
+                            sound.id == selectedID ? MihrabColor.mint : MihrabColor.textSecondary
                         )
                     Text(sound.localizedName)
                         .foregroundStyle(MihrabColor.textPrimary)

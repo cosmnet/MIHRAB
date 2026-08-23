@@ -16,6 +16,7 @@ struct PaywallView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.openURL) private var openURL
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     @State private var subscriptions = SubscriptionManager.shared
     @State private var selection: MihrabProduct = .yearly
@@ -40,9 +41,15 @@ struct PaywallView: View {
                 VStack(spacing: MihrabSpace.unit * 3) {
                     hero
                     statusBanner
+                    freeCoreStrip
                     benefits
-                    planCards
-                    callToAction
+                    // At accessibility text sizes the three columns cannot be
+                    // read side by side, so the plans fall back into the flow
+                    // as full-width rows and the footer stops being sticky.
+                    if !usesStickyPlans {
+                        planRows
+                        callToAction
+                    }
                     subscriptionTerms
                     footer
                 }
@@ -51,6 +58,9 @@ struct PaywallView: View {
                 .padding(.bottom, MihrabSpace.unit * 5)
             }
             .scrollEdgeEffectStyle(.soft, for: .top)
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                if usesStickyPlans { stickyPurchaseBar }
+            }
 
             if didSucceed { thankYouOverlay }
         }
@@ -182,12 +192,9 @@ struct PaywallView: View {
                 .cardEntrance(index: index + 1, appeared: appeared, reduceMotion: reduceMotion)
             }
 
-            // In flow, not an overlay: as an overlay it sat on top of the last row.
-            Text(L10n.paywallFreeForeverNote)
-                .font(.caption2)
-                .foregroundStyle(MihrabColor.brass.opacity(0.9))
-                .frame(maxWidth: .infinity, alignment: .center)
-                .multilineTextAlignment(.center)
+            // The "worship essentials stay free" line used to live here as a
+            // caption2 footnote. It now has its own block *above* this card
+            // (`freeCoreStrip`), so repeating it would only dilute it.
         }
         .padding(MihrabSpace.unit * 2.25)
         .mihrabCard(cornerRadius: MihrabSpace.cardRadius)
@@ -195,7 +202,41 @@ struct PaywallView: View {
 
     // MARK: - Plans
 
-    private var planCards: some View {
+    /// Bloom/Hevy pattern: the three plans sit **side by side** so they can be
+    /// compared in one glance, with the yearly column in the middle and lifted.
+    /// Two things make the comparison concrete rather than rhetorical — the
+    /// per-week unit price under each billed price, and the plan's own name
+    /// inside the CTA.
+    ///
+    /// Guideline 3.1.2 / Schedule 2 §3.8(b): the **billed** amount stays the
+    /// largest, boldest price on the layout; the unit price is deliberately
+    /// small and prefixed with "≈" so it can never be mistaken for the charge.
+    /// Left → right, with the recommended plan in the middle where the eye
+    /// lands first. Deliberately *not* `displayOrder` (which leads with
+    /// yearly) — a column layout reads by position, not by order.
+    private static let columnOrder: [MihrabProduct] = [.monthly, .yearly, .lifetime]
+
+    private var planColumns: some View {
+        HStack(alignment: .top, spacing: MihrabSpace.unit) {
+            ForEach(Self.columnOrder) { product in
+                PlanColumn(
+                    title: planName(for: product),
+                    priceText: subscriptions.displayPrice(for: product),
+                    periodText: shortPeriodText(for: product),
+                    unitText: unitPriceText(for: product),
+                    badgeText: badgeText(for: product),
+                    isSelected: selection == product,
+                    isFeatured: product == .yearly,
+                    reduceMotion: reduceMotion,
+                    action: { select(product) }
+                )
+            }
+        }
+        .padding(.top, MihrabSpace.unit * 1.25) // room for the badge overhang
+    }
+
+    /// Full-width fallback rows for accessibility text sizes.
+    private var planRows: some View {
         VStack(spacing: MihrabSpace.unit * 1.25) {
             ForEach(MihrabProduct.displayOrder) { product in
                 PlanCard(
@@ -207,15 +248,102 @@ struct PaywallView: View {
                     badgeText: badgeText(for: product),
                     reduceMotion: reduceMotion
                 ) {
-                    guard selection != product else { return }
-                    HapticsEngine.shared.light()
-                    withAnimation(reduceMotion ? .easeInOut(duration: 0.15) : MihrabMotion.snappyAnimation) {
-                        selection = product
-                    }
+                    select(product)
                 }
             }
         }
         .cardEntrance(index: 6, appeared: appeared, reduceMotion: reduceMotion)
+    }
+
+    private func select(_ product: MihrabProduct) {
+        guard selection != product else { return }
+        HapticsEngine.shared.light()
+        withAnimation(reduceMotion ? .easeInOut(duration: 0.15) : MihrabMotion.snappyAnimation) {
+            selection = product
+        }
+    }
+
+    /// The columns only survive side by side up to the largest standard text
+    /// size; past that they become rows and everything scrolls.
+    private var usesStickyPlans: Bool { dynamicTypeSize <= .accessibility1 }
+
+    /// Sticky footer: the price stays on screen while the benefits are read.
+    private var stickyPurchaseBar: some View {
+        VStack(spacing: MihrabSpace.unit) {
+            planColumns
+            callToAction
+        }
+        .padding(.horizontal, MihrabSpace.unit * 2)
+        .padding(.top, MihrabSpace.unit * 1.25)
+        .padding(.bottom, MihrabSpace.unit)
+        .background {
+            Rectangle()
+                .fill(.ultraThinMaterial)
+                .overlay(MihrabColor.abyss.opacity(0.55))
+                .overlay(alignment: .top) {
+                    Rectangle()
+                        .fill(MihrabColor.mint.opacity(0.16))
+                        .frame(height: 1)
+                }
+                .ignoresSafeArea(edges: .bottom)
+        }
+    }
+
+    private func shortPeriodText(for product: MihrabProduct) -> String {
+        switch product {
+        case .monthly: L10n.paywallPerMonthShort
+        case .yearly: L10n.paywallPerYearShort
+        case .lifetime: L10n.paywallOnceShort
+        }
+    }
+
+    /// A comparable unit price — the same unit for both subscriptions, so the
+    /// two numbers can actually be held against each other.
+    ///
+    /// Derived, never invented: taken from the live StoreKit price when there
+    /// is one, and from the indicative fallback otherwise. The divisors are the
+    /// real average week counts (365 ÷ 7 and 365 ÷ 12 ÷ 7) rather than the
+    /// flattering 52 and 4, which would overstate the yearly saving.
+    private func unitPriceText(for product: MihrabProduct) -> String? {
+        guard product.isSubscription else { return L10n.paywallBilledOnce }
+        let weeksPerPeriod: Decimal = product == .yearly
+            ? Decimal(string: "52.1429")!
+            : Decimal(string: "4.3452")!
+
+        if let storeProduct = subscriptions.products[product.rawValue] {
+            let weekly = storeProduct.price / weeksPerPeriod
+            return L10n.paywallPerWeek(weekly.formatted(storeProduct.priceFormatStyle))
+        }
+
+        let turkish = subscriptions.isTurkishStorefront
+        let amount = (turkish ? product.fallbackAmountTRY : product.fallbackAmountUSD) / weeksPerPeriod
+        return L10n.paywallPerWeek(Self.indicativeCurrency(amount, turkish: turkish))
+    }
+
+    private static func indicativeCurrency(_ amount: Decimal, turkish: Bool) -> String {
+        let style = Decimal.FormatStyle.Currency(
+            code: turkish ? "TRY" : "USD",
+            locale: Locale(identifier: turkish ? "tr_TR" : "en_US")
+        )
+        return amount.formatted(style)
+    }
+
+    /// "Worship essentials stay free" lifted out of the footnote and given its
+    /// own block above the paid list — the free tier is named, not buried.
+    private var freeCoreStrip: some View {
+        VStack(alignment: .leading, spacing: MihrabSpace.unit * 0.75) {
+            Text(L10n.paywallFreeCoreHeading)
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(MihrabColor.brass)
+            Text(L10n.paywallFreeCoreBody)
+                .font(.caption)
+                .foregroundStyle(MihrabColor.textSecondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(MihrabSpace.unit * 1.75)
+        .mihrabCard(cornerRadius: MihrabSpace.rowRadius)
+        .accessibilityElement(children: .combine)
     }
 
     private func periodText(for product: MihrabProduct) -> String {
@@ -263,9 +391,15 @@ struct PaywallView: View {
         selection.isSubscription && (storeOffersTrial || localTrialAvailable)
     }
 
+    /// The selected plan is named inside the button (Hevy). With three columns
+    /// on screen a generic "Continue" leaves the user unsure which one they are
+    /// about to buy — the ambiguity a paywall must not have.
     private var ctaTitle: String {
-        if selection == .lifetime { return L10n.paywallBuyLifetime }
-        return offersTrial ? L10n.paywallStartTrial : L10n.paywallSubscribeNow
+        let plan = planName(for: selection)
+        if selection == .lifetime { return L10n.paywallBuyLifetimeWithPlan(plan) }
+        return offersTrial
+            ? L10n.paywallStartTrialWithPlan(plan)
+            : L10n.paywallContinueWithPlan(plan)
     }
 
     private var callToAction: some View {
@@ -279,6 +413,10 @@ struct PaywallView: View {
                     } else {
                         Text(ctaTitle)
                             .font(.system(size: 17, weight: .semibold, design: .rounded))
+                            .lineLimit(2)
+                            .minimumScaleFactor(0.75)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, MihrabSpace.unit)
                     }
                 }
                 .frame(maxWidth: .infinity, minHeight: MihrabSpace.hit + 8)
@@ -564,6 +702,113 @@ struct PaywallView: View {
             try? await Task.sleep(for: .seconds(1.6))
             dismiss()
         }
+    }
+}
+
+// MARK: - Plan column (side-by-side selector)
+
+/// One of three side-by-side plans. The billed price is the loudest thing in
+/// the column; the per-week figure below it is a caption and marked "≈".
+private struct PlanColumn: View {
+    let title: String
+    let priceText: String
+    let periodText: String
+    let unitText: String?
+    let badgeText: String?
+    let isSelected: Bool
+    let isFeatured: Bool
+    let reduceMotion: Bool
+    let action: () -> Void
+
+    /// Scales with Dynamic Type instead of pinning the column open.
+    @ScaledMetric(relativeTo: .body) private var minimumHeight: CGFloat = 96
+
+    var body: some View {
+        Button(action: action) {
+            VStack(spacing: 4) {
+                Text(title)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(isSelected ? MihrabColor.mint : MihrabColor.textSecondary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+
+                // Guideline 3.1.2: the amount that will actually be charged is
+                // the most prominent price element on the layout.
+                Text(priceText)
+                    .font(.system(size: 17, weight: .bold, design: .rounded))
+                    .foregroundStyle(MihrabColor.textPrimary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.55)
+
+                Text(periodText)
+                    .font(.caption2)
+                    .foregroundStyle(MihrabColor.textTertiary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+
+                if let unitText {
+                    Text(unitText)
+                        .font(.caption2)
+                        .foregroundStyle(MihrabColor.textSecondary)
+                        .lineLimit(2)
+                        .minimumScaleFactor(0.6)
+                        .multilineTextAlignment(.center)
+                        .padding(.top, 2)
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .frame(minHeight: minimumHeight)
+            .padding(.vertical, MihrabSpace.unit * 1.25)
+            .padding(.horizontal, 4)
+            .background {
+                RoundedRectangle(cornerRadius: MihrabSpace.rowRadius, style: .continuous)
+                    .fill(isSelected ? MihrabColor.emerald.opacity(0.22) : MihrabColor.moss.opacity(0.55))
+            }
+            .overlay {
+                RoundedRectangle(cornerRadius: MihrabSpace.rowRadius, style: .continuous)
+                    .strokeBorder(
+                        isSelected ? MihrabColor.mint.opacity(0.95) : MihrabColor.mint.opacity(0.16),
+                        lineWidth: isSelected ? 1.8 : 1
+                    )
+                    .allowsHitTesting(false)
+            }
+            .overlay(alignment: .top) {
+                if let badgeText {
+                    Text(badgeText)
+                        .font(.system(size: 10, weight: .bold))
+                        .foregroundStyle(MihrabColor.abyss)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+                        .padding(.horizontal, 7)
+                        .padding(.vertical, 3)
+                        .background { Capsule().fill(MihrabColor.brass) }
+                        .offset(y: -10)
+                }
+            }
+            // The recommended column is lifted a hair even when unselected,
+            // so the middle position reads as the middle position.
+            .scaleEffect(scale)
+            .animation(
+                reduceMotion ? .easeInOut(duration: 0.15) : MihrabMotion.snappyAnimation,
+                value: isSelected
+            )
+        }
+        .buttonStyle(.plain)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(accessibilityText)
+        .accessibilityAddTraits(isSelected ? [.isButton, .isSelected] : .isButton)
+    }
+
+    private var scale: CGFloat {
+        guard !reduceMotion else { return 1 }
+        if isSelected { return 1.03 }
+        return isFeatured ? 1.015 : 1
+    }
+
+    private var accessibilityText: String {
+        [title, priceText, periodText, unitText, badgeText]
+            .compactMap { $0 }
+            .joined(separator: ", ")
     }
 }
 

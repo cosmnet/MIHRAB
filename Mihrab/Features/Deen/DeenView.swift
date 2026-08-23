@@ -13,6 +13,10 @@ struct DeenView: View {
 
     @State private var showHadith = false
     @State private var showDhikr = false
+    @State private var showQada = false
+    @State private var showZakat = false
+    @State private var qada = QadaStore.shared
+    @State private var zakat = ZakatStore.shared
     @State private var esmaQuery = ""
     @State private var selection: EsmaSelection?
     @State private var activeCollection: EsmaCollection?
@@ -53,6 +57,7 @@ struct DeenView: View {
 
                         if !isSearchingEsma {
                             hadithEntry
+                            worshipToolsCard
                             religiousDaysCard
                         }
                     }
@@ -73,6 +78,8 @@ struct DeenView: View {
             .sheet(isPresented: $showHadith) {
                 HadithDetailSheet(hadith: BundledContent.hadith())
             }
+            .sheet(isPresented: $showQada) { QadaView() }
+            .sheet(isPresented: $showZakat) { ZakatView() }
             .sheet(isPresented: $showDhikr) {
                 DhikrView()
                     .presentationDetents([.large])
@@ -101,11 +108,11 @@ struct DeenView: View {
                     Spacer()
                     Image(systemName: "chevron.right")
                         .font(.caption.weight(.semibold))
-                        .foregroundStyle(MihrabColor.textTertiary)
+                        .foregroundStyle(MihrabColor.textSecondary)
                 }
 
                 Text(BundledContent.hadith().localizedTranslation)
-                    .font(MihrabFont.quote(20))
+                    .mihrabQuote(20)
                     .foregroundStyle(MihrabColor.textPrimary)
                     .lineSpacing(5)
                     .lineLimit(4)
@@ -127,6 +134,83 @@ struct DeenView: View {
         }
         .pressable(reduceMotion)
         .accessibilityLabel(Text(L10n.dailyHadith))
+    }
+
+    // MARK: - Worship tools
+
+    /// Make-up prayers and zakat were reachable only from Settings, which is
+    /// where you go to *configure* things, not to use them. They belong on the
+    /// Deen tab next to the calendar — the other place in the app that is about
+    /// obligations rather than moments.
+    private var worshipToolsCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 8) {
+                Image(systemName: "hands.and.sparkles.fill")
+                    .font(.footnote)
+                    .foregroundStyle(MihrabColor.brass)
+                    .accessibilityHidden(true)
+                Text(L10n.deenToolsCaps)
+                    .ornamentalCaps()
+                Spacer()
+            }
+
+            toolRow(
+                symbol: "checklist",
+                title: L10n.qadaTitle,
+                detail: qada.isSetUp ? L10n.qadaRemainingCount(qada.totalRemaining) : L10n.qadaSettingsNone
+            ) { showQada = true }
+
+            Divider().overlay(MihrabColor.mint.opacity(0.12))
+
+            toolRow(
+                symbol: "scalemass.fill",
+                title: L10n.zakatTitle,
+                detail: L10n.zakatSubtitle
+            ) { showZakat = true }
+        }
+        .padding(18)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .mihrabSolidCard(cornerRadius: 26)
+    }
+
+    private func toolRow(
+        symbol: String,
+        title: String,
+        detail: String,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            HStack(spacing: 12) {
+                Image(systemName: symbol)
+                    .font(.body)
+                    .foregroundStyle(MihrabColor.mint)
+                    .frame(width: 26)
+                    .accessibilityHidden(true)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(MihrabColor.textPrimary)
+                    Text(detail)
+                        .font(.caption)
+                        // textSecondary: textTertiary is 2.9:1 on moss.
+                        .foregroundStyle(MihrabColor.textSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                Spacer(minLength: 8)
+                Image(systemName: "chevron.right")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(MihrabColor.textSecondary)
+                    .accessibilityHidden(true)
+            }
+            .frame(minHeight: MihrabSpace.hit)
+            .contentShape(Rectangle())
+            .multilineTextAlignment(.leading)
+        }
+        .buttonStyle(.plain)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(Text(title))
+        .accessibilityValue(Text(detail))
+        .accessibilityAddTraits(.isButton)
     }
 
     // MARK: - Religious days

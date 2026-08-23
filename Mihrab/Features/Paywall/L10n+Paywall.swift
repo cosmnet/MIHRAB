@@ -515,3 +515,81 @@ extension L10n {
         )
     }
 }
+
+// MARK: - W2 additions — side-by-side plan columns
+//
+// Roadmap #23 (Bloom + Hevy): three plans in a row, a comparable per-week unit
+// price under each billed price, and the selected plan's name inside the CTA.
+// Guideline 3.1.2 / Schedule 2 §3.8(b) is unchanged by this: the billed amount
+// remains the most prominent price element, and the unit price is marked "≈"
+// so it can never be read as the charge.
+extension L10n {
+
+    // MARK: Column labels
+
+    static var paywallPerYearShort: String {
+        string(en: "per year", tr: "yılda", ar: "سنويًا")
+    }
+
+    static var paywallPerMonthShort: String {
+        string(en: "per month", tr: "ayda", ar: "شهريًا")
+    }
+
+    static var paywallOnceShort: String {
+        string(en: "one-time", tr: "tek seferlik", ar: "مرة واحدة")
+    }
+
+    /// Comparable unit price. Always prefixed "≈" — it is a derived figure,
+    /// not the amount Apple will charge.
+    static func paywallPerWeek(_ price: String) -> String {
+        string(en: "≈ \(price) / week", tr: "≈ \(price) / hafta", ar: "≈ \(price) / أسبوع")
+    }
+
+    static var paywallBilledOnce: String {
+        string(en: "Billed once", tr: "Tek ödeme", ar: "دفعة واحدة")
+    }
+
+    // MARK: CTA carrying the plan name
+
+    static func paywallStartTrialWithPlan(_ plan: String) -> String {
+        string(
+            en: "Try \(plan) free for 7 days",
+            tr: "\(plan) ile 7 gün ücretsiz dene",
+            ar: "جرّب خطة \(plan) مجانًا ٧ أيام"
+        )
+    }
+
+    static func paywallContinueWithPlan(_ plan: String) -> String {
+        string(
+            en: "Continue with \(plan)",
+            tr: "\(plan) ile devam et",
+            ar: "المتابعة بخطة \(plan)"
+        )
+    }
+
+    static func paywallBuyLifetimeWithPlan(_ plan: String) -> String {
+        string(
+            en: "Buy \(plan) once",
+            tr: "\(plan) erişimi tek seferde al",
+            ar: "شراء \(plan) لمرة واحدة"
+        )
+    }
+
+    // MARK: The free tier, named rather than footnoted
+
+    static var paywallFreeCoreHeading: String {
+        string(
+            en: "The heart of Mihrab stays free",
+            tr: "Mihrab'ın kalbi hep ücretsiz kalacak",
+            ar: "قلب محراب يبقى مجانًا"
+        )
+    }
+
+    static var paywallFreeCoreBody: String {
+        string(
+            en: "Prayer times, the qibla, adhan alerts, the dhikr counter, the 99 names and the Ramadan imsakiye are never locked — with no ads, on any tier.",
+            tr: "Namaz vakitleri, kıble, ezan bildirimleri, zikirmatik, 99 isim ve Ramazan imsakiyesi hiçbir zaman kilitlenmez — hiçbir katmanda reklam da yok.",
+            ar: "مواقيت الصلاة والقبلة وتنبيهات الأذان وعدّاد الذكر والأسماء التسعة والتسعون وإمساكية رمضان لا تُقفل أبدًا — وبلا إعلانات في أي مستوى."
+        )
+    }
+}

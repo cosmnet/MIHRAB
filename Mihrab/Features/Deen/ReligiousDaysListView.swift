@@ -53,7 +53,7 @@ struct ReligiousDaysListView: View {
 
                 Text(L10n.calendarEveningRule)
                     .font(.caption2)
-                    .foregroundStyle(MihrabColor.textTertiary)
+                    .foregroundStyle(MihrabColor.textSecondary)
                     .padding(.horizontal, 4)
                     .padding(.top, 6)
             }

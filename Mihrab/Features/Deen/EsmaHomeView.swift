@@ -97,7 +97,8 @@ struct EsmaHomeView: View {
                         .modifier(BreathingScale(active: !reduceMotion, from: 0.97, to: 1.04, period: 7))
 
                     Text(name.arabic)
-                        .font(MihrabFont.arabic(70))
+                        // Hero calligraphy inside a fixed 236pt stage.
+                        .mihrabArabic(70, ceiling: .accessibility2)
                         .foregroundStyle(
                             LinearGradient(
                                 colors: [MihrabColor.textPrimary, MihrabColor.sprout],
@@ -116,7 +117,7 @@ struct EsmaHomeView: View {
 
                 VStack(spacing: 6) {
                     Text(name.localizedMeaning)
-                        .font(.system(size: 27, weight: .semibold))
+                        .font(.title.weight(.semibold))
                         .foregroundStyle(MihrabColor.textPrimary)
                         .multilineTextAlignment(.center)
                         .fixedSize(horizontal: false, vertical: true)
@@ -127,15 +128,15 @@ struct EsmaHomeView: View {
                 }
 
                 HStack(spacing: 10) {
-                    Text(String(format: "%02d · 99", featuredNumber))
-                        .font(.system(size: 12, weight: .semibold, design: .rounded).monospacedDigit())
+                    Text(L10n.esmaPositionOf99(featuredNumber))
+                        .mihrabTime(12, relativeTo: .caption, ceiling: .accessibility2)
                         .foregroundStyle(MihrabColor.textSecondary)
                     Circle()
                         .fill(MihrabColor.brass.opacity(0.6))
                         .frame(width: 3, height: 3)
                     Text(L10n.esmaHeroHint)
                         .font(.caption)
-                        .foregroundStyle(MihrabColor.textTertiary)
+                        .foregroundStyle(MihrabColor.textSecondary)
                 }
                 .padding(.top, 2)
             }
@@ -164,7 +165,9 @@ struct EsmaHomeView: View {
                         .strokeBorder(MihrabColor.brass.opacity(0.45), lineWidth: 1)
                         .frame(width: 44, height: 44)
                     Image(systemName: "circle.hexagonpath.fill")
-                        .font(.system(size: 18))
+                        // Inside a fixed 44pt ring.
+                        .font(.title3)
+                        .dynamicTypeSize(...DynamicTypeSize.accessibility1)
                         .foregroundStyle(MihrabColor.brass)
                         .symbolRenderingMode(.hierarchical)
                 }
@@ -183,7 +186,7 @@ struct EsmaHomeView: View {
 
                 Image(systemName: "chevron.right")
                     .font(.footnote.weight(.semibold))
-                    .foregroundStyle(MihrabColor.textTertiary)
+                    .foregroundStyle(MihrabColor.textSecondary)
             }
             .padding(16)
             .frame(maxWidth: .infinity, minHeight: MihrabSpace.hit)
@@ -269,8 +272,8 @@ struct EsmaCollectionCard: View {
                         .foregroundStyle(collection.tint)
                         .symbolRenderingMode(.hierarchical)
                     Spacer()
-                    Text("\(collection.numbers.count)")
-                        .font(.system(size: 13, weight: .bold, design: .rounded).monospacedDigit())
+                    Text(collection.numbers.count.formatted())
+                        .mihrabTime(13, relativeTo: .footnote, ceiling: .accessibility2)
                         .foregroundStyle(MihrabColor.textSecondary)
                 }
 
@@ -295,7 +298,7 @@ struct EsmaCollectionCard: View {
 
                 Text(collection.localizedNote)
                     .font(.caption2)
-                    .foregroundStyle(MihrabColor.textTertiary)
+                    .foregroundStyle(MihrabColor.textSecondary)
                     .lineLimit(2)
                     .multilineTextAlignment(.leading)
                     .fixedSize(horizontal: false, vertical: true)

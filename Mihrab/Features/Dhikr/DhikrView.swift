@@ -11,6 +11,7 @@ struct DhikrView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(\.layoutDirection) private var layoutDirection
 
     @State private var store = DhikrStore.shared
 
@@ -44,10 +45,20 @@ struct DhikrView: View {
     @State private var unlockToast: DhikrAchievementSnapshot?
     @State private var phraseDirection = 1
 
+    // Focus mode: everything but the dial steps out of the way.
+    @State private var focusMode = false
+    @State private var focusHintVisible = false
+    @State private var holdProgress: Double = 0
+
     private let targets = [33, 99, 100, 500, 0]
+    /// Dial size is deliberately *not* `@ScaledMetric` — it is a touch target
+    /// and a canvas, not type, and growing it at AX5 would push the footer off
+    /// screen. The number inside it scales instead, capped so it still fits.
     private let dialSide: CGFloat = 300
     private let chipHeight: CGFloat = 44
     private let toolbarSide: CGFloat = 44
+    /// How long the reset press has to be held before it commits.
+    private let holdToResetDuration: Double = 0.9
 
     private var accent: Color { theme.accent }
     private var motif: ShaderMotif { settings.dhikrShaderMotif }
@@ -59,10 +70,15 @@ struct DhikrView: View {
             ZStack {
                 MihrabBackdrop(surface: .dhikr, ramadanMode: theme.isRamadanMode)
 
+                focusTapLayer
+
                 VStack(spacing: 0) {
-                    header
-                        .padding(.horizontal, 20)
-                        .padding(.top, 4)
+                    if !focusMode {
+                        header
+                            .padding(.horizontal, 20)
+                            .padding(.top, 4)
+                            .transition(.opacity.combined(with: .move(edge: .top)))
+                    }
 
                     Spacer(minLength: 8)
 
@@ -72,7 +88,10 @@ struct DhikrView: View {
 
                     Spacer(minLength: 8)
 
-                    footer
+                    if !focusMode {
+                        footer
+                            .transition(.opacity.combined(with: .move(edge: .bottom)))
+                    }
                 }
                 .padding(.bottom, MihrabSpace.tabClearance + 4)
 
@@ -90,6 +109,24 @@ struct DhikrView: View {
             .navigationTitle(L10n.zikirmatik)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar { toolbarContent }
+            // The nav bar is chrome too — focus mode is not focus mode with a
+            // title and three glyphs still sitting on top.
+            .toolbar(focusMode ? .hidden : .visible, for: .navigationBar)
+            .statusBarHidden(focusMode)
+            .task(id: focusMode) {
+                guard focusMode else {
+                    focusHintVisible = false
+                    return
+                }
+                withAnimation(reduceMotion ? nil : MihrabMotion.gentleAnimation) {
+                    focusHintVisible = true
+                }
+                try? await Task.sleep(for: .seconds(4))
+                guard !Task.isCancelled else { return }
+                withAnimation(reduceMotion ? nil : MihrabMotion.gentleAnimation) {
+                    focusHintVisible = false
+                }
+            }
             .sheet(isPresented: $showStats) { DhikrStatsView() }
             .sheet(isPresented: $showAchievements) { DhikrAchievementSheet() }
             .sheet(isPresented: $showLibrary) {
@@ -133,13 +170,61 @@ struct DhikrView: View {
         .onAppear(perform: onAppear)
         .onDisappear {
             UIApplication.shared.isIdleTimerDisabled = false
+            DhikrScreenDim.restore()
             celebrating = false
             rippleBorn = nil
             milestoneBorn = nil
+            holdProgress = 0
         }
         .onChange(of: scenePhase) { _, phase in
-            if phase != .active { UIApplication.shared.isIdleTimerDisabled = false }
-            else { refreshIdleTimer() }
+            if phase != .active {
+                UIApplication.shared.isIdleTimerDisabled = false
+                // Never leave a dimmed screen behind us in the app switcher.
+                DhikrScreenDim.restore()
+            } else {
+                refreshIdleTimer()
+                applyScreenDim()
+            }
+        }
+    }
+
+    // MARK: - Focus mode
+
+    /// The whole backdrop is the focus toggle: one tap anywhere that is not the
+    /// dial hides (or restores) the chrome, and in focus mode a downward drag
+    /// from anywhere brings it back — the same "swipe down to leave" gesture
+    /// full-screen video uses.
+    private var focusTapLayer: some View {
+        Color.clear
+            .contentShape(Rectangle())
+            .onTapGesture { setFocus(!focusMode) }
+            .gesture(
+                DragGesture(minimumDistance: 40)
+                    .onEnded { value in
+                        guard focusMode,
+                              value.translation.height > 40,
+                              abs(value.translation.height) > abs(value.translation.width)
+                        else { return }
+                        setFocus(false)
+                    }
+            )
+            .accessibilityHidden(true)
+    }
+
+    private func setFocus(_ on: Bool) {
+        guard focusMode != on else { return }
+        DhikrFeedback.light()
+        withAnimation(reduceMotion ? nil : MihrabMotion.gentleAnimation) {
+            focusMode = on
+        }
+        applyScreenDim()
+    }
+
+    private func applyScreenDim() {
+        if focusMode && store.dimsInFocusMode {
+            DhikrScreenDim.dim()
+        } else {
+            DhikrScreenDim.restore()
         }
     }
 
@@ -170,12 +255,15 @@ struct DhikrView: View {
                 Text(routine.localizedTitle)
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(MihrabColor.textPrimary)
-                    .lineLimit(1)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.8)
                 Text(L10n.dhkRoutineStep(routineStep + 1, routine.steps.count))
                     .font(.caption2)
                     .foregroundStyle(MihrabColor.textSecondary)
             }
+            .accessibilityElement(children: .combine)
             Spacer(minLength: 8)
+            // Decorative: the step count is already spoken in the label above.
             HStack(spacing: 5) {
                 ForEach(Array(routine.steps.enumerated()), id: \.offset) { index, _ in
                     Capsule()
@@ -183,6 +271,7 @@ struct DhikrView: View {
                         .frame(width: index == routineStep ? 18 : 8, height: 5)
                 }
             }
+            .accessibilityHidden(true)
             Button {
                 DhikrFeedback.light()
                 withAnimation(reduceMotion ? nil : MihrabMotion.gentleAnimation) {
@@ -191,9 +280,9 @@ struct DhikrView: View {
                 }
             } label: {
                 Image(systemName: "xmark.circle.fill")
-                    .font(.system(size: 20))
-                    .foregroundStyle(MihrabColor.textTertiary)
-                    .frame(width: MihrabSpace.hit, height: 34)
+                    .font(.title3)
+                    .foregroundStyle(MihrabColor.textSecondary)
+                    .frame(width: MihrabSpace.hit, height: MihrabSpace.hit)
                     .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
@@ -234,10 +323,17 @@ struct DhikrView: View {
             pick(item, resetCount: true)
         } label: {
             VStack(spacing: 4) {
-                Text(L10n.isArabic && !item.arabic.isEmpty ? item.arabic : item.localizedName)
-                    .font(L10n.isArabic ? MihrabFont.arabic(15) : .subheadline.weight(.semibold))
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.7)
+                Group {
+                    if L10n.isArabic && !item.arabic.isEmpty {
+                        Text(item.arabic).mihrabArabic(15, ceiling: .accessibility2)
+                    } else {
+                        Text(item.localizedName)
+                            .font(.subheadline.weight(.semibold))
+                            .dynamicTypeSize(...DynamicTypeSize.accessibility2)
+                    }
+                }
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
                 Capsule()
                     .fill(MihrabColor.brass)
                     .frame(width: 20, height: 3)
@@ -310,10 +406,22 @@ struct DhikrView: View {
                     DragGesture(minimumDistance: 48).onEnded { value in
                         guard routine == nil,
                               abs(value.translation.width) > abs(value.translation.height) else { return }
-                        cyclePhrase(forward: value.translation.width < 0)
+                        // "Next" is a swipe towards the end of the line, which
+                        // is left in Turkish/English and right in Arabic.
+                        let towardsEnd = layoutDirection == .rightToLeft
+                            ? value.translation.width > 0
+                            : value.translation.width < 0
+                        cyclePhrase(forward: towardsEnd)
                     }
                 )
-                .onLongPressGesture(minimumDuration: 0.7) { resetCount() }
+                // Reset costs a deliberate hold, and the ring shows how much of
+                // it is left. Released early it unwinds and nothing is lost.
+                .onLongPressGesture(
+                    minimumDuration: holdToResetDuration,
+                    maximumDistance: 30,
+                    perform: { resetCount() },
+                    onPressingChanged: { pressing in trackResetHold(pressing) }
+                )
         }
     }
 
@@ -333,6 +441,12 @@ struct DhikrView: View {
         .accessibilityAddTraits(.isButton)
         .accessibilityHint(L10n.dhikrA11yHint(selected.localizedName))
         .accessibilityAction { advance() }
+        // The reset gesture is a hold and the focus toggle is a background tap;
+        // neither is reachable with VoiceOver on, so both get named actions.
+        .accessibilityAction(named: Text(L10n.dhkHoldToReset)) { resetCount() }
+        .accessibilityAction(named: Text(focusMode ? L10n.dhkFocusExit : L10n.dhkFocusEnter)) {
+            setFocus(!focusMode)
+        }
     }
 
     private func dialContent(flash: Double) -> some View {
@@ -353,6 +467,10 @@ struct DhikrView: View {
             }
 
             dialCopy(flash: flash)
+
+            if holdProgress > 0 {
+                DhikrHoldRing(progress: holdProgress, side: dialSide)
+            }
 
             if let milestoneBorn, !reduceMotion {
                 DhikrMilestoneBurst(born: milestoneBorn, side: dialSide)
@@ -387,12 +505,19 @@ struct DhikrView: View {
     private func dialCopy(flash: Double) -> some View {
         VStack(spacing: 6) {
             Group {
-                Text(selected.displayScript)
-                    .font(selected.arabic.isEmpty ? .title3.weight(.semibold) : MihrabFont.arabic(28))
-                    .foregroundStyle(MihrabColor.textPrimary)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.5)
-                    .padding(.horizontal, 26)
+                Group {
+                    if selected.arabic.isEmpty {
+                        Text(selected.displayScript)
+                            .font(.title3.weight(.semibold))
+                    } else {
+                        Text(selected.displayScript)
+                            .mihrabArabic(28)
+                    }
+                }
+                .foregroundStyle(MihrabColor.textPrimary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.5)
+                .padding(.horizontal, 26)
 
                 if !L10n.isArabic {
                     Text(selected.localizedName)
@@ -405,8 +530,10 @@ struct DhikrView: View {
             .id(selected.id)
             .transition(phraseTransition)
 
-            Text("\(count)")
-                .font(MihrabFont.countdown(92))
+            Text(count.formatted())
+                .mihrabCountdown(92)
+                .lineLimit(1)
+                .minimumScaleFactor(0.45)
                 .foregroundStyle(
                     LinearGradient(
                         colors: flash > 0.15
@@ -419,8 +546,10 @@ struct DhikrView: View {
                 .contentTransition(.numericText(value: Double(count)))
                 .shadow(color: (flash > 0.15 ? MihrabColor.brass : MihrabColor.mint).opacity(0.28), radius: 6)
 
+            // `formatted()` and not string interpolation: Arabic locales use
+            // Eastern Arabic numerals, and hand-built strings would not.
             if target > 0 {
-                Text("\(count) · \(target)")
+                Text("\(count.formatted()) · \(target.formatted())")
                     .ornamentalCaps()
             } else {
                 Text(L10n.dhkTargetLabel(0))
@@ -432,14 +561,18 @@ struct DhikrView: View {
 
     private var strandReadout: some View {
         VStack(spacing: 2) {
-            Text("\(count)")
-                .font(MihrabFont.countdown(64))
+            Text(count.formatted())
+                .mihrabCountdown(64)
+                .lineLimit(1)
+                .minimumScaleFactor(0.45)
                 .foregroundStyle(
                     LinearGradient(colors: [MihrabColor.sprout, MihrabColor.mint],
                                    startPoint: .top, endPoint: .bottom)
                 )
                 .contentTransition(.numericText(value: Double(count)))
-            Text(target > 0 ? "\(count) · \(target)" : L10n.dhkTargetLabel(0))
+            Text(target > 0
+                 ? "\(count.formatted()) · \(target.formatted())"
+                 : L10n.dhkTargetLabel(0))
                 .ornamentalCaps()
         }
     }
@@ -456,20 +589,26 @@ struct DhikrView: View {
 
     private var hintLine: some View {
         ZStack {
-            if hintVisible && count == 0 {
+            if focusMode {
+                DhikrFocusHint(visible: focusHintVisible)
+            } else if hintVisible && count == 0 {
                 Text(strandMode ? L10n.dhkStrandHint : L10n.dhkTapHint)
                     .font(.caption2)
-                    .foregroundStyle(MihrabColor.textTertiary)
+                    // textSecondary rather than textTertiary: tertiary is
+                    // 2.9:1 on moss / 4.1:1 on abyss, both below 4.5:1.
+                    .foregroundStyle(MihrabColor.textSecondary)
                     .transition(.opacity)
             } else if count > 0 && !strandMode {
                 Text(L10n.dhkHoldToReset)
                     .font(.caption2)
-                    .foregroundStyle(MihrabColor.textTertiary.opacity(0.7))
+                    .foregroundStyle(MihrabColor.textSecondary.opacity(0.85))
                     .transition(.opacity)
             }
         }
-        .frame(height: 16)
+        .frame(minHeight: 16)
         .padding(.top, 14)
+        .padding(.horizontal, 24)
+        .multilineTextAlignment(.center)
         .allowsHitTesting(false)
     }
 
@@ -483,7 +622,8 @@ struct DhikrView: View {
                 target: target,
                 accent: accent,
                 motif: motif,
-                enabled: routine == nil
+                enabled: routine == nil,
+                layoutDirection: layoutDirection
             ) { newValue in
                 DhikrFeedback.light()
                 withAnimation(reduceMotion ? nil : MihrabMotion.snappyAnimation) {
@@ -516,7 +656,7 @@ struct DhikrView: View {
                     .labelStyle(.titleAndIcon)
                     .padding(.horizontal, 14)
                     .frame(height: 34)
-                    .foregroundStyle(on ? MihrabColor.textPrimary : MihrabColor.textTertiary)
+                    .foregroundStyle(on ? MihrabColor.textPrimary : MihrabColor.textSecondary)
                     .background {
                         if on {
                             Capsule().fill(MihrabColor.abyss.opacity(0.55))
@@ -531,6 +671,7 @@ struct DhikrView: View {
             }
         }
         .frame(minHeight: MihrabSpace.hit)
+        .accessibilityElement(children: .contain)
         .accessibilityLabel(Text(L10n.dhkModeSwitch))
     }
 
@@ -547,6 +688,14 @@ struct DhikrView: View {
             }
             .tint(MihrabColor.brass)
             .accessibilityLabel(Text(L10n.dhkLibrary))
+        }
+        ToolbarItem(placement: .topBarLeading) {
+            Button { setFocus(true) } label: {
+                toolbarGlyph("arrow.down.right.and.arrow.up.left")
+            }
+            .tint(MihrabColor.textSecondary)
+            .accessibilityLabel(Text(L10n.dhkFocusEnter))
+            .accessibilityHint(Text(L10n.dhkFocusEnterHint))
         }
         ToolbarItem(placement: .topBarTrailing) {
             Button { showStats = true } label: {
@@ -582,6 +731,8 @@ struct DhikrView: View {
             .shadow(color: MihrabColor.brass.opacity(0.55), radius: 16)
             .transition(.opacity.combined(with: .scale(scale: 0.92)))
             .allowsHitTesting(false)
+            // Already spoken via AccessibilityNotification.Announcement.
+            .accessibilityHidden(true)
     }
 
     // MARK: - Derived values
@@ -638,6 +789,8 @@ struct DhikrView: View {
         sparkBorn = Date()
         milestoneBorn = Date()
         withAnimation(reduceMotion ? nil : MihrabMotion.snappyAnimation) { celebrating = true }
+        // The celebration is a badge and a haptic; neither reaches VoiceOver.
+        AccessibilityNotification.Announcement(L10n.setComplete).post()
         persist()
     }
 
@@ -672,10 +825,33 @@ struct DhikrView: View {
         persist()
     }
 
+    /// Drives the confirmation ring while the reset press is held.
+    private func trackResetHold(_ pressing: Bool) {
+        guard count > 0 else {
+            holdProgress = 0
+            return
+        }
+        if pressing {
+            DhikrFeedback.light()
+            // The ring is the contract with the user — it fills in real time
+            // even under Reduce Motion, because here motion *is* the message.
+            withAnimation(.linear(duration: holdToResetDuration)) { holdProgress = 1 }
+        } else {
+            withAnimation(reduceMotion ? nil : MihrabMotion.snappyAnimation) { holdProgress = 0 }
+        }
+    }
+
     private func resetCount() {
-        guard count > 0 else { return }
+        guard count > 0 else {
+            holdProgress = 0
+            return
+        }
         DhikrFeedback.reset()
-        withAnimation(reduceMotion ? nil : MihrabMotion.snappyAnimation) { count = 0 }
+        withAnimation(reduceMotion ? nil : MihrabMotion.snappyAnimation) {
+            count = 0
+            holdProgress = 0
+        }
+        AccessibilityNotification.Announcement(L10n.dhkResetDone).post()
         persist()
     }
 
@@ -815,66 +991,92 @@ struct DhikrView: View {
 /// Five targets, one tap or one swipe apart. Disabled while a routine is
 /// running — the routine owns the targets then, and silently changing one would
 /// break the count the user is keeping in their head.
+
+/// Adjustable-trait wrapper for `TargetCycleBar`, lifted out of the body.
+private struct TargetCycleAccessibility: ViewModifier {
+    let target: Int
+    let advance: (Int) -> Void
+
+    func body(content: Content) -> some View {
+        content
+            .accessibilityElement()
+            .accessibilityLabel(Text(L10n.dhkCustomTarget))
+            .accessibilityValue(Text(target == 0 ? L10n.dhkTargetLabel(0) : target.formatted()))
+            // No `.isAdjustable` trait exists; `accessibilityAdjustableAction`
+            // is what makes an element adjustable to VoiceOver.
+            .accessibilityAdjustableAction { direction in
+                switch direction {
+                case .increment: advance(1)
+                case .decrement: advance(-1)
+                @unknown default: break
+                }
+            }
+    }
+}
+
 private struct TargetCycleBar: View {
     let targets: [Int]
     let target: Int
     let accent: Color
     let motif: ShaderMotif
     var enabled: Bool = true
+    var layoutDirection: LayoutDirection = .leftToRight
     let onChange: (Int) -> Void
 
+    // Split into three pieces on purpose: as one chain this body exceeded the
+    // type checker's time limit.
     var body: some View {
+        chipRow
+            .padding(5)
+            .background { capsuleBackground }
+            .overlay { Capsule().strokeBorder(MihrabColor.mint.opacity(0.26), lineWidth: 1) }
+            .opacity(enabled ? 1 : 0.4)
+            .disabled(!enabled)
+            .modifier(TargetCycleAccessibility(target: target, advance: advance))
+            .highPriorityGesture(
+                DragGesture(minimumDistance: 28).onEnded { value in
+                guard enabled,
+                      abs(value.translation.width) > abs(value.translation.height) else { return }
+                let towardsEnd = layoutDirection == .rightToLeft
+                    ? value.translation.width > 0
+                    : value.translation.width < 0
+                    advance(by: towardsEnd ? 1 : -1)
+                }
+            )
+    }
+
+    private var chipRow: some View {
         HStack(spacing: 0) {
             ForEach(targets, id: \.self) { value in
-                let on = value == target
-                Button {
-                    onChange(value)
-                } label: {
-                    Text(title(for: value))
-                        .font(.subheadline.weight(.semibold).monospacedDigit())
-                        .foregroundStyle(on ? Color.white : MihrabColor.textPrimary.opacity(0.72))
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 40)
-                        .background {
-                            if on { Capsule().fill(accent.opacity(0.92)) }
-                        }
+                Button { onChange(value) } label: {
+                    chipLabel(title(for: value), selected: value == target)
                 }
                 .buttonStyle(.plain)
             }
         }
-        .padding(5)
-        .background {
-            Capsule()
-                .fill(MihrabColor.abyss.opacity(0.40))
-                .mihrabShaderPanel(motif, cornerRadius: 25, opacity: 0.28)
-                .clipShape(Capsule())
-        }
-        .overlay {
-            Capsule().strokeBorder(MihrabColor.mint.opacity(0.26), lineWidth: 1)
-        }
-        .opacity(enabled ? 1 : 0.4)
-        .disabled(!enabled)
-        .highPriorityGesture(
-            DragGesture(minimumDistance: 28).onEnded { value in
-                guard enabled,
-                      abs(value.translation.width) > abs(value.translation.height) else { return }
-                advance(by: value.translation.width < 0 ? 1 : -1)
-            }
-        )
-        .accessibilityElement()
-        .accessibilityLabel(Text(L10n.dhkCustomTarget))
-        .accessibilityValue(Text(title(for: target)))
-        .accessibilityAdjustableAction { direction in
-            switch direction {
-            case .increment: advance(by: 1)
-            case .decrement: advance(by: -1)
-            @unknown default: break
-            }
-        }
+    }
+
+    private var capsuleBackground: some View {
+        Capsule()
+            .fill(MihrabColor.abyss.opacity(0.40))
+            .mihrabShaderPanel(motif, cornerRadius: 25, opacity: 0.28)
+            .clipShape(Capsule())
+    }
+
+    @ViewBuilder
+    private func chipLabel(_ title: String, selected: Bool) -> some View {
+        let tint: Color = selected ? .white : MihrabColor.textPrimary.opacity(0.85)
+        Text(title)
+            .font(.subheadline.weight(.semibold).monospacedDigit())
+            .lineLimit(1)
+            .minimumScaleFactor(0.6)
+            .foregroundStyle(tint)
+            .frame(maxWidth: .infinity, minHeight: 40)
+            .background { selected ? Capsule().fill(accent.opacity(0.92)) : nil }
     }
 
     private func title(for value: Int) -> String {
-        value == 0 ? "∞" : "\(value)"
+        value == 0 ? "∞" : value.formatted()
     }
 
     private func advance(by step: Int) {

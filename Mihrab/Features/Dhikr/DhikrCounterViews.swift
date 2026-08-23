@@ -13,6 +13,9 @@ struct DhikrDialRing: View {
     let flash: Double
     let accent: Color
     let reduceMotion: Bool
+    /// Draws a rim tick every `tickStride` counts, so a 33 or 99 set can be read
+    /// in thirds without looking at the number — the tasbih's knotted markers.
+    var tickStride: Int = 11
 
     var body: some View {
         ZStack {
@@ -21,12 +24,54 @@ struct DhikrDialRing: View {
             } else {
                 arc(progress: progress)
             }
+            if let count = tickCount {
+                ticks(count: count)
+            }
         }
         .frame(width: side, height: side)
         .allowsHitTesting(false)
     }
 
     private var litColor: Color { accent.mix(with: MihrabColor.ramadanGold, by: flash) }
+
+    /// Only when the target divides cleanly — a tick that lands between counts
+    /// would lie about where you are.
+    private var tickCount: Int? {
+        guard target > 0, tickStride > 1, target % tickStride == 0 else { return nil }
+        let count = target / tickStride
+        return count > 1 ? count : nil
+    }
+
+    private func ticks(count: Int) -> some View {
+        Canvas { context, size in
+            let center = CGPoint(x: size.width / 2, y: size.height / 2)
+            let outer = size.width / 2 - 3
+            let inner = outer - 7
+            let reached = progress ?? 0
+
+            for index in 0..<count {
+                let fraction = Double(index) / Double(count)
+                let angle = fraction * 2 * .pi - .pi / 2
+                var path = Path()
+                path.move(to: CGPoint(x: center.x + inner * cos(angle), y: center.y + inner * sin(angle)))
+                path.addLine(to: CGPoint(x: center.x + outer * cos(angle), y: center.y + outer * sin(angle)))
+                // The tick you have already passed lights brass; the one ahead
+                // stays a hairline.
+                let passed = fraction <= reached + 0.0001
+                context.stroke(
+                    path,
+                    with: .color(
+                        passed
+                            ? MihrabColor.brass.opacity(0.85)
+                            : MihrabColor.mint.opacity(0.28)
+                    ),
+                    lineWidth: passed ? 2 : 1.2
+                )
+            }
+        }
+        .animation(reduceMotion ? nil : MihrabMotion.snappyAnimation, value: progress)
+        .accessibilityHidden(true)
+    }
 
     private func beads(progress: Double) -> some View {
         Canvas { context, size in
@@ -182,6 +227,8 @@ struct DhikrStrandView: View {
     /// Points of drag per bead.
     private let beadPitch: CGFloat = 26
 
+    @Environment(\.layoutDirection) private var layoutDirection
+
     @State private var dragBeads = 0
     @State private var dragFraction: Double = 0
 
@@ -268,7 +315,10 @@ struct DhikrStrandView: View {
     private func marker(side: CGFloat) -> some View {
         VStack(spacing: 0) {
             Image(systemName: "chevron.compact.down")
-                .font(.system(size: 22, weight: .semibold))
+                // Decorative marker inside fixed geometry — a semantic style
+                // keeps it in step with the rest of the type without scaling
+                // past the strand it points at.
+                .font(.title2.weight(.semibold))
                 .foregroundStyle(MihrabColor.brass)
                 .shadow(color: MihrabColor.brass.opacity(0.5), radius: 6)
             Spacer()
@@ -282,9 +332,15 @@ struct DhikrStrandView: View {
         DragGesture(minimumDistance: 2)
             .onChanged { value in
                 // Either axis works; the strand reads whichever the thumb moves more.
+                // Vertical drag counts the same way everywhere; horizontal drag
+                // follows the reading direction, so an Arabic thumb turns the
+                // strand the way an Arabic tasbih actually turns.
+                let horizontal = layoutDirection == .rightToLeft
+                    ? value.translation.width
+                    : -value.translation.width
                 let travel = abs(value.translation.height) > abs(value.translation.width)
                     ? value.translation.height
-                    : -value.translation.width
+                    : horizontal
                 let raw = Double(travel / beadPitch)
                 dragFraction = raw - Double(dragBeads)
                 let whole = Int(raw.rounded(.towardZero))
@@ -312,6 +368,8 @@ struct DhikrGoalBar: View {
     let streak: Int
     let accent: Color
 
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
     private var fraction: Double {
         guard goal > 0 else { return 0 }
         return min(Double(todayTotal) / Double(goal), 1)
@@ -321,20 +379,13 @@ struct DhikrGoalBar: View {
 
     var body: some View {
         VStack(spacing: 8) {
-            HStack(spacing: 8) {
-                Text(reached ? L10n.dhkGoalReached : L10n.dhkGoalToday)
-                    .font(.caption2.weight(.semibold))
-                    .foregroundStyle(reached ? MihrabColor.ramadanGold : MihrabColor.textSecondary)
-                Spacer(minLength: 8)
-                if streak > 1 {
-                    Label(L10n.dhkStreakDays(streak), systemImage: "flame.fill")
-                        .font(.caption2.weight(.semibold))
-                        .foregroundStyle(MihrabColor.brass)
-                        .labelStyle(.titleAndIcon)
-                }
-                Text(L10n.dhkGoalProgress(todayTotal, goal))
-                    .font(.caption2.monospacedDigit())
-                    .foregroundStyle(MihrabColor.textTertiary)
+            // At accessibility text sizes label + streak + count cannot share a
+            // line. `ViewThatFits` cannot judge it — the row carries a `Spacer`
+            // and so always claims to fit — so branch on the size directly.
+            if dynamicTypeSize.isAccessibilitySize {
+                VStack(alignment: .leading, spacing: 4) { headerItems }
+            } else {
+                HStack(spacing: 8) { headerItems }
             }
 
             GeometryReader { geo in
@@ -355,9 +406,30 @@ struct DhikrGoalBar: View {
                 }
             }
             .frame(height: 6)
+            .accessibilityHidden(true)
         }
         .accessibilityElement(children: .combine)
         .accessibilityLabel(Text(L10n.dhkGoalToday))
         .accessibilityValue(Text(L10n.dhkGoalProgress(todayTotal, goal)))
+    }
+
+    @ViewBuilder
+    private var headerItems: some View {
+        Text(reached ? L10n.dhkGoalReached : L10n.dhkGoalToday)
+            .font(.caption2.weight(.semibold))
+            .foregroundStyle(reached ? MihrabColor.ramadanGold : MihrabColor.textSecondary)
+        if !dynamicTypeSize.isAccessibilitySize {
+            Spacer(minLength: 8)
+        }
+        if streak > 1 {
+            Label(L10n.dhkStreakDays(streak), systemImage: "flame.fill")
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(MihrabColor.brass)
+                .labelStyle(.titleAndIcon)
+        }
+        Text(L10n.dhkGoalProgress(todayTotal, goal))
+            .font(.caption2.monospacedDigit())
+            // textTertiary measures 2.9:1 on moss — under the 4.5:1 floor.
+            .foregroundStyle(MihrabColor.textSecondary)
     }
 }

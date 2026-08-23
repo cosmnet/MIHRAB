@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>Mihrab</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>$(PRODUCT_NAME)</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(MARKETING_VERSION)</string>
+	<key>CFBundleVersion</key>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.lifestyle</string>
+
+	<!-- watchOS 7+ single-target app. WKApplication replaces the old
+	     WKWatchKitApp / WatchKit-extension pair; WKExtensionDelegate is
+	     deprecated and unused here. -->
+	<key>WKApplication</key>
+	<true/>
+	<!-- Must match the iPhone app's bundle id exactly, or installation fails
+	     with "BundleID is not valid". -->
+	<key>WKCompanionAppBundleIdentifier</key>
+	<string>com.caferkarakaya.mihrab</string>
+	<key>WKWatchOnly</key>
+	<false/>
+
+	<!-- Used for prayer times when the phone has sent no coordinate, and for
+	     the Qibla bearing. Nothing is stored or transmitted off the watch. -->
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Mihrab uses your location to calculate prayer times and the Qibla direction on your watch.</string>
+
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+	</array>
+</dict>
+</plist>
