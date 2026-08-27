@@ -125,7 +125,6 @@
 		51FDD253F259EB8AE52E836D /* VoluntaryFasts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58C949E12B0B4C50496AFF20 /* VoluntaryFasts.swift */; };
 		529853956AFA1A9053C95C21 /* CityListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADA38094DC212168B4E542EA /* CityListView.swift */; };
 		52CCC79B47040D9E61F407EF /* WatchSharedState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27317FFDC07824F9411DB0A1 /* WatchSharedState.swift */; };
-		53364343F133D98E11D856B2 /* today-hero.png in Resources */ = {isa = PBXBuildFile; fileRef = EF329F80884C6B824886F2DB /* today-hero.png */; };
 		546D59714CA8977A56E54393 /* L10n+Quran.swift in Sources */ = {isa = PBXBuildFile; fileRef = E884B6DBEBA8B3F1355027C3 /* L10n+Quran.swift */; };
 		54F8EC97C401DF720F9AE391 /* SunQiblaCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95E094437CC2998E1B71DD2C /* SunQiblaCard.swift */; };
 		551EA8D08534223852170BA2 /* MihrabAlarmMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72B01A33EB7ABD93BCACDED1 /* MihrabAlarmMetadata.swift */; };
@@ -150,7 +149,6 @@
 		60C4A9D72006064FE4C56C20 /* InlineMonthTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A4F5AD963C7F2FEA4A7B7D2 /* InlineMonthTable.swift */; };
 		61F2B0FED3E290548B55A276 /* LiveActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4EB66056B13D5B9D06BC578 /* LiveActivityManager.swift */; };
 		63D130307EC6974EE89D4261 /* SharedPrayerCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C14EBC7AF467CEA1B890458 /* SharedPrayerCache.swift */; };
-		6624AD18A08CB85B1AF9919D /* esma-bg.png in Resources */ = {isa = PBXBuildFile; fileRef = 9DBB1F6FF92E736B547C5035 /* esma-bg.png */; };
 		66C14E429AC99032DC2AFB93 /* AuroraBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 013D923E75851C7979A38E63 /* AuroraBackground.swift */; };
 		6787B05306DF87686CF115ED /* ImsakiyeCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86358B5BB6DC82ECA9FE4728 /* ImsakiyeCard.swift */; };
 		683ADC0BC3E1AA6D2A198C9B /* SubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F63408048D09488A670C3E77 /* SubscriptionManager.swift */; };
@@ -208,7 +206,6 @@
 		974297DCEF97B097E1B45C88 /* WatchBridgeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FF96D9923157A6A08FCE0C5 /* WatchBridgeTests.swift */; };
 		979712DD3A92FDEB64792D48 /* L10n+Qada.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46C3D7DD3B0A016845D0C06A /* L10n+Qada.swift */; };
 		9805434A9CD7A66A1C481153 /* QiblaAccuracyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 295F49E469255CFDF67949D9 /* QiblaAccuracyTests.swift */; };
-		9850292D93AD80610F292CE8 /* today-hadith.png in Resources */ = {isa = PBXBuildFile; fileRef = B1F7F007B8134BE6406C4C63 /* today-hadith.png */; };
 		986B00F20CA5005A232C0F64 /* PremiumEntitlement.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBF01D1DF4DDDB09420A55EF /* PremiumEntitlement.swift */; };
 		990B9A772C1C03B107F5E8BA /* L10n+Watch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 78ED6F47CD574DE2B40A21C3 /* L10n+Watch.swift */; };
 		9A08053FC89AACB0434FF8BB /* MihrabWatchWidgetsBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 362E7256C731756BEB32DF2D /* MihrabWatchWidgetsBundle.swift */; };
@@ -251,7 +248,6 @@
 		B523FDD4C0EF7A9018350207 /* BundledContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FE24223784A5D8F4B2EC10C /* BundledContent.swift */; };
 		B59140CFB25494FA57E3FB82 /* WatchTimesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9339F76C0752E0C97BED6EF7 /* WatchTimesView.swift */; };
 		B6D81349DAF7D0969D5875F2 /* PrayerEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83D2A78AFCEE5BB6523B1015 /* PrayerEngine.swift */; };
-		B70BEE9300B46A2DF66CA981 /* times-bg.png in Resources */ = {isa = PBXBuildFile; fileRef = EC14784CFD3C7BCF7017796F /* times-bg.png */; };
 		B70D53AB0D63F7E9CBBCB7E3 /* DesignTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3650D86821E8BB544540EA14 /* DesignTokens.swift */; };
 		B7622F3FA9628EC2E75F880D /* L10n+Cities.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF03830ABDB0A3F833DDD0EF /* L10n+Cities.swift */; };
 		B7C70B376515E456D5544EFD /* AdhanPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44C2FB7CDB469A6199634ACD /* AdhanPlayer.swift */; };
@@ -275,9 +271,7 @@
 		C6713C197079E1B3E03E8BE5 /* PrayerSourcePreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61F45CC94DFF7345AB61FBDF /* PrayerSourcePreferences.swift */; };
 		C67D5801861AC3588C12D1C6 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = D5BFC74AD6FF9B6B5B12D05F /* PrivacyInfo.xcprivacy */; };
 		C7B5BCD021C3965B4D573867 /* SharedPrayerCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C14EBC7AF467CEA1B890458 /* SharedPrayerCache.swift */; };
-		C7D5556959E5F731DCD6C612 /* qibla-bg.png in Resources */ = {isa = PBXBuildFile; fileRef = 95C4901FC084FD05D1C11825 /* qibla-bg.png */; };
 		C8344FFB5C8239B82FACDD18 /* PrayerModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9FD0466F6CBB450EE0D595E /* PrayerModels.swift */; };
-		C904A1E8F108E1BC5A004F96 /* ASSET_INDEX.md in Resources */ = {isa = PBXBuildFile; fileRef = B6746A8E73FF8436B71BF77C /* ASSET_INDEX.md */; };
 		C9293F23B49A64AD74B835CD /* AppearanceSettingsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB391D45D25E728200C6BA4F /* AppearanceSettingsSection.swift */; };
 		C9578ED74F4840A20A9A2CC1 /* BundledContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FE24223784A5D8F4B2EC10C /* BundledContent.swift */; };
 		CA8BB77E3B6291412519833C /* PrayerEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0AF1A04D22BC7FF54684EC1 /* PrayerEngineTests.swift */; };
@@ -324,7 +318,6 @@
 		EDBD91E8A53426E5D0C8A5DD /* DaySegment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 208076382E65601C160A419D /* DaySegment.swift */; };
 		EDDE09F47D00F255D59000FE /* AdhanSettingsSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E2BC92D1D12FFEE81EF422B /* AdhanSettingsSection.swift */; };
 		EDF0F5C30F6775CFAC0482DF /* L10n+Calendar.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7FAE6E203498260E5B8980F /* L10n+Calendar.swift */; };
-		EFB06DFD6416855D10A52334 /* dhikr-bg.png in Resources */ = {isa = PBXBuildFile; fileRef = 0C4983836E730ECEF541E8E5 /* dhikr-bg.png */; };
 		EFBC9F326AFDD160D37D8B99 /* HatimStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2DE3A0AB04C837CAD9D15D3 /* HatimStore.swift */; };
 		EFBE79655620933372338860 /* ShaderBackdropView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AF3112EADADE56AC13AA5C0 /* ShaderBackdropView.swift */; };
 		F2039F05D9712479D7E14685 /* PrayerIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62C15BE83943274A9099C747 /* PrayerIntents.swift */; };
@@ -429,7 +422,6 @@
 		0942AC934154A367DE2D367D /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		09FD2F82FD4ADB1134065E1A /* FastEdge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FastEdge.swift; sourceTree = "<group>"; };
 		0AA161FE1D05C8095ED89CF8 /* QuranText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuranText.swift; sourceTree = "<group>"; };
-		0C4983836E730ECEF541E8E5 /* dhikr-bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "dhikr-bg.png"; sourceTree = "<group>"; };
 		0EA3AECD4E4F15A9B08C47F7 /* hadiths.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = hadiths.json; sourceTree = "<group>"; };
 		0EDA8EF3E8A67EDBF8D9C9C5 /* QuranTranslation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuranTranslation.swift; sourceTree = "<group>"; };
 		0F8442FC795010726112A138 /* MihrabWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MihrabWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -563,14 +555,12 @@
 		918C18ADDB58D3E23461A632 /* MihrabWidgetsBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MihrabWidgetsBundle.swift; sourceTree = "<group>"; };
 		9339F76C0752E0C97BED6EF7 /* WatchTimesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchTimesView.swift; sourceTree = "<group>"; };
 		948A066DE25B356202F016FB /* L10n+Dhikr.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "L10n+Dhikr.swift"; sourceTree = "<group>"; };
-		95C4901FC084FD05D1C11825 /* qibla-bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "qibla-bg.png"; sourceTree = "<group>"; };
 		95E094437CC2998E1B71DD2C /* SunQiblaCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SunQiblaCard.swift; sourceTree = "<group>"; };
 		964CC4FB844D85EA14C0C2C2 /* WatchLocationProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchLocationProvider.swift; sourceTree = "<group>"; };
 		969CD21BDE0692264CA5C6E8 /* HatimModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HatimModels.swift; sourceTree = "<group>"; };
 		971CE783F1DD8B55D3746ED1 /* DhikrLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DhikrLibrary.swift; sourceTree = "<group>"; };
 		97FC527137202349B8D15A74 /* WatchHaptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchHaptics.swift; sourceTree = "<group>"; };
 		9BE37E454B4EE45AF5602047 /* PrayerLogStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerLogStore.swift; sourceTree = "<group>"; };
-		9DBB1F6FF92E736B547C5035 /* esma-bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "esma-bg.png"; sourceTree = "<group>"; };
 		9E0B074524DCCEA21D6AC831 /* DhikrAchievements.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DhikrAchievements.swift; sourceTree = "<group>"; };
 		9F74C33A33DFE8B751916977 /* FastingLogStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FastingLogStore.swift; sourceTree = "<group>"; };
 		A0CF47A098C0D912C444778E /* NotificationScheduleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationScheduleTests.swift; sourceTree = "<group>"; };
@@ -591,14 +581,12 @@
 		B1804E135BE91306BBB59199 /* quran-uthmani.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "quran-uthmani.json"; sourceTree = "<group>"; };
 		B1BAD49BD2154A2CC67C6643 /* L10n+Qibla.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "L10n+Qibla.swift"; sourceTree = "<group>"; };
 		B1E6BD1A0C8ED289D41456E7 /* L10n+Deen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "L10n+Deen.swift"; sourceTree = "<group>"; };
-		B1F7F007B8134BE6406C4C63 /* today-hadith.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "today-hadith.png"; sourceTree = "<group>"; };
 		B2DE3A0AB04C837CAD9D15D3 /* HatimStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HatimStore.swift; sourceTree = "<group>"; };
 		B3929EB74B02AFB963E758E2 /* PrayerCacheStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerCacheStore.swift; sourceTree = "<group>"; };
 		B40699CE779EE83549A7D692 /* CountdownText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownText.swift; sourceTree = "<group>"; };
 		B456EF6BB5E531620F83F768 /* AdhanAssetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdhanAssetTests.swift; sourceTree = "<group>"; };
 		B49BAD75BD019FE42DED87A8 /* MihrabWatch.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MihrabWatch.entitlements; sourceTree = "<group>"; };
 		B5F24829EA8435CCFEB4C91C /* AlarmLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmLiveActivity.swift; sourceTree = "<group>"; };
-		B6746A8E73FF8436B71BF77C /* ASSET_INDEX.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = ASSET_INDEX.md; sourceTree = "<group>"; };
 		B7D54E0DEED135C0466216AC /* QadaSettingsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QadaSettingsSection.swift; sourceTree = "<group>"; };
 		B7E42CE5FD8934EEFA658DAB /* TrialReminder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrialReminder.swift; sourceTree = "<group>"; };
 		BAD3D3D9D53BA1E162E65374 /* CityStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CityStore.swift; sourceTree = "<group>"; };
@@ -646,12 +634,10 @@
 		E9FD0466F6CBB450EE0D595E /* PrayerModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerModels.swift; sourceTree = "<group>"; };
 		EAF08D7578FBC27541729D3B /* LockScreenWidgets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LockScreenWidgets.swift; sourceTree = "<group>"; };
 		EBF01D1DF4DDDB09420A55EF /* PremiumEntitlement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumEntitlement.swift; sourceTree = "<group>"; };
-		EC14784CFD3C7BCF7017796F /* times-bg.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "times-bg.png"; sourceTree = "<group>"; };
 		EC43B35BD4208BFA0D5D1E54 /* Mihrab.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Mihrab.entitlements; sourceTree = "<group>"; };
 		ED667BB3674E083FF4952A51 /* PremiumGate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumGate.swift; sourceTree = "<group>"; };
 		EDCDAED913E6D02F4196C69E /* EsmaGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EsmaGridView.swift; sourceTree = "<group>"; };
 		EED3CB362E1A571716BEE8CD /* MihrabTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MihrabTests.swift; sourceTree = "<group>"; };
-		EF329F80884C6B824886F2DB /* today-hero.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "today-hero.png"; sourceTree = "<group>"; };
 		F4508A6E3958A264562C98EF /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		F4EB66056B13D5B9D06BC578 /* LiveActivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveActivityManager.swift; sourceTree = "<group>"; };
 		F50BBC05C4924299AA9D3AE0 /* SubscriptionSettingsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionSettingsSection.swift; sourceTree = "<group>"; };
@@ -994,15 +980,6 @@
 			path = Intents;
 			sourceTree = "<group>";
 		};
-		7C1BFA8412432F4426FEB509 /* Generated */ = {
-			isa = PBXGroup;
-			children = (
-				B6746A8E73FF8436B71BF77C /* ASSET_INDEX.md */,
-				A9C29DB6330A9A63BAD22304 /* Backgrounds */,
-			);
-			path = Generated;
-			sourceTree = "<group>";
-		};
 		7CC84AFE60282CA788B75DA5 /* Features */ = {
 			isa = PBXGroup;
 			children = (
@@ -1088,19 +1065,6 @@
 				F50BBC05C4924299AA9D3AE0 /* SubscriptionSettingsSection.swift */,
 			);
 			path = Paywall;
-			sourceTree = "<group>";
-		};
-		A9C29DB6330A9A63BAD22304 /* Backgrounds */ = {
-			isa = PBXGroup;
-			children = (
-				0C4983836E730ECEF541E8E5 /* dhikr-bg.png */,
-				9DBB1F6FF92E736B547C5035 /* esma-bg.png */,
-				95C4901FC084FD05D1C11825 /* qibla-bg.png */,
-				EC14784CFD3C7BCF7017796F /* times-bg.png */,
-				B1F7F007B8134BE6406C4C63 /* today-hadith.png */,
-				EF329F80884C6B824886F2DB /* today-hero.png */,
-			);
-			path = Backgrounds;
 			sourceTree = "<group>";
 		};
 		AB942715143B183502E6D963 /* MihrabWatchWidgets */ = {
@@ -1208,7 +1172,6 @@
 				D5BFC74AD6FF9B6B5B12D05F /* PrivacyInfo.xcprivacy */,
 				EDD58E08F8123AA2E68F75D7 /* Audio */,
 				FC22B2C6F12E09B91CDC8963 /* Fonts */,
-				7C1BFA8412432F4426FEB509 /* Generated */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -1479,7 +1442,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C904A1E8F108E1BC5A004F96 /* ASSET_INDEX.md in Resources */,
 				BFCD1CBDF888ECBEE3EB57DF /* AmiriQuran-Regular.ttf in Resources */,
 				A37D211CDACC29A6833E1FAA /* Assets.xcassets in Resources */,
 				4C65951F9E5EBF3F08D92ED6 /* CONTENT_LICENSE.md in Resources */,
@@ -1490,19 +1452,13 @@
 				C67D5801861AC3588C12D1C6 /* PrivacyInfo.xcprivacy in Resources */,
 				2DFBB4FA7FFAC82A001519D1 /* README.md in Resources */,
 				2B77B7B8615D47A682C05939 /* adhkar.json in Resources */,
-				EFB06DFD6416855D10A52334 /* dhikr-bg.png in Resources */,
-				6624AD18A08CB85B1AF9919D /* esma-bg.png in Resources */,
 				51E19007EB02007BC35FDEC6 /* esma.json in Resources */,
 				9AFE4BC251884640D27BBD6F /* hadiths.json in Resources */,
 				A2E078FB6C8BDF0E7EB9C7C7 /* mihrab-ezan-short.caf in Resources */,
 				5D200C300D31809F2548B7E1 /* mihrab-ezan.caf in Resources */,
-				C7D5556959E5F731DCD6C612 /* qibla-bg.png in Resources */,
 				185F5D11F839B9CC2765F582 /* quran-meta.json in Resources */,
 				A19E5E9B96A99C9F75E7393E /* quran-uthmani.json in Resources */,
 				CC255485A679BBA0BA4D24C5 /* religious_days.json in Resources */,
-				B70BEE9300B46A2DF66CA981 /* times-bg.png in Resources */,
-				9850292D93AD80610F292CE8 /* today-hadith.png in Resources */,
-				53364343F133D98E11D856B2 /* today-hero.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2044,7 +2000,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.caferkarakaya.mihrab.watchkitapp;
 				PRODUCT_NAME = Mihrab;
 				SDKROOT = watchos;
-				SKIP_INSTALL = NO;
+				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 4;
 				WATCHOS_DEPLOYMENT_TARGET = 26.0;
 			};
@@ -2169,7 +2125,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.caferkarakaya.mihrab.watchkitapp;
 				PRODUCT_NAME = Mihrab;
 				SDKROOT = watchos;
-				SKIP_INSTALL = NO;
+				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 4;
 				WATCHOS_DEPLOYMENT_TARGET = 26.0;
 			};
