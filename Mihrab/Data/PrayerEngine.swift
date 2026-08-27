@@ -36,7 +36,25 @@ public struct PrayerEngineConfiguration: Codable, Sendable, Equatable {
     /// the Diyanet-derived `.turkey` base (that is where the temkin comes from);
     /// `.standard` honours whatever the user chose in Settings.
     public var effectiveAdhanMethod: Adhan.CalculationMethod {
-        source.forcesTurkishBaseMethod ? .turkey : method.adhanMethod
+        source.baseAdhanMethod ?? method.adhanMethod
+    }
+
+    /// The method id to send to Aladhan, or `nil` when Aladhan cannot reproduce
+    /// this source and the network must be skipped.
+    ///
+    /// Without this the two paths could disagree: a user on the Diyanet source
+    /// with, say, ISNA still selected in Settings computed Diyanet times
+    /// offline and then had them overwritten by ISNA times from the network,
+    /// while the screen kept saying "Diyanet". `CalculationMethod.rawValue` is
+    /// the Aladhan method id (13 = Diyanet İşleri Başkanlığı).
+    public var networkMethod: CalculationMethod? {
+        source.networkMethod(userMethod: method)
+    }
+
+    /// The method the transparency panel names. Falls back to the user's own
+    /// pick for sources Aladhan cannot express, which is what the engine used.
+    public var reportedMethod: CalculationMethod {
+        networkMethod ?? method
     }
 
     /// Stable identity for cache invalidation. Changing anything here must
@@ -290,15 +308,16 @@ public struct PrayerEngine {
 
         let resolution = PrayerResolution(
             origin: .device,
-            source: configuration.source,
-            methodID: configuration.method.rawValue,
+            source: configuration.source.resolved,
+            methodID: configuration.reportedMethod.rawValue,
             madhabID: configuration.madhab.rawValue,
             adhanMethodID: configuration.effectiveAdhanMethod.rawValue,
             fajrAngle: params.fajrAngle,
             ishaAngle: params.ishaInterval > 0 ? nil : params.ishaAngle,
             ishaIntervalMinutes: params.ishaInterval,
             temkinMinutes: temkin(for: configuration),
-            temkinIsDiyanet: MethodTemkin.isTemkin(configuration.effectiveAdhanMethod),
+            temkinIsDiyanet: configuration.source.appliesDocumentedTemkin
+                || MethodTemkin.isTemkin(configuration.effectiveAdhanMethod),
             userOffsetMinutes: configuration.offsets.filter { $0.value != 0 },
             // Only worth surfacing where it actually changes anything: below
             // 48° the rule is a no-op safety net, and naming it in the panel
@@ -333,16 +352,20 @@ public struct PrayerEngine {
         var params = configuration.effectiveAdhanMethod.params
         params.madhab = configuration.madhab.adhanMadhab
 
-        if let fajrAngle = configuration.source.fajrAngleOverride {
+        let source = configuration.source.resolved
+        if let fajrAngle = source.fajrAngleOverride {
             params.fajrAngle = fajrAngle
         }
-        if let ishaAngle = configuration.source.ishaAngleOverride, params.ishaInterval == 0 {
+        if let ishaAngle = source.ishaAngleOverride, params.ishaInterval == 0 {
             params.ishaAngle = ishaAngle
         }
 
-        // Extra temkin on top of the method's own, if the tradition defines any.
-        // (Currently always empty — see `PrayerSource.extraTemkinMinutes`.)
-        let extra = configuration.source.extraTemkinMinutes
+        // Temkin the tradition applies on top of its base preset's own.
+        // Diyanet's already lives inside `.turkey`; Türkiye Takvimi's whole
+        // 10-minute margin arrives here. See `PrayerSource.extraTemkinMinutes`.
+        // `params.adjustments` is summed with `params.methodAdjustments` by
+        // adhan-swift, so this never overwrites a preset's own numbers.
+        let extra = source.extraTemkinMinutes
         if !extra.isEmpty {
             params.adjustments = PrayerAdjustments(
                 fajr: extra[.fajr] ?? 0,
@@ -363,7 +386,7 @@ public struct PrayerEngine {
     /// Method temkin + tradition temkin, merged, for the transparency panel.
     static func temkin(for configuration: PrayerEngineConfiguration) -> [Prayer: Int] {
         var merged = MethodTemkin.minutes(for: configuration.effectiveAdhanMethod)
-        for (prayer, minutes) in configuration.source.extraTemkinMinutes {
+        for (prayer, minutes) in configuration.source.resolved.extraTemkinMinutes {
             merged[prayer, default: 0] += minutes
         }
         return merged.filter { $0.value != 0 }

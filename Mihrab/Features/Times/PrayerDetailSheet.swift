@@ -84,7 +84,7 @@ struct PrayerDetailSheet: View {
             } else {
                 Text("–")
                     .font(MihrabFont.timeDisplay(44))
-                    .foregroundStyle(MihrabColor.textTertiary)
+                    .foregroundStyle(MihrabColor.textSecondary)
             }
 
             Text(day.date, format: .dateTime.weekday(.wide).day().month(.wide))
@@ -136,19 +136,19 @@ struct PrayerDetailSheet: View {
 
                     MihrabHairline()
 
-                    Text(L10n.tmxAdjustmentsCaps).ornamentalCaps(MihrabColor.textTertiary)
+                    Text(L10n.tmxAdjustmentsCaps).ornamentalCaps(MihrabColor.textSecondary)
                     adjustmentLines(resolution)
 
                     MihrabHairline()
 
                     Text(L10n.tmxLastUpdated(resolution.updatedAt))
                         .font(.caption2)
-                        .foregroundStyle(MihrabColor.textTertiary)
+                        .foregroundStyle(MihrabColor.textSecondary)
                 }
             } else {
                 Text(L10n.tmxResolutionUnavailable)
                     .font(.footnote)
-                    .foregroundStyle(MihrabColor.textTertiary)
+                    .foregroundStyle(MihrabColor.textSecondary)
             }
         }
     }
@@ -259,7 +259,7 @@ struct PrayerDetailSheet: View {
                         HStack(alignment: .top, spacing: 10) {
                             Image(systemName: selected ? "largecircle.fill.circle" : "circle")
                                 .font(.body)
-                                .foregroundStyle(selected ? theme.accent : MihrabColor.textTertiary)
+                                .foregroundStyle(selected ? theme.accent : MihrabColor.textSecondary)
 
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(candidate.localizedName)

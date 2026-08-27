@@ -674,7 +674,7 @@ struct TodayProvenanceBadge: View {
                 Spacer(minLength: 0)
             }
             .font(.caption)
-            .foregroundStyle(MihrabColor.textTertiary)
+            .foregroundStyle(MihrabColor.textSecondary)
             .accessibilityElement(children: .combine)
         }
     }
@@ -805,7 +805,7 @@ struct PrayerLogCard: View {
             HStack(spacing: 8) {
                 Image(systemName: store.streak > 0 ? "flame.fill" : "flame")
                     .font(.footnote)
-                    .foregroundStyle(store.streak > 0 ? MihrabColor.brass : MihrabColor.textTertiary)
+                    .foregroundStyle(store.streak > 0 ? MihrabColor.brass : MihrabColor.textSecondary)
                     .symbolRenderingMode(.hierarchical)
                 Text(store.streak > 0 ? L10n.homeStreakDays(store.streak) : L10n.homeStreakStart)
                     .font(.footnote.weight(.medium))
@@ -864,7 +864,7 @@ struct PrayerLogCard: View {
 
                 Text(prayer.shortName)
                     .font(.system(size: markerLabelSize, weight: .semibold))
-                    .foregroundStyle(isLogged ? MihrabColor.textPrimary : MihrabColor.textTertiary)
+                    .foregroundStyle(isLogged ? MihrabColor.textPrimary : MihrabColor.textSecondary)
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
             }
@@ -927,7 +927,7 @@ struct WeekStreakStrip: View {
 
             Text(weekday)
                 .font(.caption2)
-                .foregroundStyle(MihrabColor.textTertiary)
+                .foregroundStyle(MihrabColor.textSecondary)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
         }
@@ -1062,7 +1062,7 @@ struct DailyHadithCard: View {
                         Text(hadith.source)
                     }
                     .font(.caption)
-                    .foregroundStyle(MihrabColor.textTertiary)
+                    .foregroundStyle(MihrabColor.textSecondary)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -1154,7 +1154,7 @@ struct RamadanBand: View {
 
                     Image(systemName: "chevron.right")
                         .font(.footnote)
-                        .foregroundStyle(MihrabColor.textTertiary)
+                        .foregroundStyle(MihrabColor.textSecondary)
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 12)
@@ -1220,7 +1220,7 @@ struct DhikrSummaryCard: View {
                 }
                 Spacer()
                 Image(systemName: "chevron.right")
-                    .foregroundStyle(MihrabColor.textTertiary)
+                    .foregroundStyle(MihrabColor.textSecondary)
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)

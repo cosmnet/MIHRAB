@@ -28,6 +28,28 @@ extension L10n {
         string(en: "Reference", tr: "Referans", ar: "المرجع")
     }
 
+    /// The good case, stated once in the verification sheet instead of sitting
+    /// permanently under the dial as a badge.
+    static var qblReferenceTrueSentence: String {
+        string(
+            en: "This heading is measured from true north, the same north the Qibla bearing is drawn against.",
+            tr: "Bu yön, gerçek kuzeye göre ölçülüyor — kıble açısının da çizildiği kuzey.",
+            ar: "يُقاس هذا الاتجاه من الشمال الحقيقي، وهو الشمال نفسه الذي تُنسب إليه زاوية القبلة."
+        )
+    }
+
+    // MARK: - Verification sheet
+
+    /// The single visible entry point to everything the compass screen used to
+    /// explain inline.
+    static var qblVerifyEntry: String {
+        string(en: "How do I check this?", tr: "Nasıl doğrularım?", ar: "كيف أتحقّق؟")
+    }
+
+    static var qblVerifyTitle: String {
+        string(en: "Checking the Qibla", tr: "Kıbleyi doğrulama", ar: "التحقّق من القبلة")
+    }
+
     // MARK: - Accuracy gate
 
     static var qblUnreliableTitle: String {

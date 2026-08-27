@@ -6,16 +6,19 @@ import Foundation
 ///
 /// **Nothing ships in this layer today, and that is a licence decision, not an
 /// omission.** The Arabic text is Creative Commons; every Turkish and English
-/// translation we could find is either explicitly copyrighted (Diyanet), served
-/// under a *non-commercial only* term that a subscription app cannot satisfy
-/// (everything on tanzil.net/trans), or of a public-domain work whose only
-/// available digitisations are copyrighted modernisations (Elmalılı). The full
-/// finding, with the wording of each term and what the owner has to do to
-/// unlock this, is in `Mihrab/Features/Quran/CONTENT_LICENSE.md`.
+/// translation we could find is either explicitly copyrighted (Diyanet's
+/// *Kur'an Yolu Meali*), served under a *non-commercial only* term that a
+/// subscription app cannot satisfy (everything on tanzil.net/trans), or of a
+/// public-domain work whose only available digitisations are copyrighted
+/// modernisations (Elmalılı). The full finding — the wording of each term, and
+/// the exact letter the owner has to send to unlock the Turkish layer — is in
+/// `Mihrab/Features/Quran/CONTENT_LICENSE.md`.
 ///
-/// The type exists now so that dropping a licensed pack in later is a data
-/// change, not a rewrite: add a `quran-trans-<id>.json` to
-/// `Mihrab/Data/Bundled/`, list its id in `TranslationPack.bundledIDs`, done.
+/// **Installing a licensed pack is a one-file operation.** Drop a
+/// `quran-trans-<id>.json` into `Mihrab/Data/Bundled/` and it appears. There is
+/// no id list to remember to update: `TranslationPack.bundled` discovers every
+/// `quran-trans-*.json` in the bundle at runtime and validates it before it can
+/// be shown. `QuranTranslationInstallTests` pins that contract.
 ///
 /// Until then `installed` is empty and the reader says so out loud. It must
 /// never fill the gap with generated text — a fabricated ayah translation is
@@ -30,15 +33,29 @@ struct TranslationPack: Identifiable, Hashable, Sendable {
     let license: String
     let languageCode: String
 
-    /// Bundled pack ids, in display order. **Empty on purpose.**
-    /// Adding an id here without adding a correspondingly licensed
-    /// `quran-trans-<id>.json` will fail `QuranTests.testTranslationPacksResolve`.
-    static let bundledIDs: [String] = []
+    /// Filename stem every pack must use, so discovery can find it.
+    static let filePrefix = "quran-trans-"
 
-    /// Packs whose data file is actually present in the bundle.
+    /// Ids that get to sort first when several packs are installed. A pack that
+    /// is not listed here still shows — it just sorts after, alphabetically.
+    /// This is presentation only; it is **not** an allow-list.
+    static let preferredOrder: [String] = []
+
+    /// Every valid pack found in the bundle, in display order.
+    ///
+    /// Discovery, not configuration: adding a licensed file is the whole
+    /// install step. A file that fails validation (wrong shape, not 114 suras)
+    /// is skipped rather than shown half-broken.
     static var installed: [TranslationPack] {
-        bundledIDs.compactMap { TranslationStore.shared.descriptor(for: $0) }
+        TranslationStore.discoveredDescriptors().sorted { lhs, rhs in
+            let l = preferredOrder.firstIndex(of: lhs.id) ?? Int.max
+            let r = preferredOrder.firstIndex(of: rhs.id) ?? Int.max
+            return l == r ? lhs.id < rhs.id : l < r
+        }
     }
+
+    /// Ids currently installed. Derived — never hand-maintained.
+    static var bundledIDs: [String] { installed.map(\.id) }
 
     static var hasAny: Bool { !installed.isEmpty }
 
@@ -67,36 +84,81 @@ actor TranslationStore {
         let language: String
         /// 114 entries, ayahs separated by `U+000A`, same shape as the Arabic.
         let suras: [String]
+
+        /// A pack is only usable if it covers the whole Qur'an with the right
+        /// ayah counts. A short or mis-split file would silently misalign the
+        /// meal against the Arabic — every ayah after the gap would show the
+        /// wrong translation, which is worse than showing none.
+        var isComplete: Bool {
+            guard !id.isEmpty, suras.count == 114 else { return false }
+            return suras.enumerated().allSatisfy { index, sura in
+                sura.components(separatedBy: "\n").count == QuranCatalog.sura(index + 1)?.ayahCount
+            }
+        }
+
+        var descriptor: TranslationPack {
+            TranslationPack(id: id, title: title, attribution: attribution,
+                            license: license, languageCode: language)
+        }
     }
 
     private var loaded: [String: Payload] = [:]
-    private var descriptors: [String: TranslationPack] = [:]
 
     private final class BundleMarker {}
 
-    private nonisolated static func url(for id: String) -> URL? {
-        for bundle in [Bundle.main, Bundle(for: BundleMarker.self)] {
-            if let url = bundle.url(forResource: "quran-trans-\(id)", withExtension: "json") {
+    /// Bundles a pack could live in: the app, and the test/framework bundle.
+    private nonisolated static var searchBundles: [Bundle] {
+        var bundles = [Bundle.main, Bundle(for: BundleMarker.self)]
+        if let resource = Bundle.main.resourceURL,
+           let bundle = Bundle(url: resource), !bundles.contains(bundle) {
+            bundles.append(bundle)
+        }
+        return bundles
+    }
+
+    nonisolated static func url(for id: String) -> URL? {
+        for bundle in searchBundles {
+            if let url = bundle.url(forResource: "\(TranslationPack.filePrefix)\(id)",
+                                    withExtension: "json") {
                 return url
             }
         }
         return nil
     }
 
-    /// Synchronous, non-actor peek used by `TranslationPack.installed`. Reads
-    /// nothing but the bundle's file table when no pack is present.
-    nonisolated func descriptor(for id: String) -> TranslationPack? {
-        guard let url = Self.url(for: id),
-              let data = try? Data(contentsOf: url),
-              let payload = try? JSONDecoder().decode(Payload.self, from: data)
+    /// Every `quran-trans-*.json` present in any search bundle.
+    nonisolated static func discoveredURLs() -> [URL] {
+        var seen: Set<String> = []
+        var result: [URL] = []
+        for bundle in searchBundles {
+            for url in bundle.urls(forResourcesWithExtension: "json", subdirectory: nil) ?? [] {
+                let name = url.deletingPathExtension().lastPathComponent
+                guard name.hasPrefix(TranslationPack.filePrefix), seen.insert(name).inserted else { continue }
+                result.append(url)
+            }
+        }
+        return result
+    }
+
+    /// Descriptors for every discovered file that actually validates.
+    nonisolated static func discoveredDescriptors() -> [TranslationPack] {
+        discoveredURLs().compactMap { descriptor(at: $0) }
+    }
+
+    /// Reads and validates one pack file. `nil` when the file is missing,
+    /// malformed, or incomplete — the reader then shows its honest empty state.
+    nonisolated static func descriptor(at url: URL) -> TranslationPack? {
+        guard let data = try? Data(contentsOf: url, options: .mappedIfSafe),
+              let payload = try? JSONDecoder().decode(Payload.self, from: data),
+              payload.isComplete
         else { return nil }
-        return TranslationPack(
-            id: payload.id,
-            title: payload.title,
-            attribution: payload.attribution,
-            license: payload.license,
-            languageCode: payload.language
-        )
+        return payload.descriptor
+    }
+
+    /// Synchronous, non-actor peek by id.
+    nonisolated func descriptor(for id: String) -> TranslationPack? {
+        guard let url = Self.url(for: id) else { return nil }
+        return Self.descriptor(at: url)
     }
 
     private func payload(_ id: String) async throws -> Payload? {
@@ -106,15 +168,8 @@ actor TranslationStore {
             let data = try Data(contentsOf: url, options: .mappedIfSafe)
             return try JSONDecoder().decode(Payload.self, from: data)
         }.value
-        guard decoded.suras.count == 114 else { return nil }
+        guard decoded.isComplete else { return nil }
         loaded[id] = decoded
-        descriptors[id] = TranslationPack(
-            id: decoded.id,
-            title: decoded.title,
-            attribution: decoded.attribution,
-            license: decoded.license,
-            languageCode: decoded.language
-        )
         return decoded
     }
 

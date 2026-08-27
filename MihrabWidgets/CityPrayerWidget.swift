@@ -60,7 +60,14 @@ struct CityPrayerProvider: AppIntentTimelineProvider {
     }
 
     private func entry(at date: Date, for configuration: SelectCityIntent) -> CityPrayerEntry {
-        let city = configuration.city ?? .current
+        // Choosing a *specific* city is the paid part (`PremiumFeature
+        // .advancedWidgets`); the widget itself, showing the current location,
+        // is free. The extension cannot import SubscriptionManager, so it reads
+        // the App Group mirror.
+        let requested = configuration.city ?? .current
+        let city = (requested.isCurrentLocation || PremiumEntitlement.isPremium)
+            ? requested
+            : .current
         guard let snapshot = SharedPrayerCache.load(), matches(city, snapshot) else {
             return CityPrayerEntry(date: date, city: city, day: nil, tomorrow: nil)
         }

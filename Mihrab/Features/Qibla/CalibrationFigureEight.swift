@@ -31,13 +31,13 @@ struct QiblaCalibrationBanner: View {
                         .foregroundStyle(MihrabColor.textPrimary)
 
                     Text(L10n.qblUnreliableBody)
-                        .font(.caption)
+                        .font(.footnote)
                         .foregroundStyle(MihrabColor.textSecondary)
                         .fixedSize(horizontal: false, vertical: true)
 
                     Text(marginText)
-                        .font(.caption2.weight(.medium))
-                        .foregroundStyle(MihrabColor.textTertiary)
+                        .font(.caption.weight(.medium))
+                        .foregroundStyle(MihrabColor.textSecondary)
                 }
                 Spacer(minLength: 0)
             }
@@ -49,10 +49,10 @@ struct QiblaCalibrationBanner: View {
 
                 VStack(alignment: .leading, spacing: 3) {
                     Text(L10n.qblCalibrateHowTitle)
-                        .font(.footnote.weight(.semibold))
+                        .font(.subheadline.weight(.semibold))
                         .foregroundStyle(MihrabColor.textPrimary)
                     Text(L10n.qblCalibrateHowBody)
-                        .font(.caption2)
+                        .font(.footnote)
                         .foregroundStyle(MihrabColor.textSecondary)
                         .fixedSize(horizontal: false, vertical: true)
                 }
@@ -144,23 +144,23 @@ struct QiblaAccuracyStrip: View {
                 .accessibilityHidden(true)
 
             Text(referenceLabel)
-                .font(.caption.weight(.medium))
+                .font(.footnote.weight(.medium))
                 .foregroundStyle(MihrabColor.textSecondary)
 
-            Text("·")
-                .font(.caption)
-                .foregroundStyle(MihrabColor.textTertiary)
+            Text(verbatim: "·")
+                .font(.footnote)
+                .foregroundStyle(MihrabColor.textSecondary)
                 .accessibilityHidden(true)
 
             Text(marginLabel)
-                .font(.caption)
+                .font(.footnote)
                 .foregroundStyle(tint)
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 7)
-        .frame(minHeight: 32)
+        .frame(minHeight: 36)
         .background(Capsule().fill(MihrabColor.moss.opacity(0.85)))
         .overlay { Capsule().strokeBorder(tint.opacity(0.35), lineWidth: 1) }
         .accessibilityElement(children: .combine)
@@ -202,7 +202,7 @@ struct QiblaAccuracyStrip: View {
         switch accuracy.confidence {
         case .good: accuracy.reference == .trueNorth ? MihrabColor.mint : MihrabColor.brass
         case .coarse, .invalid: MihrabColor.brass
-        case .unavailable: MihrabColor.textTertiary
+        case .unavailable: MihrabColor.textSecondary
         }
     }
 }

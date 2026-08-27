@@ -9,6 +9,7 @@ struct QiblaCompassView: View {
     var showsAREntry: Bool = true
 
     @State private var showAR = false
+    @State private var showVerify = false
     @State private var hasLockedOn = false
     @State private var lastTickDegree = 0
     @State private var burstTrigger = 0
@@ -69,7 +70,7 @@ struct QiblaCompassView: View {
                             }
                             .padding(.horizontal, 24)
                         } else {
-                            VStack(spacing: 20) {
+                            VStack(spacing: 18) {
                                 QiblaCompassDial(
                                     heading: heading,
                                     dialHeading: dialHeading,
@@ -83,22 +84,25 @@ struct QiblaCompassView: View {
                                 .saturation(accuracy.isTrustworthy ? 1 : 0.25)
                                 .opacity(accuracy.isTrustworthy ? 1 : 0.6)
                                 .frame(width: 300, height: 300)
-                                .onTapGesture {
-                                    guard showsAREntry else { return }
-                                    HapticsEngine.shared.light()
-                                    showAR = true
-                                }
-                                .accessibilityAddTraits(.isButton)
-                                .accessibilityHint(Text(L10n.viewInAR))
+                                .accessibilityHidden(true)
 
-                                readout
+                                // The one line a person actually needs while
+                                // they are turning. Everything else moved.
+                                guidance
                             }
                             .padding(20)
                             .mihrabShaderPanel(.kufic, cornerRadius: MihrabSpace.cardRadius, opacity: 0.18)
                             .mihrabCardScene("qibla-bg", opacity: 0.45)
                             .mihrabCard()
+                            .accessibilityElement(children: .combine)
+                            .accessibilityLabel(Text(accessibilitySummary))
 
-                            QiblaAccuracyStrip(accuracy: accuracy)
+                            // Silence when the compass is fine. The strip used
+                            // to announce "true north · compass steady" forever,
+                            // which is a sentence nobody needs to read twice.
+                            if !accuracy.isTrustworthy || accuracy.isMagneticFallback {
+                                QiblaAccuracyStrip(accuracy: accuracy)
+                            }
 
                             if accuracy.isMagneticFallback {
                                 magneticNorthNotice
@@ -111,10 +115,7 @@ struct QiblaCompassView: View {
                                     .transition(.opacity.combined(with: .offset(y: 8)))
                             }
 
-                            if let coordinate = locationManager.effectiveCoordinate {
-                                SunQiblaCard(coordinate: coordinate, qiblaBearing: qiblaBearing)
-                                    .padding(.horizontal, 16)
-                            }
+                            verifyEntry
                         }
 
                         Spacer(minLength: 0)
@@ -144,6 +145,14 @@ struct QiblaCompassView: View {
             .mihrabTabSafeContent(showsAREntry ? MihrabSpace.tabClearance : 16)
             .navigationTitle(L10n.tabQibla)
             .navigationBarTitleDisplayMode(.inline)
+        }
+        .sheet(isPresented: $showVerify) {
+            QiblaVerifySheet(
+                coordinate: locationManager.effectiveCoordinate,
+                qiblaBearing: qiblaBearing,
+                distanceKm: distanceKm,
+                accuracy: accuracy
+            )
         }
         .fullScreenCover(isPresented: $showAR) {
             QiblaARGate(qiblaBearing: qiblaBearing, distanceKm: distanceKm)
@@ -185,78 +194,61 @@ struct QiblaCompassView: View {
         }
     }
 
-    private var readout: some View {
-        VStack(spacing: 10) {
-            // Untrustworthy readings lose their contrast as well as their
-            // colour: a crisp white "217°" reads as a fact.
-            Text(accuracy.hasHeading ? "\(Int(heading.rounded()))°" : "—")
-                .font(MihrabFont.countdown(48))
-                .foregroundStyle(headingColor)
-                .contentTransition(.numericText())
-                .animation(reduceMotion ? nil : .snappy(duration: 0.25), value: Int(heading.rounded()))
-
-            // Two facts side by side: where the Qibla is, and how far Makkah is.
+    /// One visible button in place of a permanently open essay. Behind it:
+    /// the sun check, Rashdul Qibla, the calibration walkthrough and the method
+    /// note that all used to sit on this screen at once.
+    private var verifyEntry: some View {
+        Button {
+            HapticsEngine.shared.light()
+            showVerify = true
+        } label: {
             HStack(spacing: 10) {
-                factTile(
-                    caption: L10n.qibHeadingCaps,
-                    value: L10n.qiblaDegrees(Int(qiblaBearing.rounded()), L10n.cardinal(for: qiblaBearing)),
-                    tint: MihrabColor.mint
-                )
-                if distanceKm > 0 {
-                    factTile(
-                        caption: L10n.qibDistanceCaps,
-                        value: L10n.kmToMakkah(Int(distanceKm.rounded())),
-                        tint: MihrabColor.brass
-                    )
-                }
+                Image(systemName: "sun.max")
+                    .font(.body)
+                    .foregroundStyle(MihrabColor.brass)
+                Text(L10n.qblVerifyEntry)
+                    .font(.body.weight(.semibold))
+                    .foregroundStyle(MihrabColor.textPrimary)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+                Image(systemName: "chevron.right")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(MihrabColor.textSecondary)
             }
-
-            guidance
+            .padding(.horizontal, 20)
+            .frame(minHeight: 52)
+            .contentShape(Capsule())
+            .background(Capsule().fill(MihrabColor.moss))
+            .overlay { Capsule().strokeBorder(MihrabColor.mint.opacity(0.3), lineWidth: 1) }
         }
-        .animation(reduceMotion ? nil : MihrabMotion.snappyAnimation, value: isAligned)
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel(Text(accessibilitySummary))
-    }
-
-    private var headingColor: Color {
-        if !accuracy.isTrustworthy { return MihrabColor.textTertiary }
-        return isAligned ? MihrabColor.mint : MihrabColor.textPrimary
-    }
-
-    private func factTile(caption: String, value: String, tint: Color) -> some View {
-        VStack(spacing: 4) {
-            Text(caption)
-                .ornamentalCaps()
-                .lineLimit(1)
-            Text(value)
-                .font(.footnote.weight(.semibold))
-                .foregroundStyle(tint)
-                .lineLimit(1)
-                .minimumScaleFactor(0.75)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 10)
-        .padding(.horizontal, 8)
-        .mihrabSolidCard(cornerRadius: 16)
+        .buttonStyle(.plain)
+        .pressable(reduceMotion)
+        .accessibilityAddTraits(.isButton)
     }
 
     /// Locked on, told which way to turn, or told honestly that we cannot say.
+    ///
+    /// This is now the *only* text under the dial, so it is sized to be read
+    /// at arm's length rather than squinted at.
     @ViewBuilder
     private var guidance: some View {
         if !accuracy.isTrustworthy, accuracy.hasHeading {
             // The sensor is live but wrong. Saying "turn 14° right" here would
             // be the precise failure mode this screen exists to avoid.
             Label(L10n.qblUnreliableTitle, systemImage: "exclamationmark.triangle.fill")
-                .font(.subheadline.weight(.semibold))
+                .font(.title3.weight(.semibold))
                 .foregroundStyle(MihrabColor.brass)
-                .padding(.horizontal, 16).padding(.vertical, 8)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 20)
+                .frame(minHeight: 52)
                 .background(Capsule().fill(MihrabColor.moss))
                 .overlay { Capsule().strokeBorder(MihrabColor.brass.opacity(0.5), lineWidth: 1) }
         } else if isAligned {
             Text(L10n.facingQibla)
-                .font(.headline)
+                .font(.title3.weight(.bold))
                 .foregroundStyle(MihrabColor.mint)
-                .padding(.horizontal, 16).padding(.vertical, 8)
+                .padding(.horizontal, 24)
+                .frame(minHeight: 52)
                 .background(Capsule().fill(MihrabColor.moss))
                 .overlay {
                     Capsule().strokeBorder(MihrabColor.mint.opacity(0.45), lineWidth: 1)
@@ -264,10 +256,11 @@ struct QiblaCompassView: View {
                 .transition(.opacity.combined(with: .scale))
         } else if locationManager.heading == nil {
             Text(L10n.holdFlat)
-                .font(.caption)
+                .font(.body)
                 .foregroundStyle(MihrabColor.textSecondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 32)
+                .frame(minHeight: 52)
         } else {
             let degrees = Int(abs(qiblaDelta).rounded())
             Label {
@@ -276,9 +269,12 @@ struct QiblaCompassView: View {
             } icon: {
                 Image(systemName: qiblaDelta > 0 ? "arrow.turn.up.right" : "arrow.turn.up.left")
             }
-            .font(.subheadline.weight(.semibold))
+            .font(.title3.weight(.semibold))
             .foregroundStyle(MihrabColor.textPrimary)
-            .padding(.horizontal, 16).padding(.vertical, 8)
+            .lineLimit(1)
+            .minimumScaleFactor(0.7)
+            .padding(.horizontal, 20)
+            .frame(minHeight: 52)
             .background(Capsule().fill(MihrabColor.moss.opacity(0.9)))
             .animation(reduceMotion ? nil : .snappy(duration: 0.25), value: degrees)
         }
@@ -293,7 +289,7 @@ struct QiblaCompassView: View {
                 .foregroundStyle(MihrabColor.brass)
                 .accessibilityHidden(true)
             Text(L10n.qblMagneticNorthWarning)
-                .font(.caption)
+                .font(.footnote)
                 .foregroundStyle(MihrabColor.textSecondary)
                 .fixedSize(horizontal: false, vertical: true)
             Spacer(minLength: 0)
@@ -422,7 +418,7 @@ struct QiblaCompassDial: View {
             ForEach([0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330], id: \.self) { deg in
                 Text("\(deg)")
                     .font(.system(size: 9, weight: .semibold, design: .rounded).monospacedDigit())
-                    .foregroundStyle(MihrabColor.textTertiary)
+                    .foregroundStyle(MihrabColor.textSecondary)
                     .offset(y: -96)
                     .rotationEffect(.degrees(Double(deg)))
                     .rotationEffect(.degrees(dialHeading))

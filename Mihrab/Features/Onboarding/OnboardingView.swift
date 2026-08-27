@@ -284,10 +284,11 @@ struct OnboardingView: View {
 
     private var welcomePage: some View {
         OnboardingScaffold {
-            VStack(spacing: 26) {
+            VStack(spacing: 24) {
                 Spacer(minLength: 0)
-                MihrabArchMark()
-                    .frame(height: 188)
+                // The brand mark itself, not a stand-in for it: the same
+                // niche the splash draws and the app icon carries.
+                MihrabMark(height: 150)
                 VStack(spacing: 10) {
                     Text("Mihrab")
                         .font(.system(size: 42, weight: .bold, design: .rounded))
@@ -313,8 +314,7 @@ struct OnboardingView: View {
             VStack(spacing: 22) {
                 Spacer(minLength: 0)
                 OnboardingHeadline(
-                    systemImage: "person.crop.circle",
-                    tint: MihrabColor.mint,
+                    illustration: "ob-name",
                     title: L10n.obNameTitle,
                     message: L10n.obNameBody
                 )
@@ -350,8 +350,7 @@ struct OnboardingView: View {
             VStack(spacing: 20) {
                 Spacer(minLength: 0)
                 OnboardingHeadline(
-                    systemImage: "location.fill",
-                    tint: MihrabColor.emerald,
+                    illustration: "ob-location",
                     title: L10n.obLocationTitle,
                     message: L10n.obLocationBody
                 )
@@ -401,8 +400,7 @@ struct OnboardingView: View {
         OnboardingScaffold {
             VStack(spacing: 18) {
                 OnboardingHeadline(
-                    systemImage: "sun.horizon.fill",
-                    tint: MihrabColor.brass,
+                    illustration: "ob-method",
                     title: L10n.obMethodTitle,
                     message: L10n.obMethodBody
                 )
@@ -485,8 +483,7 @@ struct OnboardingView: View {
         OnboardingScaffold {
             VStack(spacing: 16) {
                 OnboardingHeadline(
-                    systemImage: "sun.horizon.fill",
-                    tint: MihrabColor.brass,
+                    illustration: "ob-asr",
                     title: L10n.obAsrTitle,
                     message: L10n.obAsrBody
                 )
@@ -623,8 +620,7 @@ struct OnboardingView: View {
         OnboardingScaffold {
             VStack(spacing: 18) {
                 OnboardingHeadline(
-                    systemImage: "bell.badge.fill",
-                    tint: MihrabColor.brass,
+                    illustration: "ob-notifications",
                     title: L10n.obNotificationsTitle,
                     message: L10n.obNotificationsBody
                 )
@@ -669,6 +665,7 @@ struct OnboardingView: View {
     private var tourPage: some View {
         OnboardingScaffold {
             VStack(spacing: 16) {
+                MihrabIllustration(asset: "ob-tour", height: 150)
                 Text(L10n.obTourTitle)
                     .font(.title2.bold())
                     .foregroundStyle(MihrabColor.textPrimary)
@@ -712,18 +709,22 @@ struct OnboardingView: View {
             VStack(spacing: 20) {
                 Spacer(minLength: 0)
 
+                // Was a 78pt brass crescent, which at this size read as a
+                // stray capital "C" rather than as anything to do with the
+                // product. It is now the Plus panel from the illustration
+                // set, with the brand mark resting in front of it.
                 ZStack {
                     Circle()
                         .fill(
                             RadialGradient(
-                                colors: [MihrabColor.brass.opacity(0.35), .clear],
+                                colors: [MihrabColor.brass.opacity(0.28), .clear],
                                 center: .center,
                                 startRadius: 4,
-                                endRadius: 90
+                                endRadius: 110
                             )
                         )
-                        .frame(width: 168, height: 168)
-                    BrassCrescent(diameter: 78, opacity: 0.95)
+                        .frame(width: 210, height: 210)
+                    MihrabIllustration(asset: "ob-plus", height: 176)
                 }
 
                 VStack(spacing: 8) {
@@ -772,18 +773,18 @@ private struct OnboardingScaffold<Content: View>: View {
     }
 }
 
+/// Every step is topped by the same thing: one arch-panel illustration, then
+/// the title, then the body. The illustrations are a matched set — one flat
+/// emerald mihrab panel with a brass motif inside — so the eight screens read
+/// as one story rather than eight SF Symbols.
 private struct OnboardingHeadline: View {
-    let systemImage: String
-    let tint: Color
+    let illustration: String
     let title: String
     let message: String
 
     var body: some View {
-        VStack(spacing: 12) {
-            Image(systemName: systemImage)
-                .font(.system(size: 44))
-                .symbolRenderingMode(.hierarchical)
-                .foregroundStyle(tint)
+        VStack(spacing: 14) {
+            MihrabIllustration(asset: illustration, height: 168)
             Text(title)
                 .font(.title2.bold())
                 .foregroundStyle(MihrabColor.textPrimary)

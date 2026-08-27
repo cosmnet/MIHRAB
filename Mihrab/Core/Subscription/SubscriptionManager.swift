@@ -67,8 +67,6 @@ enum PremiumFeature: String, CaseIterable, Sendable {
     case dhikrUnlimitedGoals
     case dhikrFullHistory
     case esmaCollections
-    case tafakkurContent
-    case ramadanPlanner
     case qiblaAR
     case multipleCities
     case iCloudBackup
@@ -82,8 +80,6 @@ enum PremiumFeature: String, CaseIterable, Sendable {
         case .dhikrUnlimitedGoals: L10n.premiumFeatureDhikrGoals
         case .dhikrFullHistory: L10n.premiumFeatureDhikrHistory
         case .esmaCollections: L10n.premiumFeatureEsma
-        case .tafakkurContent: L10n.premiumFeatureTafakkur
-        case .ramadanPlanner: L10n.premiumFeatureRamadan
         case .qiblaAR: L10n.premiumFeatureQiblaAR
         case .multipleCities: L10n.premiumFeatureCities
         case .iCloudBackup: L10n.premiumFeatureBackup
@@ -129,65 +125,21 @@ extension PremiumFeature {
         case .iCloudBackup:
             .live("CloudSyncManager.refresh()/syncNow(), SyncSettingsSection toggle, CloudSyncPreference.isEntitled → Persistence.container")
         case .qiblaAR:
-            .awaitingWiring(
-                owner: "Qibla surface",
-                site: "Mihrab/Features/Qibla/QiblaCompassView.swift (the button that presents QiblaARView)",
-                call: ".premiumRequired(.qiblaAR) — the ready-made modifier in PremiumGate.swift"
-            )
+            .live("QiblaCompassView AR entry — .premiumRequired(.qiblaAR)")
         case .customAdhan:
-            .awaitingWiring(
-                owner: "W2",
-                site: "Mihrab/Core/Adhan/AdhanSettingsSection.swift",
-                call: "SubscriptionManager.shared.hasAccess(to: .customAdhan) around AdhanLibrary.setSound/importSound"
-            )
+            .live("AdhanSettingsSection — hasAccess(to: .customAdhan) around setSound/importSound")
         case .advancedWidgets:
-            .awaitingWiring(
-                owner: "W3",
-                site: "MihrabWidgets/*.swift",
-                call: "PremiumEntitlement.isPremium (App Group mirror; the widget target cannot import SubscriptionManager)"
-            )
+            .live("CityPrayerWidget city picker gated on PremiumEntitlement.isPremium")
         case .themes:
-            .awaitingWiring(
-                owner: "W6",
-                site: "Mihrab/Core/Backdrop/AppearanceSettingsSection.swift",
-                call: "SubscriptionManager.shared.hasAccess(to: .themes) around AccentTheme / ShaderStyle pickers"
-            )
+            .live("AppearanceSettingsSection accent palette — .premiumRequired(.themes)")
         case .dhikrUnlimitedGoals:
-            .awaitingWiring(
-                owner: "Dhikr surface",
-                site: "Mihrab/Features/Dhikr/DhikrLibrarySheet.swift:155",
-                call: "replace the bare `isPremium` read with hasAccess(to: .dhikrUnlimitedGoals)"
-            )
+            .live("DhikrLibrarySheet custom-dhikr gate")
         case .dhikrFullHistory:
-            .awaitingWiring(
-                owner: "Dhikr surface",
-                site: "Mihrab/Features/Dhikr/DhikrStatsView.swift:290",
-                call: "replace the bare `isPremium` read with hasAccess(to: .dhikrFullHistory)"
-            )
+            .live("DhikrStatsView 30-day history gate")
         case .esmaCollections:
-            .awaitingWiring(
-                owner: "Deen surface",
-                site: "Mihrab/Features/Deen/EsmaHomeView.swift:232",
-                call: "replace the bare `isPremium` read with hasAccess(to: .esmaCollections)"
-            )
-        case .tafakkurContent:
-            .awaitingWiring(
-                owner: "Deen surface",
-                site: "Mihrab/Features/Deen/EsmaCommentary.swift",
-                call: "hasAccess(to: .tafakkurContent) around the long-form commentary body"
-            )
-        case .ramadanPlanner:
-            .awaitingWiring(
-                owner: "Ramadan surface",
-                site: "Mihrab/Features/Ramadan/RamadanHubView.swift",
-                call: "hasAccess(to: .ramadanPlanner) around the planner section"
-            )
+            .live("EsmaHomeView collections gate")
         case .shareCards:
-            .awaitingWiring(
-                owner: "Share surface",
-                site: "Mihrab/Core/ShareImage.swift call sites",
-                call: "hasAccess(to: .shareCards) before presenting the share sheet"
-            )
+            .live("QuranVerseShareCard rendered image; plain-text sharing stays free everywhere")
         }
     }
 

@@ -26,10 +26,10 @@ struct PaywallView: View {
     @State private var didSucceed = false
     @State private var errorMessage: String?
 
-    /// ⚠️ **Placeholder.** Guideline 3.1.2 requires a *functioning* privacy
-    /// policy link on the paywall. The owner must publish the policy and put
-    /// the real URL here before submission — this domain is not live yet.
-    private static let privacyURL = URL(string: "https://mihrab.app/privacy")!
+    /// Served from GitHub Pages (`docs/privacy.html`). Guideline 3.1.2 wants a
+    /// *working* privacy link on the paywall; this one is live and loads no
+    /// third-party resources.
+    private static let privacyURL = URL(string: "https://cosm.github.io/MIHRAB/privacy.html")!
     private static let termsURL = URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!
 
     var body: some View {
@@ -80,6 +80,11 @@ struct PaywallView: View {
 
     // MARK: - Hero
 
+    /// Purely the visual layer. Everything the App Store cares about — the
+    /// three plans side by side, the sticky bar, the weekly unit price, the
+    /// plan name on the CTA, the subscription-detail block, the Terms and
+    /// Privacy links, the close button visible from the first frame — lives
+    /// below and is untouched by this.
     private var hero: some View {
         VStack(spacing: MihrabSpace.unit * 1.5) {
             ZStack {
@@ -97,27 +102,23 @@ struct PaywallView: View {
                             endRadius: 130
                         )
                     )
-                    .frame(width: 240, height: 240)
+                    .frame(width: 260, height: 260)
                     .scaleEffect(reduceMotion ? 1 : 0.92 + 0.12 * haloPhase)
                     .blur(radius: 12)
 
-                MihrabArchGlyph()
-                    .stroke(
-                        LinearGradient(
-                            colors: [MihrabColor.brass, MihrabColor.mint.opacity(0.7)],
-                            startPoint: .top,
-                            endPoint: .bottom
-                        ),
-                        style: StrokeStyle(lineWidth: 1.6, lineCap: .round, lineJoin: .round)
-                    )
-                    .frame(width: 108, height: 132)
-                    .opacity(0.9)
+                // Three-arch colonnade behind the mark: the same niche the
+                // brand is built on, receding to either side. Drawn, so it
+                // costs nothing and takes the theme colour.
+                HStack(spacing: MihrabSpace.unit * 1.25) {
+                    sideArch
+                    Spacer(minLength: 0).frame(width: 108)
+                    sideArch
+                }
+                .frame(width: 300)
 
-                Image(systemName: "sparkles")
-                    .font(.system(size: 22, weight: .light))
-                    .foregroundStyle(MihrabColor.brass)
-                    .offset(y: -46)
-                    .opacity(reduceMotion ? 0.8 : 0.55 + 0.4 * haloPhase)
+                // The mark itself, replacing the bare glyph the "C" lived in.
+                MihrabMark(height: 150)
+                    .shadow(color: MihrabColor.brass.opacity(0.18), radius: 22)
             }
             .frame(height: 190)
             .accessibilityHidden(true)
@@ -137,6 +138,15 @@ struct PaywallView: View {
                 .padding(.horizontal, MihrabSpace.unit)
         }
         .cardEntrance(index: 0, appeared: appeared, reduceMotion: reduceMotion)
+    }
+
+    /// A flanking niche. Deliberately faint and un-animated: it is depth
+    /// behind the mark, not a second thing to look at.
+    private var sideArch: some View {
+        MihrabArch()
+            .stroke(MihrabColor.brass.opacity(0.22), style: StrokeStyle(lineWidth: 1, lineCap: .round))
+            .frame(width: 62, height: 100)
+            .offset(y: 18)
     }
 
     // MARK: - Benefits
@@ -905,51 +915,6 @@ private struct PlanCard: View {
         .buttonStyle(.plain)
         .accessibilityElement(children: .combine)
         .accessibilityAddTraits(isSelected ? [.isButton, .isSelected] : .isButton)
-    }
-}
-
-// MARK: - Arch glyph
-
-/// A simple mihrab arch outline, drawn rather than shipped as an asset.
-private struct MihrabArchGlyph: Shape {
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        let width = rect.width
-        let height = rect.height
-        let shoulder = height * 0.42
-
-        path.move(to: CGPoint(x: rect.minX, y: rect.maxY))
-        path.addLine(to: CGPoint(x: rect.minX, y: rect.minY + shoulder))
-        path.addCurve(
-            to: CGPoint(x: rect.midX, y: rect.minY),
-            control1: CGPoint(x: rect.minX, y: rect.minY + shoulder * 0.34),
-            control2: CGPoint(x: rect.midX - width * 0.30, y: rect.minY)
-        )
-        path.addCurve(
-            to: CGPoint(x: rect.maxX, y: rect.minY + shoulder),
-            control1: CGPoint(x: rect.midX + width * 0.30, y: rect.minY),
-            control2: CGPoint(x: rect.maxX, y: rect.minY + shoulder * 0.34)
-        )
-        path.addLine(to: CGPoint(x: rect.maxX, y: rect.maxY))
-
-        // Inner arch, offset inwards.
-        let inset = width * 0.18
-        let inner = rect.insetBy(dx: inset, dy: 0)
-        let innerShoulder = shoulder * 0.92
-        path.move(to: CGPoint(x: inner.minX, y: rect.maxY))
-        path.addLine(to: CGPoint(x: inner.minX, y: rect.minY + inset + innerShoulder))
-        path.addCurve(
-            to: CGPoint(x: inner.midX, y: rect.minY + inset),
-            control1: CGPoint(x: inner.minX, y: rect.minY + inset + innerShoulder * 0.34),
-            control2: CGPoint(x: inner.midX - inner.width * 0.30, y: rect.minY + inset)
-        )
-        path.addCurve(
-            to: CGPoint(x: inner.maxX, y: rect.minY + inset + innerShoulder),
-            control1: CGPoint(x: inner.midX + inner.width * 0.30, y: rect.minY + inset),
-            control2: CGPoint(x: inner.maxX, y: rect.minY + inset + innerShoulder * 0.34)
-        )
-        path.addLine(to: CGPoint(x: inner.maxX, y: rect.maxY))
-        return path
     }
 }
 

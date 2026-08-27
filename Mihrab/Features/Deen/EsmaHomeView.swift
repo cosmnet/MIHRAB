@@ -2,53 +2,18 @@ import SwiftUI
 
 // MARK: - Ornament
 
-/// Rub el Hizb rosette — two squares at 45°, stroked in brass. Drawn, never a
-/// bitmap, so it stays crisp behind the 76pt calligraphy of the hero card.
-struct EsmaRosette: View {
-    var side: CGFloat = 240
-    var lineWidth: CGFloat = 1
-    var opacity: Double = 0.22
-
-    var body: some View {
-        Canvas { context, size in
-            let box = CGRect(
-                x: (size.width - side) / 2,
-                y: (size.height - side) / 2,
-                width: side,
-                height: side
-            )
-            let center = CGPoint(x: box.midX, y: box.midY)
-            let radius = side / 2
-
-            for rotation in [0.0, 45.0] {
-                var path = Path()
-                for corner in 0..<4 {
-                    let angle = Angle.degrees(rotation + Double(corner) * 90 - 45).radians
-                    let point = CGPoint(
-                        x: center.x + cos(angle) * radius,
-                        y: center.y + sin(angle) * radius
-                    )
-                    if corner == 0 { path.move(to: point) } else { path.addLine(to: point) }
-                }
-                path.closeSubpath()
-                context.stroke(
-                    path,
-                    with: .color(MihrabColor.brass.opacity(opacity)),
-                    lineWidth: lineWidth
-                )
-            }
-
-            context.stroke(
-                Path(ellipseIn: box.insetBy(dx: side * 0.16, dy: side * 0.16)),
-                with: .color(MihrabColor.brass.opacity(opacity * 0.7)),
-                lineWidth: lineWidth
-            )
-        }
-        .frame(width: side, height: side)
-        .allowsHitTesting(false)
-        .accessibilityHidden(true)
-    }
-}
+/// The ornament behind a Name's calligraphy.
+///
+/// This used to draw a *rub el hizb* — two squares at 45°. Geometrically that
+/// is an eight-pointed Islamic seal, but stroked thinly at 22% opacity behind
+/// Arabic script, users read the crossing diagonals as a hexagram. The whole
+/// drawing is gone: `MihrabRosette` (see `Core/Brand/MihrabMark.swift`) builds
+/// its sixteen-fold ring out of arcs and concentric circles, with no straight
+/// edges and no polygon overlay for the eye to complete into a star.
+///
+/// Kept as a named alias so the Esma surfaces share one ornament and one set
+/// of defaults; both call sites here and in `EsmaDetailSheet` go through it.
+typealias EsmaRosette = MihrabRosette
 
 // MARK: - Home
 

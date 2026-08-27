@@ -18,8 +18,65 @@ extension L10n {
         string(en: "Counting mode", tr: "Sayma modu", ar: "وضع العد")
     }
 
+    /// The mode button names where it takes you, not where you are — one
+    /// control instead of two, and no "which one is lit?" to work out.
+    static var dhkModeToStrand: String {
+        string(en: "Switch to tasbih", tr: "Tesbihe geç", ar: "التبديل إلى المسبحة")
+    }
+
+    static var dhkModeToCounter: String {
+        string(en: "Switch to counter", tr: "Sayaca geç", ar: "التبديل إلى العدّاد")
+    }
+
+    static var dhkMore: String {
+        string(en: "More", tr: "Daha fazla", ar: "المزيد")
+    }
+
     static var dhkStrandHint: String {
-        string(en: "Drag the beads to count", tr: "Saymak için taneleri çevir", ar: "اسحب الحبات للعد")
+        string(
+            en: "Drag the beads — flick to run several",
+            tr: "Taneleri çevir — fiskele, birkaçı birden geçsin",
+            ar: "اسحب الحبات — انقر بسرعة لتمرير عدة حبات"
+        )
+    }
+
+    // MARK: - Tasbih material
+
+    static func dhkMaterialName(_ id: String) -> String {
+        switch id {
+        case "amber": string(en: "Amber", tr: "Kehribar", ar: "كهرمان")
+        case "ebony": string(en: "Ebony", tr: "Abanoz", ar: "أبنوس")
+        case "olive": string(en: "Olive wood", tr: "Zeytin ağacı", ar: "خشب الزيتون")
+        default: id
+        }
+    }
+
+    static var dhkMaterial: String {
+        string(en: "Bead material", tr: "Tane malzemesi", ar: "مادة الحبات")
+    }
+
+    static var dhkMaterialNext: String {
+        string(en: "Change bead material", tr: "Tane malzemesini değiştir", ar: "تغيير مادة الحبات")
+    }
+
+    static var dhkMaterialHint: String {
+        string(
+            en: "Double-tap the strand to change the beads",
+            tr: "Taneleri değiştirmek için tesbihe çift dokun",
+            ar: "انقر مرتين على المسبحة لتغيير الحبات"
+        )
+    }
+
+    static var dhkPrefBeadSound: String {
+        string(en: "Bead click", tr: "Tane tıkırtısı", ar: "نقرة الحبة")
+    }
+
+    static var dhkPrefBeadSoundFooter: String {
+        string(
+            en: "A short synthesised click as each bead passes. Follows the silent switch.",
+            tr: "Her tane geçerken kısa, sentezlenmiş bir tık. Sessiz düğmesine uyar.",
+            ar: "نقرة قصيرة مركّبة عند مرور كل حبة. تتبع مفتاح الصامت."
+        )
     }
 
     static var dhkTapHint: String {

@@ -1,0 +1,246 @@
+/* Mihrab — legal & support site.
+   No external resources: no CDN, no webfont, no analytics, no tracker.
+   One file, ~4 KB, works offline once cached. */
+
+:root {
+  --abyss: #07120d;
+  --forest: #0d2418;
+  --moss: #143322;
+  --emerald: #1fa96b;
+  --mint: #7fe0b2;
+  --sprout: #b8f5d6;
+  --brass: #c9a24b;
+  --text: #f2f7f4;
+  --text-2: #9db8aa;
+  --text-3: #5f7a6b;
+  --line: rgba(159, 184, 170, 0.16);
+  --radius: 14px;
+  --measure: 42rem;
+}
+
+* { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background:
+    radial-gradient(120% 80% at 50% -10%, #10291b 0%, transparent 60%),
+    var(--abyss);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 17px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap {
+  max-width: var(--measure);
+  margin: 0 auto;
+  padding: 2rem 1.25rem 5rem;
+}
+
+/* ---- masthead ---- */
+
+.masthead {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.5rem 0 1rem;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 2rem;
+}
+
+.mark {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+}
+
+.masthead-name {
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  margin: 0;
+}
+
+.masthead-name a { color: var(--text); text-decoration: none; }
+
+.masthead-tag {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--text-3);
+}
+
+/* ---- nav ---- */
+
+nav.pages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0 0 2rem;
+}
+
+nav.pages a {
+  display: inline-block;
+  padding: 0.35rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 0.85rem;
+  color: var(--text-2);
+  text-decoration: none;
+}
+
+nav.pages a:hover,
+nav.pages a:focus-visible { color: var(--sprout); border-color: var(--emerald); }
+
+nav.pages a[aria-current="page"] {
+  color: var(--abyss);
+  background: var(--mint);
+  border-color: var(--mint);
+  font-weight: 600;
+}
+
+/* ---- type ---- */
+
+h1 {
+  font-size: 1.85rem;
+  line-height: 1.25;
+  margin: 0 0 0.35rem;
+  letter-spacing: -0.01em;
+}
+
+h2 {
+  font-size: 1.15rem;
+  margin: 2.75rem 0 0.6rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+  color: var(--sprout);
+}
+
+h3 {
+  font-size: 1rem;
+  margin: 1.6rem 0 0.4rem;
+  color: var(--mint);
+}
+
+p, li { color: var(--text-2); }
+p { margin: 0 0 1rem; }
+strong { color: var(--text); font-weight: 600; }
+
+ul, ol { padding-left: 1.25rem; margin: 0 0 1rem; }
+li { margin-bottom: 0.45rem; }
+
+a { color: var(--mint); }
+a:hover { color: var(--sprout); }
+
+code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.86em;
+  background: var(--moss);
+  border-radius: 5px;
+  padding: 0.1em 0.4em;
+  color: var(--sprout);
+  overflow-wrap: anywhere;
+}
+
+.lede {
+  font-size: 1.05rem;
+  color: var(--text);
+  margin-bottom: 1.75rem;
+}
+
+.updated {
+  font-size: 0.82rem;
+  color: var(--text-3);
+  margin: 0 0 2rem;
+}
+
+/* ---- cards / callouts ---- */
+
+.card {
+  background: linear-gradient(180deg, var(--moss), var(--forest));
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 1.1rem 1.25rem;
+  margin: 0 0 1rem;
+}
+
+.card h3 { margin-top: 0; }
+.card p:last-child, .card ul:last-child { margin-bottom: 0; }
+
+.callout {
+  border-left: 3px solid var(--brass);
+  background: rgba(201, 162, 75, 0.07);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 0.9rem 1.1rem;
+  margin: 0 0 1.5rem;
+}
+
+.callout p:last-child { margin-bottom: 0; }
+
+/* ---- tables ---- */
+
+.table-scroll { overflow-x: auto; margin: 0 0 1.5rem; }
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 30rem;
+  font-size: 0.92rem;
+}
+
+th, td {
+  text-align: left;
+  vertical-align: top;
+  padding: 0.6rem 0.7rem;
+  border-bottom: 1px solid var(--line);
+}
+
+th {
+  color: var(--text);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+td { color: var(--text-2); }
+
+/* ---- misc ---- */
+
+.grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  margin-bottom: 1.5rem;
+}
+
+.lang-switch {
+  float: right;
+  font-size: 0.82rem;
+  color: var(--text-3);
+}
+
+footer {
+  margin-top: 4rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+  font-size: 0.82rem;
+  color: var(--text-3);
+}
+
+footer a { color: var(--text-2); }
+
+@media (max-width: 30rem) {
+  body { font-size: 16px; }
+  .wrap { padding: 1rem 1rem 3.5rem; }
+  h1 { font-size: 1.5rem; }
+  .lang-switch { float: none; display: block; margin-bottom: 0.75rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}

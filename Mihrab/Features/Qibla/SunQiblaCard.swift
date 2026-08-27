@@ -33,7 +33,7 @@ struct SunQiblaCard: View {
                 .foregroundStyle(MihrabColor.brass)
 
             Text(L10n.qblSunCheckCaps)
-                .ornamentalCaps(MihrabColor.textTertiary)
+                .ornamentalCaps(MihrabColor.textSecondary)
 
             if sun.altitude < 0 {
                 note(L10n.qblSunBelowHorizon, symbol: "moon.stars")
@@ -60,15 +60,15 @@ struct SunQiblaCard: View {
                     Text(L10n.qblRashdulExplain)
                     Text(L10n.qblAccuracyMethodNote)
                 }
-                .font(.caption)
+                .font(.footnote)
                 .foregroundStyle(MihrabColor.textSecondary)
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.top, 6)
             } label: {
                 Text(L10n.qblHowItWorks)
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(MihrabColor.textSecondary)
-                    .frame(minHeight: 32, alignment: .leading)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(MihrabColor.textPrimary)
+                    .frame(minHeight: 44, alignment: .leading)
             }
             .tint(MihrabColor.mint)
         }
@@ -139,7 +139,7 @@ struct SunQiblaCard: View {
                 Divider().overlay(MihrabColor.brass.opacity(0.22))
 
                 Label(L10n.qblRashdulTitle, systemImage: "sparkles")
-                    .font(.caption.weight(.semibold))
+                    .font(.subheadline.weight(.semibold))
                     .foregroundStyle(MihrabColor.brass)
 
                 if daysAway <= 1, sunThen.altitude > 3 {
@@ -156,8 +156,8 @@ struct SunQiblaCard: View {
 
                 if sunThen.altitude <= 3 {
                     Text(L10n.qblRashdulNightNote)
-                        .font(.caption2)
-                        .foregroundStyle(MihrabColor.textTertiary)
+                        .font(.footnote)
+                        .foregroundStyle(MihrabColor.textSecondary)
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }
@@ -195,8 +195,8 @@ private struct SunQiblaDiagram: View {
                     .frame(width: side - 20, height: side - 20)
 
                 Text(L10n.compassN)
-                    .font(.caption2.weight(.bold))
-                    .foregroundStyle(MihrabColor.textTertiary)
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(MihrabColor.textSecondary)
                     .position(x: centre.x, y: centre.y - radius - 2)
 
                 ray(from: centre, radius: radius, bearing: sunAzimuth,

@@ -12,9 +12,9 @@ extension L10n {
 
     static var sourceSectionFooter: String {
         string(
-            en: "Turkish calendars disagree about when true dawn begins, so imsak can differ by 15–20 minutes between them. Sunrise, dhuhr, asr and maghrib carry Diyanet's temkin margin.",
-            tr: "Türkiye'deki takvimler fecr-i sâdıkın başlangıcında hemfikir değil; bu yüzden imsak aralarında 15–20 dakika kadar değişebilir. Güneş, öğle, ikindi ve akşam Diyanet'in temkin payını taşır.",
-            ar: "تختلف التقاويم في تركيا حول بداية الفجر الصادق، لذا قد يختلف الإمساك بينها بمقدار ١٥–٢٠ دقيقة. وتحمل أوقات الشروق والظهر والعصر والمغرب هامش التمكين لدى ديانت."
+            en: "Turkish calendars disagree about when true dawn begins, so imsak differs between them. Only calendars whose publisher states its own angles and temkin are offered here. Standard uses the calculation method you picked, untouched.",
+            tr: "Türkiye'deki takvimler fecr-i sâdıkın başlangıcında hemfikir değil; bu yüzden imsak aralarında değişir. Burada yalnızca kendi açılarını ve temkinini yayımlayan takvimler sunulur. Standart ise seçtiğin hesaplama yöntemini olduğu gibi kullanır.",
+            ar: "تختلف التقاويم في تركيا حول بداية الفجر الصادق فيختلف الإمساك بينها. ولا يُعرض هنا إلا تقويم ينشر ناشره زواياه وتمكينه. أما الخيار القياسي فيتبع طريقة الحساب التي اخترتها كما هي."
         )
     }
 
@@ -42,19 +42,21 @@ extension L10n {
         )
     }
 
-    static var sourceFaziletDetail: String {
+    static var sourceTurkiyeTakvimiDetail: String {
         string(
-            en: "Same as Diyanet except imsak, which uses a deeper dawn angle (19°) and therefore falls earlier.",
-            tr: "İmsak dışında Diyanet ile aynı; imsak daha derin bir fecir açısı (19°) kullandığı için daha erkene gelir.",
-            ar: "مثل ديانت باستثناء الإمساك، إذ يعتمد زاوية فجر أعمق (١٩°) فيأتي أبكر."
+            en: "Imsak 19°, isha 17°, with 10 minutes of temkin on every time — taken off imsak and sunrise, added to dhuhr, asr, maghrib and isha. Imsak lands noticeably earlier than Diyanet's.",
+            tr: "İmsak 19°, yatsı 17°, her vakitte 10 dakika temkin — imsak ve güneşten düşülür; öğle, ikindi, akşam ve yatsıya eklenir. İmsak, Diyanet'e göre belirgin biçimde daha erkendir.",
+            ar: "الإمساك ١٩°، العشاء ١٧°، مع تمكين ١٠ دقائق لكل وقت: يُطرح من الإمساك والشروق ويُضاف إلى الظهر والعصر والمغرب والعشاء. فيأتي الإمساك أبكر من ديانت بوضوح."
         )
     }
 
-    static var sourceTurkiyeTakvimiDetail: String {
+    /// Shown only if an old install still has a withdrawn tradition stored.
+    /// Says plainly what happened and what is being used instead.
+    static var sourceWithdrawnDetail: String {
         string(
-            en: "Same as Diyanet except imsak, which uses a deeper dawn angle (19°) and therefore falls earlier.",
-            tr: "İmsak dışında Diyanet ile aynı; imsak daha derin bir fecir açısı (19°) kullandığı için daha erkene gelir.",
-            ar: "مثل ديانت باستثناء الإمساك، إذ يعتمد زاوية فجر أعمق (١٩°) فيأتي أبكر."
+            en: "This calendar is no longer offered: its publisher does not document the angles and margins it uses, so we could not show its times honestly. Diyanet's published times are used instead.",
+            tr: "Bu takvim artık sunulmuyor: yayıncısı kullandığı açıları ve temkin paylarını açıklamıyor, bu yüzden vakitlerini dürüstçe gösteremiyorduk. Onun yerine Diyanet'in yayımladığı vakitler kullanılıyor.",
+            ar: "لم يعد هذا التقويم متاحاً لعدم نشر ناشره الزوايا والهوامش المعتمدة، وتُستخدم بدلاً منه أوقات ديانت المنشورة."
         )
     }
 
@@ -68,10 +70,23 @@ extension L10n {
 
     static var sourceTurkeyOnlyNote: String {
         string(
-            en: "Fazilet and Türkiye Takvimi describe Turkish practice. Outside Turkey, Standard is usually the honest choice.",
-            tr: "Fazilet ve Türkiye Takvimi Türkiye'deki uygulamayı anlatır. Türkiye dışında genellikle Standart daha doğru olur.",
-            ar: "يصف تقويما فضيلت وتركيا الممارسة في تركيا. خارج تركيا يكون الخيار القياسي أصدق عادةً."
+            en: "These calendars describe practice in Türkiye. Outside Türkiye, Standard is usually the honest choice.",
+            tr: "Bu takvimler Türkiye'deki uygulamayı anlatır. Türkiye dışında genellikle Standart daha doğru olur.",
+            ar: "تصف هذه التقاويم الممارسة في تركيا. وخارج تركيا يكون الخيار القياسي أصدق عادةً."
         )
+    }
+
+    /// Names the authority on screen. Shown under the Diyanet source.
+    static var sourceAuthorityTurkiyeTakvimi: String {
+        string(en: "Source: Türkiye Takvimi (Hakîkat Kitabevi)",
+               tr: "Kaynak: Türkiye Takvimi (Hakîkat Kitabevi)",
+               ar: "المصدر: تقويم تركيا (مكتبة الحقيقة)")
+    }
+
+    static var sourceAuthorityDiyanet: String {
+        string(en: "Source: Presidency of Religious Affairs (Diyanet İşleri Başkanlığı)",
+               tr: "Kaynak: Diyanet İşleri Başkanlığı",
+               ar: "المصدر: رئاسة الشؤون الدينية التركية (ديانت)")
     }
 
     // MARK: - Per-prayer corrections

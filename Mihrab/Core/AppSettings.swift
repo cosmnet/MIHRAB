@@ -104,6 +104,13 @@ final class AppSettings: @unchecked Sendable {
         set { defaults.set(newValue, forKey: Key.manualLon) }
     }
 
+    /// IANA zone of the manually chosen city. Without it a city in another zone
+    /// is rendered on the device's clock — every prayer wrong by the offset.
+    var manualTimeZoneIdentifier: String? {
+        get { defaults.string(forKey: Key.manualTimeZone) }
+        set { defaults.set(newValue, forKey: Key.manualTimeZone) }
+    }
+
     // MARK: - Appearance
 
     enum ThemeMode: String, CaseIterable, Identifiable {
@@ -243,6 +250,7 @@ final class AppSettings: @unchecked Sendable {
         static let manualCity = "manualCityName"
         static let manualLat = "manualLatitude"
         static let manualLon = "manualLongitude"
+        static let manualTimeZone = "manualTimeZoneIdentifier"
         static let theme = "themeMode"
         static let ramadanTheme = "ramadanThemeEnabled"
         static let dhikrShader = "dhikrShaderStyle"

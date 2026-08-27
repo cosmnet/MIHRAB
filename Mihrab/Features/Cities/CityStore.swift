@@ -18,13 +18,25 @@ struct SavedCity: Identifiable, Codable, Hashable, Sendable {
     /// Human-readable region ("Türkiye", "Almanya"). Optional on purpose.
     var region: String?
 
+    /// IANA zone for the city. Without it every saved city was rendered in the
+    /// *device's* zone, so a city in another zone showed every prayer wrong by
+    /// the offset between them — hours, not minutes.
+    var timeZoneIdentifier: String?
+
+    /// The city's own zone, or the device's when it was never resolved.
+    var timeZone: TimeZone {
+        timeZoneIdentifier.flatMap(TimeZone.init(identifier:)) ?? .current
+    }
+
     init(
         id: UUID = UUID(),
         name: String,
         latitude: Double,
         longitude: Double,
-        region: String? = nil
+        region: String? = nil,
+        timeZoneIdentifier: String? = nil
     ) {
+        self.timeZoneIdentifier = timeZoneIdentifier
         self.id = id
         self.name = name
         self.latitude = latitude
@@ -220,10 +232,12 @@ final class CityStore {
             settings.manualCityName = nil
             settings.manualLatitude = nil
             settings.manualLongitude = nil
+            settings.manualTimeZoneIdentifier = nil
         } else {
             settings.manualCityName = city.name
             settings.manualLatitude = city.latitude
             settings.manualLongitude = city.longitude
+            settings.manualTimeZoneIdentifier = city.timeZoneIdentifier
         }
     }
 

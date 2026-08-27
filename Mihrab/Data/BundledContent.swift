@@ -80,6 +80,14 @@ enum BundledContent {
 
     private final class BundleMarker {}
 
+    /// Empty-but-valid stand-in used when a bundled file cannot be read.
+    /// Shipping a crash-on-launch for a packaging fault is worse than an empty
+    /// list the UI already knows how to render; the unit tests are the real
+    /// guard that the resources are present.
+    private static func fallback<T: Decodable>() -> T? {
+        try? JSONDecoder().decode(T.self, from: Data("[]".utf8))
+    }
+
     private static func load<T: Decodable>(_ name: String) -> T {
         // Bundle.main in the app; class bundle when running inside tests.
         let candidates = [Bundle.main, Bundle(for: BundleMarker.self)]
@@ -90,7 +98,11 @@ enum BundledContent {
                 return decoded
             }
         }
-        fatalError("Missing or invalid bundled resource: \(name).json")
+        assertionFailure("Missing or invalid bundled resource: \(name).json")
+        guard let empty: T = fallback() else {
+            fatalError("Missing bundled resource \(name).json and no empty form for \(T.self)")
+        }
+        return empty
     }
 }
 

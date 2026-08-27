@@ -139,13 +139,23 @@ final class PrayerTimesRepository: @unchecked Sendable {
             return
         }
 
+        // Aladhan has no method for every tradition we support (Türkiye
+        // Takvimi has none). Fetching would silently replace the user's chosen
+        // calendar with Diyanet's numbers, so those sources stay on-device —
+        // which costs nothing, because the offline engine is already exact.
+        guard let networkMethod = configuration.networkMethod else {
+            lastError = nil
+            publishSnapshot(coordinate: coordinate, configuration: configuration)
+            return
+        }
+
         do {
             let comps = calendar.dateComponents([.year, .month], from: now)
             var fetched = try await api.calendar(
                 year: comps.year ?? calendar.component(.year, from: now),
                 month: comps.month ?? calendar.component(.month, from: now),
                 latitude: coordinate.latitude, longitude: coordinate.longitude,
-                method: configuration.method, madhab: configuration.madhab
+                method: networkMethod, madhab: configuration.madhab
             )
             // Next month too, so a refresh late in the month still covers the
             // notification window.
@@ -154,7 +164,7 @@ final class PrayerTimesRepository: @unchecked Sendable {
                 if let days = try? await api.calendar(
                     year: next.year ?? 0, month: next.month ?? 1,
                     latitude: coordinate.latitude, longitude: coordinate.longitude,
-                    method: configuration.method, madhab: configuration.madhab
+                    method: networkMethod, madhab: configuration.madhab
                 ) { fetched.append(contentsOf: days) }
             }
 
@@ -202,13 +212,6 @@ final class PrayerTimesRepository: @unchecked Sendable {
                                     configuration: PrayerEngineConfiguration,
                                     now: Date,
                                     calendar: Calendar) -> Bool {
-        // Aladhan has no parameter for the Fazilet / Türkiye Takvimi imsak
-        // angle. Fetching would silently replace the user's chosen tradition
-        // with Diyanet's numbers, so those sources stay on-device only.
-        switch configuration.source {
-        case .fazilet, .turkiyeTakvimi: return false
-        case .diyanet, .standard: break
-        }
         if activeSignature != signature { return true }
         if !cache.covers(from: now, days: Self.requiredCoverageDays,
                          signature: signature, calendar: calendar) { return true }
@@ -326,14 +329,17 @@ final class PrayerTimesRepository: @unchecked Sendable {
     private func networkResolution(for configuration: PrayerEngineConfiguration) -> PrayerResolution {
         PrayerResolution(
             origin: .network,
-            source: configuration.source,
-            methodID: configuration.method.rawValue,
+            source: configuration.source.resolved,
+            methodID: configuration.reportedMethod.rawValue,
             madhabID: configuration.madhab.rawValue,
             adhanMethodID: configuration.effectiveAdhanMethod.rawValue,
             // Angles are the API authority's, not ours — do not claim numbers
             // the response never gave us.
             fajrAngle: nil,
             ishaAngle: nil,
+            // Only Diyanet reaches the network, and Aladhan's method 13 returns
+            // exactly this offset table — so naming it here is a checked claim,
+            // not an assumption.
             temkinMinutes: MethodTemkin.isTemkin(configuration.effectiveAdhanMethod)
                 ? MethodTemkin.minutes(for: .turkey) : [:],
             temkinIsDiyanet: MethodTemkin.isTemkin(configuration.effectiveAdhanMethod),

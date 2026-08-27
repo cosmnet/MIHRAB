@@ -159,7 +159,7 @@ struct QiblaARView: View {
             VStack(alignment: .trailing, spacing: 2) {
                 Text(accuracy.hasHeading ? "\(Int(heading.rounded()))°" : "—")
                     .font(.title3.weight(.bold).monospacedDigit())
-                    .foregroundStyle(!accuracy.isTrustworthy ? MihrabColor.textTertiary
+                    .foregroundStyle(!accuracy.isTrustworthy ? MihrabColor.textSecondary
                                      : (isAligned ? MihrabColor.mint : MihrabColor.textPrimary))
                 Text("\(Int(qiblaBearing.rounded()))° \(L10n.cardinal(for: qiblaBearing))")
                     .font(.caption2.weight(.medium))

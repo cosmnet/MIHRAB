@@ -43,27 +43,50 @@ extension L10n {
     // MARK: - Nisab
 
     static var zakatNisabHeader: String { string(en: "NISAB", tr: "NİSAP", ar: "النصاب") }
-    static var zakatBasisGold: String { string(en: "Gold — 80.18 g", tr: "Altın — 80,18 gr", ar: "الذهب — ٨٠٫١٨ غ") }
-    static var zakatBasisSilver: String { string(en: "Silver", tr: "Gümüş", ar: "الفضة") }
+
+    /// Names the authority whose figures are on screen. The user asked us not
+    /// to make them decide; the least we owe them is to say who did.
+    static var zakatSourceDiyanet: String {
+        string(en: "Figures from the Presidency of Religious Affairs (Diyanet İşleri Başkanlığı)",
+               tr: "Rakamlar Diyanet İşleri Başkanlığı'ndan",
+               ar: "الأرقام من رئاسة الشؤون الدينية التركية (ديانت)")
+    }
+
+    static var zakatBasisGold: String {
+        string(en: "Gold — 80.18 g (Diyanet)", tr: "Altın — 80,18 gr (Diyanet)", ar: "الذهب — ٨٠٫١٨ غ (ديانت)")
+    }
+    static var zakatBasisSilver: String {
+        string(en: "Silver — 561 g (classical)", tr: "Gümüş — 561 gr (klasik görüş)", ar: "الفضة — ٥٦١ غ (القول الكلاسيكي)")
+    }
     static var zakatSilver595: String { string(en: "595 g (200 dirhem × 2.975 g)", tr: "595 gr (200 dirhem × 2,975 gr)", ar: "٥٩٥ غ") }
     static var zakatSilver561: String { string(en: "561 g (200 dirhem × 2.805 g)", tr: "561 gr (200 dirhem × 2,805 gr)", ar: "٥٦١ غ") }
+
+    /// Shown under the gold basis. This is the recommended, pre-selected one.
+    static var zakatBasisGoldNote: String {
+        string(
+            en: "This is what Diyanet recommends, and it is already selected. Its ruling is that the value of 80.18 g of 24-carat gold should be the threshold for everything you hold — cash, silver, trade goods and investments alike.",
+            tr: "Diyanet'in tavsiyesi budur ve seçili gelir. Kararına göre 24 ayar 80,18 gram altının değeri; nakit, gümüş, ticaret malı ve yatırımlar dâhil elindeki her şey için nisap ölçüsüdür.",
+            ar: "هذا ما توصي به ديانت وهو المحدد مسبقاً: قيمة ٨٠٫١٨ غراماً من الذهب عيار ٢٤ هي النصاب لكل ما تملك."
+        )
+    }
+
+    /// Shown under the silver basis. Says plainly that it is *not* Diyanet's.
+    static var zakatBasisSilverNote: String {
+        string(
+            en: "The classical 200-dirhem threshold. It is a recognised opinion, but it is not Diyanet's: Diyanet holds that silver has lost too much of its historical value to serve as the measure, and says to use the gold figure even for silver. The silver threshold is much lower, so choosing it makes more people liable.",
+            tr: "Klasik 200 dirhem nisabı. Muteber bir görüştür ama Diyanet'in görüşü değildir: Diyanet, gümüşün tarihî değerini büyük ölçüde yitirdiğini, bu yüzden gümüş için de altın ölçüsünün alınmasını uygun görür. Gümüş nisabı çok daha düşüktür; onu seçmek daha çok kişiyi mükellef kılar.",
+            ar: "نصاب ٢٠٠ درهم الكلاسيكي: قول معتبر لكنه ليس قول ديانت، إذ ترى اعتماد نصاب الذهب حتى في الفضة. ونصاب الفضة أدنى بكثير فيوسّع دائرة الوجوب."
+        )
+    }
+
     static var zakatBasisExplain: String {
         string(
-            en: "The silver threshold is the lower of the two, so choosing it makes more people liable and more wealth zakatable. Both are held by recognised opinions; pick the one you follow, or ask someone you trust.",
-            tr: "Gümüş nisabı ikisinden düşüktür; onu seçmek daha çok kişiyi mükellef kılar ve daha çok malı zekâta tâbi hale getirir. Her ikisi de muteber görüşlerdir; takip ettiğini seç veya güvendiğin birine sor.",
-            ar: "نصاب الفضة أدنى، فاختياره يوسّع دائرة الوجوب. كلاهما قول معتبر، فاختر ما تتبعه أو استشر من تثق به."
+            en: "Diyanet's own answer is already chosen for you. Change it only if you follow a different opinion.",
+            tr: "Diyanet'in cevabı senin için seçildi. Başka bir görüşü takip ediyorsan değiştir.",
+            ar: "اختير لك قول ديانت. لا تغيّره إلا إن كنت تتبع قولاً آخر."
         )
     }
-    static var zakatSilverStandardHeader: String {
-        string(en: "Silver nisab in grams", tr: "Gümüş nisabı (gram)", ar: "نصاب الفضة بالغرام")
-    }
-    static var zakatSilverStandardNote: String {
-        string(
-            en: "200 dirhem converts to a different gram figure depending on the dirham weight used, and published values differ. Pick the one your source uses.",
-            tr: "200 dirhem, esas alınan dirhem ağırlığına göre farklı gram karşılığı verir ve yayımlanan değerler farklılaşır. Takip ettiğin kaynağın kullandığını seç.",
-            ar: "يختلف تحويل ٢٠٠ درهم إلى الغرامات باختلاف وزن الدرهم المعتمد."
-        )
-    }
+
     static func zakatNisabValue(_ amount: String) -> String {
         string(en: "Threshold: \(amount)", tr: "Nisap: \(amount)", ar: "النصاب: \(amount)")
     }
@@ -155,9 +178,33 @@ extension L10n {
     }
     static var fitreNote: String {
         string(
-            en: "Fitre is a fixed amount per person, not a percentage, and it is given before the eid prayer. In Türkiye the minimum is announced each year by the Diyanet fitre commission — enter this year's figure yourself; we do not ship one.",
-            tr: "Fitre yüzde değil, kişi başı sabit bir tutardır ve bayram namazından önce verilir. Türkiye'de asgari tutar her yıl Diyanet fitre komisyonunca açıklanır — bu yılın rakamını kendin gir; uygulamada gömülü bir değer yoktur.",
+            en: "Fitre is a fixed amount per person, not a percentage, and it is given before the eid prayer. In Türkiye the minimum is announced each year by the Din İşleri Yüksek Kurulu.",
+            tr: "Fitre yüzde değil, kişi başı sabit bir tutardır ve bayram namazından önce verilir. Türkiye'de asgari tutar her yıl Din İşleri Yüksek Kurulu'nca açıklanır.",
             ar: "الفطرة مقدار ثابت لكل شخص تُخرج قبل صلاة العيد، ويُعلن حدها الأدنى سنوياً."
+        )
+    }
+
+    /// One-tap suggestion, shown only while the announced figure is still valid.
+    static func fitreDiyanetAmount(_ amount: String) -> String {
+        string(en: "Use Diyanet's figure: \(amount)",
+               tr: "Diyanet'in tutarını kullan: \(amount)",
+               ar: "استخدم مبلغ ديانت: \(amount)")
+    }
+
+    static func fitreDiyanetNote(_ date: String) -> String {
+        string(
+            en: "The Din İşleri Yüksek Kurulu announced this minimum on \(date). It is a floor, not a cap — give more if you can. The same amount is the daily fidye for a missed fast.",
+            tr: "Din İşleri Yüksek Kurulu bu asgari tutarı \(date) tarihinde açıkladı. Alt sınırdır, üst sınır değil — gücün yeterse fazlasını ver. Aynı tutar, tutulamayan orucun günlük fidyesidir.",
+            ar: "أعلن مجلس الشؤون الدينية هذا الحد الأدنى في \(date). وهو حد أدنى لا أقصى، وهو نفسه فدية اليوم الواحد."
+        )
+    }
+
+    /// Shown once the announced figure has been superseded.
+    static var fitreFigureOutdated: String {
+        string(
+            en: "This year's figure has not been added yet. Check the amount announced by the Din İşleri Yüksek Kurulu and enter it here.",
+            tr: "Bu yılın tutarı henüz eklenmedi. Din İşleri Yüksek Kurulu'nun açıkladığı tutara bakıp buraya gir.",
+            ar: "لم يُضف مبلغ هذا العام بعد. راجع ما أعلنه مجلس الشؤون الدينية وأدخله هنا."
         )
     }
 

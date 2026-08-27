@@ -84,7 +84,8 @@ struct SettingsView: View {
                 [title, subtitle, L10n.quranTitle, L10n.hatimTitle,
                  L10n.qadaTitle, L10n.zakatTitle, L10n.zakatSectionTitle,
                  L10n.calendarTitle, L10n.dhkPrefs, L10n.tabDhikr, L10n.dhkPrefGoal,
-                 L10n.dhkPrefSound, L10n.dhkPrefHaptics, L10n.dhkPrefFocusDim]
+                 L10n.dhkPrefSound, L10n.dhkPrefBeadSound, L10n.dhkMaterial,
+                 L10n.dhkPrefHaptics, L10n.dhkPrefFocusDim]
             case .appearance:
                 [title, subtitle, L10n.apprBackdropSection, L10n.apprTextureSection,
                  L10n.apprColourSection, L10n.setSectionLanguage, L10n.setLanguageCurrent,
@@ -100,6 +101,10 @@ struct SettingsView: View {
             }
         }
     }
+
+    /// Served from GitHub Pages — see `docs/privacy.html`.
+    private static let privacyPolicyURL =
+        URL(string: "https://cosm.github.io/MIHRAB/privacy.html")!
 
     private var accent: Color {
         theme.isRamadanMode ? MihrabColor.ramadanGold : settings.accentTheme.color
@@ -313,6 +318,18 @@ struct SettingsView: View {
                 get: { store.soundEnabled },
                 set: { store.soundEnabled = $0 }
             ))
+            Toggle(L10n.dhkPrefBeadSound, isOn: Binding(
+                get: { store.beadSoundEnabled },
+                set: { store.beadSoundEnabled = $0 }
+            ))
+            Picker(L10n.dhkMaterial, selection: Binding(
+                get: { store.tasbihMaterial },
+                set: { store.tasbihMaterial = $0 }
+            )) {
+                ForEach(TasbihMaterial.allCases) { material in
+                    Text(material.localizedName).tag(material)
+                }
+            }
             Toggle(L10n.dhkPrefKeepAwake, isOn: Binding(
                 get: { store.keepAwakeWhileCounting },
                 set: { store.keepAwakeWhileCounting = $0 }
@@ -399,9 +416,7 @@ struct SettingsView: View {
                 Text(L10n.setDataOnDevice)
             }
             Button {
-                if let url = URL(string: UIApplication.openSettingsURLString) {
-                    openURL(url)
-                }
+                openURL(Self.privacyPolicyURL)
             } label: {
                 HStack {
                     Text(L10n.setPrivacyPolicy)
@@ -515,6 +530,21 @@ struct SettingsCreditsView: View {
                         symbol: "textformat",
                         title: L10n.setCreditsFont,
                         body: L10n.setCreditsFontBody
+                    )
+
+                    creditCard(
+                        index: 4,
+                        symbol: "text.book.closed.fill",
+                        title: L10n.setCreditsQuran,
+                        body: L10n.setCreditsQuranBody
+                    )
+                    // MIT and the SIL OFL both require their notice to travel
+                    // with the binary, not just with the repository.
+                    creditCard(
+                        index: 5,
+                        symbol: "shippingbox.fill",
+                        title: L10n.setCreditsOpenSource,
+                        body: L10n.setCreditsOpenSourceBody
                     )
 
                     Text(L10n.setCreditsDisclaimer)

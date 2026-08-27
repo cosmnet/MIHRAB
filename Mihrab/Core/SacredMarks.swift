@@ -96,29 +96,6 @@ struct BrassCrescent: View {
     }
 }
 
-/// Welcome / empty-state arch. Stroke only, no bitmap.
-struct MihrabArchMark: View {
-    var body: some View {
-        ZStack {
-            MihrabArchShape()
-                .stroke(
-                    LinearGradient(
-                        colors: [MihrabColor.brass, MihrabColor.brass.opacity(0.35)],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    ),
-                    lineWidth: 1.5
-                )
-                .frame(width: 120, height: 156)
-
-            BrassCrescent(diameter: 44, opacity: 0.85)
-                .offset(y: -10)
-        }
-        .frame(width: 168, height: 188)
-        .accessibilityHidden(true)
-    }
-}
-
 private struct MihrabArchShape: Shape {
     func path(in rect: CGRect) -> Path {
         var path = Path()

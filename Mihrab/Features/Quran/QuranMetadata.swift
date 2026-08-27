@@ -147,7 +147,11 @@ enum QuranCatalog {
                 return decoded
             }
         }
-        fatalError("Missing or invalid bundled resource: quran-meta.json")
+        // A packaging fault must not be a launch crash. The library then shows
+        // its honest empty state; `QuranTests` is what actually guarantees the
+        // file ships.
+        assertionFailure("Missing or invalid bundled resource: quran-meta.json")
+        return Payload(suras: [], juz: [], quarters: [], pages: [], sajdas: [])
     }()
 
     // MARK: Suras

@@ -12,6 +12,7 @@ struct DhikrView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.layoutDirection) private var layoutDirection
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     @State private var store = DhikrStore.shared
 
@@ -51,10 +52,29 @@ struct DhikrView: View {
     @State private var holdProgress: Double = 0
 
     private let targets = [33, 99, 100, 500, 0]
+    /// The space the layout actually has, so the dial can be as big as the
+    /// device allows instead of a number picked for one phone.
+    @State private var available: CGSize = .zero
+
     /// Dial size is deliberately *not* `@ScaledMetric` — it is a touch target
     /// and a canvas, not type, and growing it at AX5 would push the footer off
     /// screen. The number inside it scales instead, capped so it still fits.
-    private let dialSide: CGFloat = 300
+    ///
+    /// It *is* proportional to the screen. This is the primary action of the
+    /// screen, and a screen that will be used by people who want a large,
+    /// unmissable target, so it takes the room it can get instead of the flat
+    /// 300 it used to take on every device from an SE to a Pro Max. Three
+    /// bounds keep it honest: the width, so it never touches the edges; the
+    /// height, so the footer can never be pushed off; and a ceiling, because
+    /// past a point a bigger circle is just a bigger circle.
+    private var dialSide: CGFloat {
+        guard available.width > 0, available.height > 0 else { return 300 }
+        // The header and footer grow with the text size and the dial has to
+        // give that room back, so it claims a smaller share when they are big.
+        let share: CGFloat = dynamicTypeSize.isAccessibilitySize ? 0.40 : 0.50
+        return min(min(available.width - 36, available.height * share), 372)
+    }
+
     private let chipHeight: CGFloat = 44
     private let toolbarSide: CGFloat = 44
     /// How long the reset press has to be held before it commits.
@@ -94,6 +114,9 @@ struct DhikrView: View {
                     }
                 }
                 .padding(.bottom, MihrabSpace.tabClearance + 4)
+                .onGeometryChange(for: CGSize.self) { $0.size } action: { size in
+                    available = size
+                }
 
                 if celebrating || routineFinished {
                     celebrationOverlay
@@ -166,10 +189,20 @@ struct DhikrView: View {
                 try? await Task.sleep(for: .milliseconds(1000))
                 milestoneBorn = nil
             }
+            // The click synth holds an audio session, so it is only alive while
+            // the strand is actually on screen and the user asked for it.
+            .task(id: strandMode && store.beadSoundEnabled) {
+                if strandMode && store.beadSoundEnabled {
+                    TasbihClickSynth.shared.prepare()
+                } else {
+                    TasbihClickSynth.shared.shutdown()
+                }
+            }
         }
         .onAppear(perform: onAppear)
         .onDisappear {
             UIApplication.shared.isIdleTimerDisabled = false
+            TasbihClickSynth.shared.shutdown()
             DhikrScreenDim.restore()
             celebrating = false
             rippleBorn = nil
@@ -179,11 +212,16 @@ struct DhikrView: View {
         .onChange(of: scenePhase) { _, phase in
             if phase != .active {
                 UIApplication.shared.isIdleTimerDisabled = false
-                // Never leave a dimmed screen behind us in the app switcher.
+                // Never leave a dimmed screen behind us in the app switcher,
+                // and never sit on an audio session in the background.
+                TasbihClickSynth.shared.shutdown()
                 DhikrScreenDim.restore()
             } else {
                 refreshIdleTimer()
                 applyScreenDim()
+                if strandMode && store.beadSoundEnabled {
+                    TasbihClickSynth.shared.prepare()
+                }
             }
         }
     }
@@ -386,7 +424,7 @@ struct DhikrView: View {
                     target: target,
                     accent: accent,
                     reduceMotion: reduceMotion,
-                    onAdvance: { advance() }
+                    onAdvance: { advance(by: $0, silent: true) }
                 )
                 strandReadout
                     .allowsHitTesting(false)
@@ -598,6 +636,13 @@ struct DhikrView: View {
                     // 2.9:1 on moss / 4.1:1 on abyss, both below 4.5:1.
                     .foregroundStyle(MihrabColor.textSecondary)
                     .transition(.opacity)
+            } else if strandMode && count > 0 && count < 6 {
+                // The strand had no second line at all; the one thing worth
+                // saying here is the gesture nobody would guess.
+                Text(L10n.dhkMaterialHint)
+                    .font(.caption2)
+                    .foregroundStyle(MihrabColor.textSecondary.opacity(0.85))
+                    .transition(.opacity)
             } else if count > 0 && !strandMode {
                 Text(L10n.dhkHoldToReset)
                     .font(.caption2)
@@ -637,46 +682,47 @@ struct DhikrView: View {
         .padding(.horizontal, 20)
     }
 
+    /// One button that says where it takes you.
+    ///
+    /// This used to be a two-chip segmented control, which asks the reader to
+    /// work out which half is lit before they can act. A single control naming
+    /// its destination — "Switch to tasbih" — needs no such reading, is one
+    /// fewer thing standing on the screen, and can be a full 44pt tall instead
+    /// of the 34 two chips had to squeeze into.
     private var modeSwitch: some View {
-        HStack(spacing: 6) {
-            ForEach([false, true], id: \.self) { strand in
-                let on = strandMode == strand
-                Button {
-                    guard strandMode != strand else { return }
-                    DhikrFeedback.phraseSwap()
-                    withAnimation(reduceMotion ? nil : MihrabMotion.gentleAnimation) {
-                        strandMode = strand
-                    }
-                } label: {
-                    Label(
-                        strand ? L10n.dhkModeStrand : L10n.dhkModeCounter,
-                        systemImage: strand ? "circle.hexagongrid.fill" : "hand.tap.fill"
-                    )
-                    .font(.caption.weight(.semibold))
-                    .labelStyle(.titleAndIcon)
-                    .padding(.horizontal, 14)
-                    .frame(height: 34)
-                    .foregroundStyle(on ? MihrabColor.textPrimary : MihrabColor.textSecondary)
-                    .background {
-                        if on {
-                            Capsule().fill(MihrabColor.abyss.opacity(0.55))
-                        }
-                    }
-                    .overlay {
-                        Capsule().strokeBorder(MihrabColor.mint.opacity(on ? 0.3 : 0), lineWidth: 1)
-                    }
-                }
-                .buttonStyle(.plain)
-                .accessibilityAddTraits(on ? .isSelected : [])
+        Button {
+            DhikrFeedback.phraseSwap()
+            withAnimation(reduceMotion ? nil : MihrabMotion.gentleAnimation) {
+                strandMode.toggle()
             }
+        } label: {
+            Label(
+                strandMode ? L10n.dhkModeToCounter : L10n.dhkModeToStrand,
+                systemImage: strandMode ? "hand.tap.fill" : "circle.hexagongrid.fill"
+            )
+            .font(.subheadline.weight(.semibold))
+            .labelStyle(.titleAndIcon)
+            .lineLimit(1)
+            .minimumScaleFactor(0.7)
+            .padding(.horizontal, 18)
+            .frame(minHeight: MihrabSpace.hit)
+            .foregroundStyle(MihrabColor.textPrimary)
+            .background { Capsule().fill(MihrabColor.abyss.opacity(0.55)) }
+            .overlay { Capsule().strokeBorder(MihrabColor.mint.opacity(0.3), lineWidth: 1) }
         }
-        .frame(minHeight: MihrabSpace.hit)
-        .accessibilityElement(children: .contain)
-        .accessibilityLabel(Text(L10n.dhkModeSwitch))
+        .buttonStyle(.plain)
+        .accessibilityLabel(Text(strandMode ? L10n.dhkModeToCounter : L10n.dhkModeToStrand))
+        .accessibilityHint(Text(L10n.dhkModeSwitch))
     }
 
     // MARK: - Toolbar
 
+    /// Two controls, not four.
+    ///
+    /// Focus mode, statistics and achievements are all *occasional* — none of
+    /// them is why anyone opens this screen — so they moved behind one menu.
+    /// What is left on the bar is the phrase library and that menu, which is
+    /// two large, well-separated targets instead of four small crowded ones.
     @ToolbarContentBuilder
     private var toolbarContent: some ToolbarContent {
         ToolbarItem(placement: .topBarLeading) {
@@ -689,27 +735,30 @@ struct DhikrView: View {
             .tint(MihrabColor.brass)
             .accessibilityLabel(Text(L10n.dhkLibrary))
         }
-        ToolbarItem(placement: .topBarLeading) {
-            Button { setFocus(true) } label: {
-                toolbarGlyph("arrow.down.right.and.arrow.up.left")
+        ToolbarItem(placement: .topBarTrailing) {
+            Menu {
+                Button {
+                    setFocus(true)
+                } label: {
+                    Label(L10n.dhkFocusEnter, systemImage: "arrow.down.right.and.arrow.up.left")
+                }
+                Button {
+                    DhikrFeedback.light()
+                    showStats = true
+                } label: {
+                    Label(L10n.dhikrStats, systemImage: "chart.bar.fill")
+                }
+                Button {
+                    DhikrFeedback.light()
+                    showAchievements = true
+                } label: {
+                    Label(L10n.achievements, systemImage: "seal.fill")
+                }
+            } label: {
+                toolbarGlyph("ellipsis.circle")
             }
             .tint(MihrabColor.textSecondary)
-            .accessibilityLabel(Text(L10n.dhkFocusEnter))
-            .accessibilityHint(Text(L10n.dhkFocusEnterHint))
-        }
-        ToolbarItem(placement: .topBarTrailing) {
-            Button { showStats = true } label: {
-                toolbarGlyph("chart.bar.fill")
-            }
-            .tint(accent)
-            .accessibilityLabel(Text(L10n.dhikrStats))
-        }
-        ToolbarItem(placement: .topBarTrailing) {
-            Button { showAchievements = true } label: {
-                toolbarGlyph("seal.fill")
-            }
-            .tint(MihrabColor.brass)
-            .accessibilityLabel(Text(L10n.achievements))
+            .accessibilityLabel(Text(L10n.dhkMore))
         }
     }
 
@@ -753,19 +802,34 @@ struct DhikrView: View {
 
     // MARK: - Counting
 
-    private func advance() {
-        guard !celebrating else { return }
-        count += 1
-        todayTotal += 1
+    /// - Parameter steps: how many counts just happened. The strand can hand us
+    ///   several in one frame when the beads are flying, and the old one-at-a-
+    ///   time path charged a SwiftData save *and* a full session refetch for
+    ///   every single one — a fast flick cost five of each. The batch does the
+    ///   arithmetic in one go and persists once.
+    /// - Parameter silent: the caller already gave its own feedback (the strand
+    ///   ticks per bead, on its own budget), so the counter should not tick too.
+    private func advance(by steps: Int = 1, silent: Bool = false) {
+        guard !celebrating, steps > 0 else { return }
+        let before = count
+        count += steps
+        todayTotal += steps
         MihrabIntentBridge.publishDhikrTotal(todayTotal, phraseID: selected.id)
-        DhikrFeedback.tap(countInSet: count, target: target > 0 ? target : 33)
-        playTapMotion()
+        if !silent {
+            DhikrFeedback.tap(countInSet: count, target: target > 0 ? target : 33)
+            playTapMotion()
+        }
         refreshIdleTimer()
 
-        // 33 / 66 / 99 inside a longer set get their own golden moment.
-        if target > 33, count % 33 == 0, count != target {
-            DhikrFeedback.milestone(index: count / 33)
-            milestoneBorn = Date()
+        // 33 / 66 / 99 inside a longer set get their own golden moment. With a
+        // batch, the milestone is whichever multiple of 33 the run crossed —
+        // checking `count % 33` alone would miss it when a flick jumps over.
+        if target > 33 {
+            let crossed = (count / 33) - (before / 33)
+            if crossed > 0, count / 33 * 33 != target {
+                DhikrFeedback.milestone(index: count / 33)
+                milestoneBorn = Date()
+            }
         }
 
         if target > 0 && count >= target {

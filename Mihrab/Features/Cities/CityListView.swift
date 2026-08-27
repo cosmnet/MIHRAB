@@ -242,7 +242,8 @@ struct CityListView: View {
             name: candidate.name,
             latitude: candidate.latitude,
             longitude: candidate.longitude,
-            region: candidate.region.isEmpty ? nil : candidate.region
+            region: candidate.region.isEmpty ? nil : candidate.region,
+            timeZoneIdentifier: candidate.timeZoneIdentifier
         )
         do {
             try store.add(city)

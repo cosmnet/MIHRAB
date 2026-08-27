@@ -24,7 +24,7 @@ struct MakruhTimesCard: View {
                     Image(systemName: expanded ? "info.circle.fill" : "info.circle")
                         .font(.footnote)
                         .foregroundStyle(MihrabColor.textSecondary)
-                        .frame(width: MihrabSpace.hit, height: 32)
+                        .frame(width: MihrabSpace.hit, height: MihrabSpace.hit)
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
@@ -34,7 +34,7 @@ struct MakruhTimesCard: View {
             if windows.isEmpty {
                 Text(L10n.tmxMakruhUnavailable)
                     .font(.caption)
-                    .foregroundStyle(MihrabColor.textTertiary)
+                    .foregroundStyle(MihrabColor.textSecondary)
             } else {
                 ForEach(windows) { window in
                     row(window)
@@ -71,7 +71,7 @@ struct MakruhTimesCard: View {
         HStack(spacing: 10) {
             Image(systemName: window.kind.symbolName)
                 .font(.footnote)
-                .foregroundStyle(active ? MihrabColor.brass : MihrabColor.textTertiary)
+                .foregroundStyle(active ? MihrabColor.brass : MihrabColor.textSecondary)
                 .frame(width: 22)
 
             Text(window.kind.localizedName)
@@ -88,7 +88,7 @@ struct MakruhTimesCard: View {
                 .lineLimit(1)
                 .minimumScaleFactor(0.75)
         }
-        .frame(minHeight: 32)
+        .frame(minHeight: MihrabSpace.hit)
         .accessibilityElement(children: .combine)
     }
 }
@@ -111,7 +111,7 @@ struct NightDivisionsCard: View {
                     Image(systemName: expanded ? "info.circle.fill" : "info.circle")
                         .font(.footnote)
                         .foregroundStyle(MihrabColor.textSecondary)
-                        .frame(width: MihrabSpace.hit, height: 32)
+                        .frame(width: MihrabSpace.hit, height: MihrabSpace.hit)
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
@@ -124,7 +124,7 @@ struct NightDivisionsCard: View {
             } else {
                 Text(L10n.tmxNightNeedsTomorrow)
                     .font(.caption)
-                    .foregroundStyle(MihrabColor.textTertiary)
+                    .foregroundStyle(MihrabColor.textSecondary)
             }
 
             if expanded {
@@ -143,7 +143,7 @@ struct NightDivisionsCard: View {
         HStack(spacing: 10) {
             Image(systemName: symbol)
                 .font(.footnote)
-                .foregroundStyle(MihrabColor.textTertiary)
+                .foregroundStyle(MihrabColor.textSecondary)
                 .frame(width: 22)
             Text(title)
                 .font(.footnote)
@@ -155,7 +155,7 @@ struct NightDivisionsCard: View {
                 .font(.footnote.monospacedDigit())
                 .foregroundStyle(MihrabColor.mint)
         }
-        .frame(minHeight: 32)
+        .frame(minHeight: MihrabSpace.hit)
         .accessibilityElement(children: .combine)
     }
 }
@@ -182,19 +182,19 @@ struct TimesFreshnessBadge: View {
                         .foregroundStyle(MihrabColor.textSecondary)
                     Text("·")
                         .font(.caption)
-                        .foregroundStyle(MihrabColor.textTertiary)
+                        .foregroundStyle(MihrabColor.textSecondary)
                     Text(lastRefresh.map(L10n.tmxLastUpdated) ?? L10n.tmxNeverUpdated)
                         .font(.caption)
-                        .foregroundStyle(MihrabColor.textTertiary)
+                        .foregroundStyle(MihrabColor.textSecondary)
                         .lineLimit(1)
                         .minimumScaleFactor(0.75)
                 }
-                .frame(minHeight: 32)
+                .frame(minHeight: MihrabSpace.hit)
 
                 if showExplain {
                     Text(L10n.tmxOfflineExplain)
                         .font(.caption2)
-                        .foregroundStyle(MihrabColor.textTertiary)
+                        .foregroundStyle(MihrabColor.textSecondary)
                         .multilineTextAlignment(.leading)
                         .fixedSize(horizontal: false, vertical: true)
                 }

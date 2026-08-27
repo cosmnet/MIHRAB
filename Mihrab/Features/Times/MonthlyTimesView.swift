@@ -67,7 +67,7 @@ struct MonthlyTimesView: View {
                         }
                     } else {
                         Image(systemName: "square.and.arrow.up")
-                            .foregroundStyle(MihrabColor.textTertiary)
+                            .foregroundStyle(MihrabColor.textSecondary)
                             .accessibilityLabel(Text(L10n.tmxPreparingShare))
                     }
                 }

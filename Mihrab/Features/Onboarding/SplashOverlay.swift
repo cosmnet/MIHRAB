@@ -1,7 +1,7 @@
 import SwiftUI
 
-/// Launch curtain: the mihrab arch draws itself, a brass crescent settles into
-/// the niche, then the wordmark is written letter by letter. ~1.2 s, then it
+/// Launch curtain: the mihrab niche draws itself, the lamp inside it settles,
+/// then the wordmark is written letter by letter. ~1.2 s, then it
 /// cross-fades into the app. Reduce Motion gets the finished frame instantly.
 struct SplashOverlay: View {
     var onFinish: () -> Void
@@ -9,7 +9,7 @@ struct SplashOverlay: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     @State private var archProgress: CGFloat = 0
-    @State private var crescentIn = false
+    @State private var lampIn = false
     @State private var lettersRevealed = 0
     @State private var taglineIn = false
     @State private var haloOpacity: Double = 0
@@ -58,25 +58,16 @@ struct SplashOverlay: View {
         .ignoresSafeArea()
     }
 
+    /// The brand mark draws itself: the niche outline strokes on, then the
+    /// lamp inside it settles. `MihrabMark` authors its arch as one
+    /// continuous path precisely so `drawProgress` reads as a single line.
     private var mark: some View {
-        ZStack {
-            SplashArchShape()
-                .trim(from: 0, to: archProgress)
-                .stroke(
-                    LinearGradient(
-                        colors: [MihrabColor.brass, MihrabColor.brass.opacity(0.35)],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    ),
-                    style: StrokeStyle(lineWidth: 1.6, lineCap: .round, lineJoin: .round)
-                )
-                .frame(width: 132, height: 172)
-
-            BrassCrescent(diameter: 46, opacity: 0.9)
-                .offset(y: -14)
-                .scaleEffect(crescentIn ? 1 : 0.55)
-                .opacity(crescentIn ? 1 : 0)
-        }
+        MihrabMark(
+            height: 172,
+            drawProgress: archProgress,
+            detailOpacity: lampIn ? 1 : 0
+        )
+        .scaleEffect(lampIn ? 1 : 0.985)
         .frame(width: 176, height: 196)
         .accessibilityHidden(true)
     }
@@ -102,7 +93,7 @@ struct SplashOverlay: View {
     private func run() async {
         guard !reduceMotion else {
             archProgress = 1
-            crescentIn = true
+            lampIn = true
             lettersRevealed = wordmark.count
             taglineIn = true
             haloOpacity = 1
@@ -115,7 +106,7 @@ struct SplashOverlay: View {
         withAnimation(.easeInOut(duration: 1.0)) { haloOpacity = 1 }
 
         try? await Task.sleep(for: .milliseconds(260))
-        withAnimation(.spring(response: 0.55, dampingFraction: 0.68)) { crescentIn = true }
+        withAnimation(.spring(response: 0.55, dampingFraction: 0.68)) { lampIn = true }
 
         try? await Task.sleep(for: .milliseconds(200))
         for step in 1...wordmark.count {
@@ -127,23 +118,5 @@ struct SplashOverlay: View {
 
         try? await Task.sleep(for: .milliseconds(420))
         onFinish()
-    }
-}
-
-/// Splash-only arch: drawn from the floor up one side, over the crown and down
-/// the other, so `.trim` reads as a single continuous stroke.
-private struct SplashArchShape: Shape {
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        let inset = rect.width * 0.08
-        let shoulder = rect.midY + 10
-        path.move(to: CGPoint(x: rect.minX + inset, y: rect.maxY))
-        path.addLine(to: CGPoint(x: rect.minX + inset, y: shoulder))
-        path.addQuadCurve(
-            to: CGPoint(x: rect.maxX - inset, y: shoulder),
-            control: CGPoint(x: rect.midX, y: rect.minY)
-        )
-        path.addLine(to: CGPoint(x: rect.maxX - inset, y: rect.maxY))
-        return path
     }
 }

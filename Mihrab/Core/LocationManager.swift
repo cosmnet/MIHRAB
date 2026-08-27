@@ -179,6 +179,18 @@ final class LocationManager: NSObject, @unchecked Sendable {
         AppSettings.shared.manualCityName ?? cityName
     }
 
+    /// The zone that belongs to `effectiveCoordinate`. A saved city in another
+    /// zone must not be rendered on the device's clock — that is an hour-scale
+    /// error the user has no way to spot.
+    var effectiveTimeZone: TimeZone {
+        let settings = AppSettings.shared
+        guard settings.manualLatitude != nil,
+              let identifier = settings.manualTimeZoneIdentifier,
+              let zone = TimeZone(identifier: identifier)
+        else { return .current }
+        return zone
+    }
+
     private func wrapDegrees(_ value: Double) -> Double {
         var wrapped = value.truncatingRemainder(dividingBy: 360)
         if wrapped < 0 { wrapped += 360 }

@@ -95,7 +95,7 @@ struct ImsakiyeCard: View {
                         .font(.system(size: 15, weight: isFriday ? .bold : .regular).monospacedDigit())
                     Text(day.date.formatted(.dateTime.weekday(.abbreviated).locale(L10n.appLocale)))
                         .font(.system(size: 11, weight: .regular))
-                        .foregroundStyle(isFriday ? MihrabColor.brass : MihrabColor.textTertiary)
+                        .foregroundStyle(isFriday ? MihrabColor.brass : MihrabColor.textSecondary)
                 }
                 .frame(width: 86, alignment: .leading)
 
@@ -147,7 +147,7 @@ struct ImsakiyeCard: View {
                 .foregroundStyle(MihrabColor.textSecondary)
             Text(L10n.tmxComputedOnDevice)
                 .font(.system(size: 11))
-                .foregroundStyle(MihrabColor.textTertiary)
+                .foregroundStyle(MihrabColor.textSecondary)
         }
         .padding(.horizontal, 28)
         .padding(.top, 18)

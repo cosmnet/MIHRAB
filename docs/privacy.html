@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gizlilik Politikası — Mihrab</title>
+<meta name="description" content="Mihrab uygulamasının gizlilik politikası. Reklam yok, analitik yok, hesap yok. Verileriniz cihazınızda kalır.">
+<meta name="color-scheme" content="dark">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wrap">
+
+<header class="masthead">
+  <svg class="mark" width="38" height="38" viewBox="0 0 40 40" aria-hidden="true" focusable="false">
+    <defs>
+      <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#7fe0b2"/><stop offset="1" stop-color="#1fa96b"/>
+      </linearGradient>
+    </defs>
+    <path d="M20 3c-6.1 0-11 4.9-11 11v23h22V14c0-6.1-4.9-11-11-11z" fill="none" stroke="url(#g)" stroke-width="2.4" stroke-linejoin="round"/>
+    <path d="M20 12.5c-3 0-5.4 2.4-5.4 5.4V31h10.8V17.9c0-3-2.4-5.4-5.4-5.4z" fill="none" stroke="#c9a24b" stroke-width="1.5" stroke-linejoin="round" opacity="0.9"/>
+  </svg>
+  <div>
+    <p class="masthead-name"><a href="index.html">Mihrab</a></p>
+    <p class="masthead-tag">Gizlilik Politikası</p>
+  </div>
+</header>
+
+<nav class="pages" aria-label="Sayfalar">
+  <a href="index.html">Ana sayfa</a>
+  <a href="privacy.html" aria-current="page">Gizlilik</a>
+  <a href="terms.html">Kullanım Şartları</a>
+  <a href="support.html">Destek</a>
+  <a href="privacy-en.html">English</a>
+</nav>
+
+<main>
+  <h1>Gizlilik Politikası</h1>
+  <p class="updated">Yürürlük tarihi: 27 Ağustos 2026 · Sürüm 1.0 · Uygulama sürümü 1.0</p>
+
+  <p class="lede">
+    Mihrab sizden veri toplamaz. Hesap yoktur, reklam yoktur, analitik yoktur,
+    üçüncü taraf izleyici yoktur. Bu sayfa, uygulamanın <em>fiilen</em> ne yaptığını
+    satır satır anlatır — pazarlama dili değil, teknik gerçek.
+  </p>
+
+  <div class="callout">
+    <p><strong>Bir cümlede:</strong> ibadet kayıtlarınız, zikir sayılarınız,
+    favorileriniz ve ayarlarınız cihazınızda kalır. Uygulamanın geliştiricisine
+    giden hiçbir veri yoktur. Cihazınızın dışına çıkan tek şey, namaz vakitlerini
+    resmî kaynakla karşılaştırmak için gönderilen <strong>enlem ve boylam</strong>
+    ile Apple'ın kendi servislerine (Haritalar, iCloud, App Store) yaptığınız
+    normal işletim sistemi çağrılarıdır.</p>
+  </div>
+
+  <h2>1. Veri sorumlusu</h2>
+  <p>
+    KVKK (6698 sayılı Kanun) anlamında <strong>veri sorumlusu</strong>, GDPR anlamında
+    <strong>controller</strong>:
+  </p>
+  <div class="card">
+    <p>
+      <strong>Cafer Karakaya</strong> — Mihrab uygulamasının geliştiricisi (bağımsız
+      geliştirici)<br>
+      E-posta: <a href="mailto:mihrab.feedback@icloud.com">mihrab.feedback@icloud.com</a><br>
+      Uygulama paket kimliği: <code>com.caferkarakaya.mihrab</code>
+    </p>
+  </div>
+  <p>
+    Mihrab'ın sunucusu yoktur. Geliştiricinin işlettiği hiçbir veri tabanı, hiçbir
+    kullanıcı kaydı, hiçbir günlük (log) dosyası bulunmaz.
+  </p>
+
+  <h2>2. Toplamadıklarımız</h2>
+  <p>Aşağıdakiler uygulamada <strong>yoktur</strong>. Bu bir taahhüt değil, kod düzeyinde
+  bir olgudur ve Apple'a sunulan <code>PrivacyInfo.xcprivacy</code> gizlilik
+  manifestosunda <code>NSPrivacyTracking = false</code> ve boş
+  <code>NSPrivacyCollectedDataTypes</code> olarak beyan edilir:</p>
+  <ul>
+    <li>Reklam ağı, reklam kimliği (IDFA), reklam izleme izni istemi</li>
+    <li>Analitik / kullanım ölçümleme SDK'sı (Firebase, Amplitude, Mixpanel vb.)</li>
+    <li>Çökme raporlama servisi (Crashlytics vb.)</li>
+    <li>Attribution / dönüşüm izleme (AppsFlyer, Adjust vb.)</li>
+    <li>Sosyal medya SDK'sı, giriş sağlayıcı, tek oturum açma</li>
+    <li>Kullanıcı hesabı, e-posta kaydı, telefon numarası, profil</li>
+    <li>Kişiler, fotoğraflar, takvim, sağlık verisi, mikrofon erişimi</li>
+    <li>Çerez, piksel, parmak izi (fingerprinting) tekniği</li>
+    <li>Veri satışı, veri paylaşımı, veri simsarlarına aktarım</li>
+  </ul>
+  <p>
+    Uygulamanın bağlı olduğu tek üçüncü taraf kütüphane
+    <a href="https://github.com/batoulapps/adhan-swift">adhan-swift</a>'tir (MIT lisanslı,
+    açık kaynak). Bu kütüphane yalnızca matematik yapar: hiçbir ağ bağlantısı açmaz,
+    hiçbir veri okumaz.
+  </p>
+
+  <h2>3. İşlenen veriler, amaçları ve hukuki dayanakları</h2>
+
+  <div class="table-scroll">
+  <table>
+    <thead>
+      <tr>
+        <th>Veri</th><th>Amaç</th><th>Nerede kalır</th><th>Hukuki dayanak</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Konum (enlem/boylam)</td>
+        <td>Namaz vakti hesabı, kıble yönü, yakındaki camiler, şehir adı</td>
+        <td>Cihaz + vakit sorgusunda Aladhan'a gönderilir</td>
+        <td>Açık rıza (iOS izni) — KVKK m.5/1, GDPR m.6(1)(a)</td>
+      </tr>
+      <tr>
+        <td>Kamera görüntüsü (AR kıble)</td>
+        <td>Kıble okunu canlı görüntü üzerine yerleştirmek</td>
+        <td>Yalnızca ekranda, hiç kaydedilmez</td>
+        <td>Açık rıza (iOS izni)</td>
+      </tr>
+      <tr>
+        <td>Namaz/oruç kaydı, zikir sayıları, favoriler, yer imleri</td>
+        <td>Kendi takibinizi tutmak</td>
+        <td>Cihaz; açarsanız kendi iCloud hesabınız</td>
+        <td>Sözleşmenin ifası — GDPR m.6(1)(b)</td>
+      </tr>
+      <tr>
+        <td>Ayarlar (hesaplama yöntemi, ezan sesi, tema, dil, ±dk düzeltme)</td>
+        <td>Uygulamayı sizin seçtiğiniz gibi çalıştırmak</td>
+        <td>Cihaz (App Group)</td>
+        <td>Sözleşmenin ifası</td>
+      </tr>
+      <tr>
+        <td>Abonelik durumu</td>
+        <td>Mihrab Plus özelliklerini açmak</td>
+        <td>Apple'da; cihazda yalnızca "açık/kapalı" işareti</td>
+        <td>Sözleşmenin ifası</td>
+      </tr>
+      <tr>
+        <td>Bildirim izni</td>
+        <td>Vakit hatırlatmaları ve ezan alarmı</td>
+        <td>Cihaz</td>
+        <td>Açık rıza (iOS izni)</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>3.1 Konum</h3>
+  <p>
+    Uygulama <strong>yalnızca kullanırken</strong> (<em>when in use</em>) konum izni ister;
+    arka planda sürekli konum takibi yapmaz. İzin vermezseniz Ayarlar'dan
+    <strong>şehri elle</strong> seçebilirsiniz ve uygulama tam olarak çalışır.
+  </p>
+  <ul>
+    <li>Vakit ve şehir için istenen hassasiyet <strong>kilometre</strong> düzeyindedir ve
+      konum güncellemeleri ancak <strong>2 km</strong> hareket ettiğinizde tetiklenir.</li>
+    <li>Kıble ekranı açıkken hassasiyet geçici olarak on metre düzeyine çıkar,
+      ekrandan çıkınca eski haline döner. Ekranların hiçbiri kapandıktan sonra
+      konumu açık bırakmaz.</li>
+    <li>Şehir adı, Apple'ın <em>CLGeocoder</em> servisiyle çözülür. Bu, işletim sisteminin
+      Apple'a yaptığı bir çağrıdır ve Apple'ın kendi gizlilik politikasına tabidir.
+      Uygulama bu çağrıyı dakikada birden ve 3 km'den az hareket için hiç yapmaz.</li>
+    <li>Konum <strong>cihazdan çıkarılıp bir sunucuda saklanmaz</strong>; hiçbir konum geçmişi
+      tutulmaz.</li>
+  </ul>
+
+  <h3>3.2 Ağ: Aladhan API'sine ne gidiyor</h3>
+  <p>
+    Namaz vakitleri <strong>önce cihazınızda</strong> hesaplanır. Uygulama uçak modunda,
+    çekmeyen yerde ve API kesintisinde tam olarak çalışır. Ağ yalnızca bu hesabı
+    resmî bir kaynakla karşılaştırıp iyileştirmek içindir.
+  </p>
+  <p>Bu karşılaştırma için <code>api.aladhan.com</code> adresine şu bilgiler gider:</p>
+  <ul>
+    <li><strong>Enlem ve boylam</strong> (ondalık derece)</li>
+    <li><strong>Tarih</strong> veya ay/yıl</li>
+    <li>Seçtiğiniz <strong>hesaplama yöntemi</strong> ve <strong>mezhep</strong> (ikindi vakti için)</li>
+  </ul>
+  <p>
+    Bu istekle birlikte <strong>hiçbir kimlik, hesap, cihaz kimliği, reklam kimliği,
+    ad, e-posta veya çerez gönderilmez.</strong> İstek anonimdir. Her HTTPS isteğinde
+    olduğu gibi Aladhan'ın sunucusu isteğin geldiği IP adresini görür; bu, her
+    internet bağlantısının teknik bir sonucudur ve uygulamanın kontrolünde değildir.
+    Aladhan bağımsız bir üçüncü taraftır ve kendi gizlilik uygulamalarına tabidir.
+  </p>
+  <div class="callout">
+    <p>
+      <strong>Bunu istemiyorsanız:</strong> Ayarlar'dan konum yerine bir şehir seçin.
+      Bu durumda cihazınızın kendi GPS koordinatı hiç kullanılmaz; ağ isteğinde
+      seçtiğiniz şehrin genel koordinatı yer alır. Cihazınızı uçak moduna alsanız
+      dahi vakitler cihaz üstü motorla hesaplanmaya devam eder.
+    </p>
+  </div>
+
+  <h3>3.3 Yakındaki camiler</h3>
+  <p>
+    Cami araması Apple'ın <em>MapKit</em> yerel arama servisiyle yapılır; aramanın
+    yapıldığı bölge Apple Haritalar'a gider ve Apple'ın gizlilik politikasına tabidir.
+    Bu ekranı hiç açmazsanız böyle bir istek de hiç yapılmaz.
+  </p>
+
+  <h3>3.4 Kamera (AR kıble)</h3>
+  <p>
+    AR kıble modu ARKit ile çalışır. Kamera görüntüsü yalnızca ekranda gösterilir:
+    <strong>kaydedilmez, saklanmaz, hiçbir yere yüklenmez</strong>, hiçbir görüntü işleme
+    servisine gönderilmez. Mod kapandığında oturum sona erer.
+  </p>
+
+  <h3>3.5 Bildirimler ve alarmlar</h3>
+  <p>
+    Bütün hatırlatmalar <strong>yerel</strong>dir: cihazınızda planlanır, cihazınızda çalar.
+    Uzaktan bildirim (push) gönderen bir sunucu yoktur. Uygulama iOS 26'nın
+    <em>AlarmKit</em> çerçevesini kullanarak ezanı sessiz modda ve Odak'ta da
+    duyurabilir; bu da tamamen cihaz üzerindedir. Uygulamanın
+    <code>remote-notification</code> arka plan modu yalnızca iCloud senkronizasyonunun
+    sessiz uyandırma sinyalleri içindir.
+  </p>
+
+  <h3>3.6 iCloud senkronizasyonu (isteğe bağlı, varsayılan kapalı)</h3>
+  <p>
+    Mihrab Plus ile birlikte, zikir oturumlarınız, favori hadisleriniz, hatim
+    ilerlemeniz, namaz ve oruç kayıtlarınız <strong>kendi iCloud hesabınıza</strong>
+    yedeklenebilir. Bu özellik <strong>varsayılan olarak kapalıdır</strong> ve Ayarlar'dan
+    açılır.
+  </p>
+  <ul>
+    <li>Veriler Apple'ın <em>CloudKit özel veri tabanına</em>
+      (<code>iCloud.com.caferkarakaya.mihrab</code>) ve
+      <em>NSUbiquitousKeyValueStore</em>'a yazılır.</li>
+    <li>Özel veri tabanı <strong>sizin Apple Hesabınıza</strong> aittir.
+      <strong>Geliştirici bu verilere erişemez</strong>, göremez, indiremez.</li>
+    <li>Aboneliğiniz sona ererse senkronizasyon durur; <strong>hiçbir şey silinmez</strong> —
+      yereldeki ve iCloud'daki kayıtlarınız olduğu yerde kalır.</li>
+    <li>Senkronizasyonu kapatmak yeni yazmaları durdurur; iCloud'daki mevcut
+      kayıtları silmek için iOS Ayarlar → Apple Hesabı → iCloud → Mihrab yolunu
+      kullanabilirsiniz.</li>
+  </ul>
+
+  <h3>3.7 Satın alma</h3>
+  <p>
+    Mihrab Plus abonelikleri ve ömür boyu satın alma <strong>Apple'ın StoreKit</strong> altyapısı
+    üzerinden yürür. Ödeme bilgileriniz Apple'a gider; <strong>uygulama kart bilgisi,
+    fatura adresi veya ödeme verisi görmez, saklamaz.</strong> Uygulama Apple'dan yalnızca
+    "bu cihazda geçerli bir hak var mı" sorusunun cevabını alır ve bunu cihazdaki
+    App Group alanında bir açık/kapalı işareti olarak tutar. Geliştirici App Store
+    Connect üzerinden yalnızca Apple'ın sağladığı <strong>toplulaştırılmış ve anonim</strong>
+    satış raporlarını görür.
+  </p>
+
+  <h3>3.8 Apple Watch</h3>
+  <p>
+    Telefon ile saat arasındaki köprü <em>WatchConnectivity</em>'dir ve
+    <strong>sonuçları değil ayarları</strong> taşır: koordinat, hesaplama yöntemi, mezhep,
+    kaynak, vakit başına dakika düzeltmesi, saat dilimi. Saat aynı hesabı kendi
+    üzerinde yapar. Bu aktarım <strong>iki cihazınız arasındadır</strong>; hiçbir sunucudan
+    geçmez.
+  </p>
+
+  <h3>3.9 Ortak hatim daveti</h3>
+  <p>
+    Ortak hatim özelliğinin <strong>sunucusu yoktur</strong>. Davet, hatim tanımını içeren
+    kısa bir koddan ibarettir; siz onu WhatsApp, mesaj ya da başka bir uygulamayla
+    kendiniz gönderirsiniz. Kimin hangi cüzü aldığını gören merkezi bir sistem
+    bulunmaz; her cihaz yalnızca kendi okumasını izler.
+  </p>
+
+  <h2>4. Paylaşım ve yurt dışına aktarım</h2>
+  <p>
+    Geliştirici kişisel verilerinizi <strong>hiç kimseyle paylaşmaz, satmaz, kiralamaz</strong>.
+    Aşağıdakiler "paylaşım" değil, uygulamanın çalışması için zorunlu servis
+    çağrılarıdır ve KVKK m.9 / GDPR Bölüm V anlamında yurt dışı aktarım oluşturabilir:
+  </p>
+  <div class="table-scroll">
+  <table>
+    <thead><tr><th>Alıcı</th><th>Giden veri</th><th>Ne zaman</th></tr></thead>
+    <tbody>
+      <tr><td>Aladhan (aladhan.com)</td><td>Enlem, boylam, tarih, yöntem, mezhep</td><td>İnternet varken, vakitler tazelenirken</td></tr>
+      <tr><td>Apple — Konum/Haritalar servisleri</td><td>Şehir adı çözümü, cami araması bölgesi</td><td>Şehir adı gerektiğinde; Camiler ekranı açıldığında</td></tr>
+      <tr><td>Apple — iCloud/CloudKit</td><td>Yalnızca siz açtıysanız: ibadet kayıtları ve tercihler</td><td>Senkronizasyon açıkken</td></tr>
+      <tr><td>Apple — App Store / StoreKit</td><td>Satın alma ve abonelik işlemi</td><td>Satın alırken veya geri yüklerken</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>
+    Apple'a giden çağrılar Apple'ın <a href="https://www.apple.com/legal/privacy/">gizlilik
+    politikasına</a> tabidir. Ayrıca yetkili bir mahkeme veya kamu kurumunun hukuka
+    uygun talebi olması hâlinde mevzuatın gerektirdiği bilgiler paylaşılabilir — ancak
+    geliştiricide sizinle ilgili saklanan bir veri bulunmadığı için pratikte
+    paylaşılacak bir şey yoktur.
+  </p>
+
+  <h2>5. Saklama süreleri</h2>
+  <div class="table-scroll">
+  <table>
+    <thead><tr><th>Veri</th><th>Süre</th><th>Nasıl silinir</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Cihazdaki ayarlar, kayıtlar, sayaçlar, önbellek</td>
+        <td>Siz silene kadar</td>
+        <td>Uygulamayı kaldırmak hepsini siler</td>
+      </tr>
+      <tr>
+        <td>Vakit önbelleği (App Group)</td>
+        <td>Yaklaşık 60 gün geriye dönük tutulur, sonra otomatik temizlenir</td>
+        <td>Uygulamayı kaldırmak</td>
+      </tr>
+      <tr>
+        <td>Konum (bellekte tutulan son konum)</td>
+        <td>Uygulama kapanınca kaybolur; geçmiş tutulmaz</td>
+        <td>Kendiliğinden</td>
+      </tr>
+      <tr>
+        <td>iCloud'daki kayıtlar</td>
+        <td>Siz silene kadar</td>
+        <td>iOS Ayarlar → Apple Hesabı → iCloud → Mihrab</td>
+      </tr>
+      <tr>
+        <td>Geliştiricinin sunucusundaki veriler</td>
+        <td>—</td>
+        <td>Böyle bir sunucu yok</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h2>6. Haklarınız</h2>
+  <p>
+    KVKK m.11 ve GDPR m.15–22 uyarınca; verilerinizin işlenip işlenmediğini öğrenme,
+    bilgi talep etme, amacına uygun kullanılıp kullanılmadığını öğrenme, düzeltilmesini,
+    silinmesini veya yok edilmesini isteme, aktarıldığı üçüncü kişileri öğrenme,
+    otomatik sistemlerle analiz sonucu aleyhinize bir sonuç doğmasına itiraz etme,
+    zararınızın giderilmesini talep etme; ayrıca GDPR kapsamında taşınabilirlik,
+    işlemeyi kısıtlama ve rızayı geri çekme haklarına sahipsiniz.
+  </p>
+  <div class="callout">
+    <p>
+      <strong>Pratikte:</strong> Mihrab'ın verilerinizi tutan bir sunucusu olmadığı için
+      bu hakların çoğunu <strong>doğrudan kendiniz</strong>, hiç kimseden izin almadan
+      kullanırsınız: verileriniz cihazınızdadır, uygulamayı silmek onları siler,
+      iCloud'daki kopya Apple Hesabınızın kontrolündedir. Yine de bir talebiniz veya
+      sorunuz olursa <a href="mailto:mihrab.feedback@icloud.com">mihrab.feedback@icloud.com</a>
+      adresine yazın; en geç <strong>30 gün</strong> içinde yanıtlanır.
+    </p>
+  </div>
+  <p>
+    İzinleri istediğiniz an geri alabilirsiniz: iOS Ayarlar → Mihrab → Konum / Kamera /
+    Bildirimler. İzin geri alındığında ilgili özellik devre dışı kalır, uygulamanın
+    geri kalanı çalışmaya devam eder.
+  </p>
+  <p>
+    Türkiye'de Kişisel Verileri Koruma Kurumu'na (<a href="https://www.kvkk.gov.tr">kvkk.gov.tr</a>),
+    Avrupa Birliği'nde ise bulunduğunuz ülkenin veri koruma otoritesine şikâyette
+    bulunma hakkınız saklıdır.
+  </p>
+
+  <h2>7. Çocuklar</h2>
+  <p>
+    Mihrab herkese açıktır (App Store yaş sınırı 4+) ve kullanıcı hesabı, sohbet,
+    kullanıcı üretimi içerik veya reklam içermediği için çocuklardan bilerek ya da
+    bilmeyerek kişisel veri toplamaz. 13 yaşından küçük çocuklar dâhil hiçbir
+    yaş grubundan veri toplanmadığı için silinmesi gereken bir kayıt oluşmaz.
+  </p>
+
+  <h2>8. Güvenlik</h2>
+  <ul>
+    <li>Uygulamanın tüm ağ trafiği <strong>HTTPS</strong> üzerindedir.</li>
+    <li>Verileriniz cihaz üzerinde iOS'un kendi dosya koruma ve sandbox mekanizmalarıyla
+      korunur; cihaz parolanız açıksa <strong>disk şifrelemesi</strong> kapsamındadır.</li>
+    <li>iCloud'daki kopya Apple'ın altyapısında, sizin Apple Hesabınızın kimlik
+      doğrulamasının arkasındadır.</li>
+    <li>Geliştiricide saklanan veri olmadığı için, geliştiricide sızdırılabilecek
+      veri de yoktur.</li>
+  </ul>
+
+  <h2>9. Bu politikadaki değişiklikler</h2>
+  <p>
+    Uygulamanın veri davranışı değişirse bu sayfa güncellenir ve yukarıdaki
+    "yürürlük tarihi" yenilenir. Yeni bir veri kategorisinin işlenmeye başlanması
+    gibi esaslı bir değişiklikte, değişiklik uygulama içinde de duyurulur.
+    Bu sayfanın geçmiş sürümleri projenin herkese açık depo geçmişinde izlenebilir.
+  </p>
+
+  <h2>10. İletişim</h2>
+  <p>
+    Gizlilikle ilgili her soru, talep ve şikâyet için:
+    <a href="mailto:mihrab.feedback@icloud.com">mihrab.feedback@icloud.com</a>.
+    Ayrıca <a href="support.html">Destek</a> sayfasına bakabilirsiniz.
+  </p>
+</main>
+
+<footer>
+  <p><a href="index.html">Mihrab</a> · <a href="privacy-en.html">English version</a> ·
+  <a href="terms.html">Kullanım Şartları</a> · <a href="support.html">Destek</a></p>
+  <p>Bu sayfa çerez kullanmaz, istatistik toplamaz ve hiçbir dış kaynağa istek atmaz.</p>
+</footer>
+
+</div>
+</body>
+</html>

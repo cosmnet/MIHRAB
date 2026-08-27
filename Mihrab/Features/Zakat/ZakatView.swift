@@ -80,18 +80,13 @@ struct ZakatView: View {
             }
             .pickerStyle(.segmented)
 
-            if store.basis == .silver {
-                Picker(L10n.zakatSilverStandardHeader, selection: Binding(
-                    get: { store.silverStandard },
-                    set: { store.silverStandard = $0 }
-                )) {
-                    ForEach(SilverNisabStandard.allCases) { Text($0.localizedName).tag($0) }
-                }
-                .frame(minHeight: MihrabSpace.hit)
-                Text(L10n.zakatSilverStandardNote)
-                    .font(.caption)
-                    .foregroundStyle(MihrabColor.textTertiary)
-            }
+            // Whose position the current choice is, in one sentence. The user
+            // said they cannot decide this themselves, so the app decides and
+            // then explains — it does not hand the question back.
+            Text(store.basis.localizedNote)
+                .font(.caption)
+                .foregroundStyle(MihrabColor.textSecondary)
+                .fixedSize(horizontal: false, vertical: true)
 
             if let nisab = store.nisabValue, nisab > 0 {
                 Text(L10n.zakatNisabValue(store.format(nisab)))
@@ -102,6 +97,12 @@ struct ZakatView: View {
                     .font(.caption)
                     .foregroundStyle(MihrabColor.textSecondary)
             }
+
+            // Name the authority behind the 80,18 g figure.
+            Label(L10n.zakatSourceDiyanet, systemImage: "building.columns")
+                .font(.caption)
+                .foregroundStyle(MihrabColor.textTertiary)
+                .fixedSize(horizontal: false, vertical: true)
         } header: {
             Text(L10n.zakatNisabHeader)
         } footer: {
@@ -214,6 +215,29 @@ struct ZakatView: View {
                 get: { store.fitrePerPerson },
                 set: { store.fitrePerPerson = max(0, $0) }
             ))
+
+            // One tap instead of "go and look it up". Only offered while the
+            // announced figure is still the current one — after that the app
+            // says nothing rather than suggesting a stale amount.
+            if let suggested = store.suggestedFitre {
+                Button {
+                    store.applySuggestedFitre()
+                    HapticsEngine.shared.light()
+                } label: {
+                    Text(L10n.fitreDiyanetAmount(store.format(suggested)))
+                        .frame(minHeight: MihrabSpace.hit)
+                }
+                Text(L10n.fitreDiyanetNote(Self.dateFormatter.string(from: DiyanetFitre.announcedOn)))
+                    .font(.caption)
+                    .foregroundStyle(MihrabColor.textTertiary)
+                    .fixedSize(horizontal: false, vertical: true)
+            } else if store.fitreFigureIsStale {
+                Label(L10n.fitreFigureOutdated, systemImage: "exclamationmark.triangle.fill")
+                    .font(.caption)
+                    .foregroundStyle(MihrabColor.brass)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
             Stepper(value: Binding(get: { store.fitrePeople }, set: { store.fitrePeople = $0 }), in: 0...50) {
                 HStack {
                     Text(L10n.fitrePeople)

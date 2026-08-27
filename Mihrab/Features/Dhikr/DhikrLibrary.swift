@@ -116,6 +116,105 @@ enum DhikrCatalog {
     static var allBuiltIn: [DhikrItem] { core + extended + esma }
 }
 
+// MARK: - Tasbih materials
+
+/// What the strand is *made of*. A real tasbih is chosen as much by the feel and
+/// the sound of the material as by the count, so the choice is a stored
+/// preference rather than a theme detail: amber is bright and glassy, ebony is
+/// dark and dry, olive wood is warm and matte.
+///
+/// The colours are the material's own, not palette tokens — an amber bead that
+/// borrowed the app's green would stop being amber.
+enum TasbihMaterial: String, CaseIterable, Codable, Identifiable, Sendable {
+    case amber
+    case ebony
+    case olive
+
+    var id: String { rawValue }
+
+    var localizedName: String { L10n.dhkMaterialName(rawValue) }
+
+    /// Body of the bead where it is in shadow.
+    var coreHex: UInt32 {
+        switch self {
+        case .amber: 0x8A4A0C
+        case .ebony: 0x14100E
+        case .olive: 0x5A431F
+        }
+    }
+
+    /// Body of the bead where the light lands.
+    var litHex: UInt32 {
+        switch self {
+        case .amber: 0xF0A93C
+        case .ebony: 0x4A423C
+        case .olive: 0xC29A54
+        }
+    }
+
+    /// The specular pin-prick — how wet the surface looks.
+    var sheenHex: UInt32 {
+        switch self {
+        case .amber: 0xFFE7B0
+        case .ebony: 0xBFC4C0
+        case .olive: 0xF2DCA8
+        }
+    }
+
+    /// Rim light around the silhouette.
+    var rimHex: UInt32 {
+        switch self {
+        case .amber: 0xFFCE7A
+        case .ebony: 0x8C948E
+        case .olive: 0xE0C88A
+        }
+    }
+
+    /// The cord the beads are strung on.
+    var cordHex: UInt32 {
+        switch self {
+        case .amber: 0x6B4A18
+        case .ebony: 0x2A2622
+        case .olive: 0x4A3A1C
+        }
+    }
+
+    /// 0…1 — how glossy the highlight reads. Amber is glass, olive is oiled
+    /// wood, ebony is polished but dark.
+    var gloss: Double {
+        switch self {
+        case .amber: 0.95
+        case .ebony: 0.55
+        case .olive: 0.68
+        }
+    }
+
+    /// Fundamental of the synthesised click, in hertz. Denser, harder material
+    /// rings higher; wood is lower and dies faster.
+    var clickFrequency: Double {
+        switch self {
+        case .amber: 1180
+        case .ebony: 560
+        case .olive: 820
+        }
+    }
+
+    /// Seconds for the click to fall away.
+    var clickDecay: Double {
+        switch self {
+        case .amber: 0.055
+        case .ebony: 0.030
+        case .olive: 0.042
+        }
+    }
+
+    var next: TasbihMaterial {
+        let all = Self.allCases
+        let index = all.firstIndex(of: self) ?? 0
+        return all[(index + 1) % all.count]
+    }
+}
+
 // MARK: - Store
 
 /// Counter preferences and user-made dhikr. Deliberately `UserDefaults` and not
@@ -135,6 +234,8 @@ final class DhikrStore {
         static let strandDefault = "mihrab.dhikr.strandDefault"
         static let focusDim = "mihrab.dhikr.focusDim"
         static let lastPhrase = "mihrab.dhikr.lastPhrase"
+        static let material = "mihrab.dhikr.tasbihMaterial"
+        static let beadSound = "mihrab.dhikr.beadSound"
     }
 
     private let defaults: UserDefaults
@@ -168,6 +269,17 @@ final class DhikrStore {
         didSet { defaults.set(lastPhraseID, forKey: Key.lastPhrase) }
     }
 
+    /// What the tasbih strand is made of.
+    var tasbihMaterial: TasbihMaterial {
+        didSet { defaults.set(tasbihMaterial.rawValue, forKey: Key.material) }
+    }
+
+    /// The synthesised bead click. Off by default — a counting app that starts
+    /// making noise on its own is a counting app people mute and stop using.
+    var beadSoundEnabled: Bool {
+        didSet { defaults.set(beadSoundEnabled, forKey: Key.beadSound) }
+    }
+
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
         soundEnabled = defaults.object(forKey: Key.sound) as? Bool ?? false
@@ -176,6 +288,9 @@ final class DhikrStore {
         opensInStrandMode = defaults.object(forKey: Key.strandDefault) as? Bool ?? false
         dimsInFocusMode = defaults.object(forKey: Key.focusDim) as? Bool ?? true
         lastPhraseID = defaults.string(forKey: Key.lastPhrase) ?? DhikrCatalog.subhanallah.id
+        tasbihMaterial = defaults.string(forKey: Key.material)
+            .flatMap(TasbihMaterial.init(rawValue:)) ?? .amber
+        beadSoundEnabled = defaults.object(forKey: Key.beadSound) as? Bool ?? false
 
         if let data = defaults.data(forKey: Key.custom),
            let decoded = try? JSONDecoder().decode([DhikrItem].self, from: data) {

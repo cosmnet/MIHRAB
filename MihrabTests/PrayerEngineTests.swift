@@ -138,18 +138,23 @@ final class PrayerEngineTests: XCTestCase {
         XCTAssertNil(temkin[.isha])
     }
 
-    func testFaziletImsakIsEarlierThanDiyanetAndOtherTimesMatch() throws {
+    /// Fazilet was withdrawn: its temkin minutes are published per city and are
+    /// not obtainable, so a dawn angle alone produced a wrong time. The case
+    /// survives only so old preferences still decode, and must resolve away.
+    func testFaziletIsWithdrawnAndResolvesToDiyanet() throws {
+        XCTAssertFalse(PrayerSource.fazilet.isSelectable)
+        XCTAssertEqual(PrayerSource.fazilet.resolved, .diyanet)
+        XCTAssertFalse(PrayerSource.allCases.contains(.fazilet),
+                       "a withdrawn source must never reach a picker")
+
         let when = date(2026, 4, 12, timeZone: "Europe/Istanbul")
         let diyanet = try XCTUnwrap(PrayerEngine.times(for: when, coordinate: istanbul,
                                                        configuration: configuration(source: .diyanet)))
         let fazilet = try XCTUnwrap(PrayerEngine.times(for: when, coordinate: istanbul,
                                                        configuration: configuration(source: .fazilet)))
-        XCTAssertLessThan(fazilet.times[.fajr]!, diyanet.times[.fajr]!,
-                          "A deeper dawn angle must produce an earlier imsak")
-        // The tradition only moves imsak in this model — everything else is identical.
-        for prayer in [Prayer.sunrise, .dhuhr, .asr, .maghrib] {
+        for prayer in Prayer.allCases {
             XCTAssertEqual(fazilet.times[prayer]!.timeIntervalSince(diyanet.times[prayer]!), 0,
-                           accuracy: 1, "\(prayer.rawValue) must not move with the source")
+                           accuracy: 1, "withdrawn source must fall back exactly to Diyanet")
         }
     }
 

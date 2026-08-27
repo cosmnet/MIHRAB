@@ -8,35 +8,38 @@ struct OnboardingCity: Identifiable, Hashable, Sendable {
     let region: String
     let latitude: Double
     let longitude: Double
+    /// IANA zone, carried so a saved city is never rendered on the device's
+    /// clock. `nil` only when the geocoder could not say.
+    var timeZoneIdentifier: String? = nil
 }
 
 /// Geocoding kept off the main actor — only `Sendable` values cross back.
 enum CitySearch {
     static let presets: [OnboardingCity] = [
-        OnboardingCity(name: "İstanbul", region: "Türkiye", latitude: 41.0082, longitude: 28.9784),
-        OnboardingCity(name: "Ankara", region: "Türkiye", latitude: 39.9334, longitude: 32.8597),
-        OnboardingCity(name: "İzmir", region: "Türkiye", latitude: 38.4237, longitude: 27.1428),
-        OnboardingCity(name: "Bursa", region: "Türkiye", latitude: 40.1826, longitude: 29.0665),
-        OnboardingCity(name: "Antalya", region: "Türkiye", latitude: 36.8969, longitude: 30.7133),
-        OnboardingCity(name: "Adana", region: "Türkiye", latitude: 37.0000, longitude: 35.3213),
-        OnboardingCity(name: "Konya", region: "Türkiye", latitude: 37.8746, longitude: 32.4932),
-        OnboardingCity(name: "Gaziantep", region: "Türkiye", latitude: 37.0662, longitude: 37.3833),
-        OnboardingCity(name: "Kayseri", region: "Türkiye", latitude: 38.7312, longitude: 35.4787),
-        OnboardingCity(name: "Trabzon", region: "Türkiye", latitude: 41.0027, longitude: 39.7168),
-        OnboardingCity(name: "Diyarbakır", region: "Türkiye", latitude: 37.9144, longitude: 40.2306),
-        OnboardingCity(name: "Erzurum", region: "Türkiye", latitude: 39.9043, longitude: 41.2679),
-        OnboardingCity(name: "Mekke", region: "Suudi Arabistan", latitude: 21.3891, longitude: 39.8579),
-        OnboardingCity(name: "Medine", region: "Suudi Arabistan", latitude: 24.5247, longitude: 39.5692),
-        OnboardingCity(name: "Kudüs", region: "Filistin", latitude: 31.7683, longitude: 35.2137),
-        OnboardingCity(name: "Kahire", region: "Mısır", latitude: 30.0444, longitude: 31.2357),
-        OnboardingCity(name: "Dubai", region: "BAE", latitude: 25.2048, longitude: 55.2708),
-        OnboardingCity(name: "Londra", region: "Birleşik Krallık", latitude: 51.5074, longitude: -0.1278),
-        OnboardingCity(name: "Berlin", region: "Almanya", latitude: 52.5200, longitude: 13.4050),
-        OnboardingCity(name: "Paris", region: "Fransa", latitude: 48.8566, longitude: 2.3522),
-        OnboardingCity(name: "Amsterdam", region: "Hollanda", latitude: 52.3676, longitude: 4.9041),
-        OnboardingCity(name: "New York", region: "ABD", latitude: 40.7128, longitude: -74.0060),
-        OnboardingCity(name: "Kuala Lumpur", region: "Malezya", latitude: 3.1390, longitude: 101.6869),
-        OnboardingCity(name: "Jakarta", region: "Endonezya", latitude: -6.2088, longitude: 106.8456),
+        OnboardingCity(name: "İstanbul", region: "Türkiye", latitude: 41.0082, longitude: 28.9784, timeZoneIdentifier: "Europe/Istanbul"),
+        OnboardingCity(name: "Ankara", region: "Türkiye", latitude: 39.9334, longitude: 32.8597, timeZoneIdentifier: "Europe/Istanbul"),
+        OnboardingCity(name: "İzmir", region: "Türkiye", latitude: 38.4237, longitude: 27.1428, timeZoneIdentifier: "Europe/Istanbul"),
+        OnboardingCity(name: "Bursa", region: "Türkiye", latitude: 40.1826, longitude: 29.0665, timeZoneIdentifier: "Europe/Istanbul"),
+        OnboardingCity(name: "Antalya", region: "Türkiye", latitude: 36.8969, longitude: 30.7133, timeZoneIdentifier: "Europe/Istanbul"),
+        OnboardingCity(name: "Adana", region: "Türkiye", latitude: 37.0000, longitude: 35.3213, timeZoneIdentifier: "Europe/Istanbul"),
+        OnboardingCity(name: "Konya", region: "Türkiye", latitude: 37.8746, longitude: 32.4932, timeZoneIdentifier: "Europe/Istanbul"),
+        OnboardingCity(name: "Gaziantep", region: "Türkiye", latitude: 37.0662, longitude: 37.3833, timeZoneIdentifier: "Europe/Istanbul"),
+        OnboardingCity(name: "Kayseri", region: "Türkiye", latitude: 38.7312, longitude: 35.4787, timeZoneIdentifier: "Europe/Istanbul"),
+        OnboardingCity(name: "Trabzon", region: "Türkiye", latitude: 41.0027, longitude: 39.7168, timeZoneIdentifier: "Europe/Istanbul"),
+        OnboardingCity(name: "Diyarbakır", region: "Türkiye", latitude: 37.9144, longitude: 40.2306, timeZoneIdentifier: "Europe/Istanbul"),
+        OnboardingCity(name: "Erzurum", region: "Türkiye", latitude: 39.9043, longitude: 41.2679, timeZoneIdentifier: "Europe/Istanbul"),
+        OnboardingCity(name: "Mekke", region: "Suudi Arabistan", latitude: 21.3891, longitude: 39.8579, timeZoneIdentifier: "Asia/Riyadh"),
+        OnboardingCity(name: "Medine", region: "Suudi Arabistan", latitude: 24.5247, longitude: 39.5692, timeZoneIdentifier: "Asia/Riyadh"),
+        OnboardingCity(name: "Kudüs", region: "Filistin", latitude: 31.7683, longitude: 35.2137, timeZoneIdentifier: "Asia/Jerusalem"),
+        OnboardingCity(name: "Kahire", region: "Mısır", latitude: 30.0444, longitude: 31.2357, timeZoneIdentifier: "Africa/Cairo"),
+        OnboardingCity(name: "Dubai", region: "BAE", latitude: 25.2048, longitude: 55.2708, timeZoneIdentifier: "Asia/Dubai"),
+        OnboardingCity(name: "Londra", region: "Birleşik Krallık", latitude: 51.5074, longitude: -0.1278, timeZoneIdentifier: "Europe/London"),
+        OnboardingCity(name: "Berlin", region: "Almanya", latitude: 52.5200, longitude: 13.4050, timeZoneIdentifier: "Europe/Berlin"),
+        OnboardingCity(name: "Paris", region: "Fransa", latitude: 48.8566, longitude: 2.3522, timeZoneIdentifier: "Europe/Paris"),
+        OnboardingCity(name: "Amsterdam", region: "Hollanda", latitude: 52.3676, longitude: 4.9041, timeZoneIdentifier: "Europe/Amsterdam"),
+        OnboardingCity(name: "New York", region: "ABD", latitude: 40.7128, longitude: -74.0060, timeZoneIdentifier: "America/New_York"),
+        OnboardingCity(name: "Kuala Lumpur", region: "Malezya", latitude: 3.1390, longitude: 101.6869, timeZoneIdentifier: "Asia/Kuala_Lumpur"),
+        OnboardingCity(name: "Jakarta", region: "Endonezya", latitude: -6.2088, longitude: 106.8456, timeZoneIdentifier: "Asia/Jakarta"),
     ]
 
     static func filteredPresets(_ query: String) -> [OnboardingCity] {
@@ -64,7 +67,9 @@ enum CitySearch {
                 name: name,
                 region: region,
                 latitude: coordinate.latitude,
-                longitude: coordinate.longitude
+                longitude: coordinate.longitude,
+                // `CLPlacemark` is not Sendable, but its zone's identifier is.
+                timeZoneIdentifier: placemark.timeZone?.identifier
             )
         }
     }

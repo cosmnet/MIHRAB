@@ -45,9 +45,10 @@ struct InlineMonthTable: View {
             Spacer()
             Button(action: onOpenFull) {
                 Label(L10n.tmzOpenFullMonth, systemImage: "square.and.arrow.up")
-                    .font(.caption.weight(.semibold))
+                    .font(.subheadline.weight(.semibold))
                     .foregroundStyle(theme.accent)
-                    .frame(minHeight: 32)
+                    .frame(minHeight: MihrabSpace.hit)
+                    .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
         }

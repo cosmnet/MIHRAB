@@ -36,9 +36,8 @@ struct TimesView: View {
                 MihrabBackdrop(surface: .times, ramadanMode: theme.isRamadanMode)
 
                 ScrollView {
-                    VStack(spacing: 20) {
-                        header
-                        modePicker
+                    VStack(spacing: 14) {
+                        contextRow
 
                         if mode == .month {
                             InlineMonthTable(anchorDate: displayedDate) { showMonthly = true }
@@ -47,7 +46,7 @@ struct TimesView: View {
                                     removal: .move(edge: .trailing).combined(with: .opacity)
                                 ))
                         } else {
-                            dayPager
+                            dayNavigator
 
                             if let displayedDay {
                                 if isFriday { fridayBanner }
@@ -121,10 +120,29 @@ struct TimesView: View {
                 }
             }
             .navigationTitle(L10n.prayerTimesTitle)
+            // The tab is already called "Times". A 96pt large-title block on top
+            // of that pushed the first prayer row off a small screen, which is
+            // the one thing this tab exists to show.
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button(L10n.month, systemImage: "calendar") { showMonthly = true }
-                        .tint(theme.accent)
+                    // One control instead of two: the lone calendar icon and the
+                    // separate day/month segment were the same decision spelled
+                    // twice. The full, shareable table still opens from inside
+                    // the month view.
+                    Button {
+                        HapticsEngine.shared.light()
+                        withAnimation(reduceMotion ? nil : MihrabMotion.snappyAnimation) {
+                            mode = mode == .day ? .month : .day
+                        }
+                    } label: {
+                        Label(mode == .day ? L10n.tmzModeMonth : L10n.tmzModeDay,
+                              systemImage: mode == .day ? "calendar" : "list.bullet")
+                            .labelStyle(.titleAndIcon)
+                            .font(.subheadline.weight(.semibold))
+                    }
+                    .tint(theme.accent)
+                    .accessibilityAddTraits(mode == .month ? [.isButton, .isSelected] : .isButton)
                 }
             }
             .sheet(isPresented: $showMonthly) {
@@ -161,86 +179,73 @@ struct TimesView: View {
         }
     }
 
-    // MARK: - Header
+    // MARK: - Context row
 
-    private var header: some View {
-        HStack(alignment: .center, spacing: 12) {
-            Button { showSettings = true } label: {
-                Label(
-                    locationManager.effectiveCityName.isEmpty
-                        ? L10n.locating
-                        : locationManager.effectiveCityName,
-                    systemImage: "location.fill"
-                )
-                .font(.subheadline.weight(.medium))
-                .foregroundStyle(MihrabColor.textPrimary)
-                .lineLimit(1)
-                .minimumScaleFactor(0.8)
-                .padding(.horizontal, 14)
-                .padding(.vertical, 8)
-                .frame(minHeight: MihrabSpace.hit)
-                .background(Capsule().fill(MihrabColor.moss))
-                .overlay {
-                    Capsule().strokeBorder(MihrabColor.mint.opacity(0.28), lineWidth: 1)
-                }
-            }
-            .pressable(reduceMotion)
-            .accessibilityHint(Text(L10n.settings))
+    /// Everything that used to be a two-column header block — city, hijri date,
+    /// calculation method — collapsed into one 48pt tappable line. It answers
+    /// "where and by whose reckoning", which is context, not content.
+    private var contextRow: some View {
+        Button { showSettings = true } label: {
+            HStack(spacing: 8) {
+                Image(systemName: "location.fill")
+                    .font(.footnote)
+                    .foregroundStyle(MihrabColor.mint)
+                    .accessibilityHidden(true)
 
-            Spacer(minLength: 8)
+                Text(locationManager.effectiveCityName.isEmpty
+                     ? L10n.locating
+                     : locationManager.effectiveCityName)
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(MihrabColor.textPrimary)
+                    .lineLimit(1)
+                    .layoutPriority(2)
 
-            Button { showSettings = true } label: {
-                VStack(alignment: .trailing, spacing: 3) {
-                    if let hijri = displayedDay?.hijriDate {
-                        Text(hijri.formatted)
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(MihrabColor.brass)
-                            .lineLimit(1)
-                    }
-                    Text(settings.calculationMethod.localizedName)
-                        .font(.caption)
+                if let hijri = displayedDay?.hijriDate {
+                    Text(verbatim: "·")
+                        .font(.subheadline)
                         .foregroundStyle(MihrabColor.textSecondary)
+                        .accessibilityHidden(true)
+                    Text(hijri.formatted)
+                        .font(.subheadline)
+                        .foregroundStyle(MihrabColor.brass)
                         .lineLimit(1)
                         .minimumScaleFactor(0.8)
+                        .layoutPriority(1)
                 }
+
+                Spacer(minLength: 4)
+
+                // City and Hijri date always win the row; a long method name
+                // truncated to one letter ("M…") told the reader nothing, so it
+                // is dropped whenever it cannot be shown whole. It is still on
+                // the prayer detail sheet and in Settings, one tap away.
+                ViewThatFits(in: .horizontal) {
+                    Text(settings.calculationMethod.localizedName)
+                        .font(.footnote)
+                        .foregroundStyle(MihrabColor.textSecondary)
+                        .lineLimit(1)
+                    Color.clear.frame(width: 0, height: 0)
+                }
+                .fixedSize(horizontal: true, vertical: false)
+
+                Image(systemName: "chevron.right")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(MihrabColor.textSecondary)
+                    .accessibilityHidden(true)
             }
-            .pressable(reduceMotion)
-            .accessibilityHint(Text(L10n.settings))
-        }
-    }
-
-    // MARK: - Mode picker
-
-    /// Day ⇄ month without leaving the screen. A sheet still exists for the
-    /// full, shareable table — this is the glance.
-    private var modePicker: some View {
-        HStack(spacing: 6) {
-            ForEach(Mode.allCases) { candidate in
-                let selected = candidate == mode
-                Button {
-                    guard !selected else { return }
-                    HapticsEngine.shared.light()
-                    withAnimation(reduceMotion ? nil : MihrabMotion.snappyAnimation) { mode = candidate }
-                } label: {
-                    Text(candidate.localizedName)
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(selected ? .white : MihrabColor.textSecondary)
-                        .frame(maxWidth: .infinity)
-                        .frame(minHeight: 38)
-                        .background {
-                            if selected {
-                                Capsule().fill(theme.accent)
-                            }
-                        }
-                }
-                .buttonStyle(.plain)
-                .accessibilityAddTraits(selected ? [.isButton, .isSelected] : .isButton)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 10)
+            .frame(minHeight: 48)
+            .contentShape(Capsule())
+            .background(Capsule().fill(MihrabColor.moss))
+            .overlay {
+                Capsule().strokeBorder(MihrabColor.mint.opacity(0.28), lineWidth: 1)
             }
         }
-        .padding(4)
-        .background(Capsule().fill(MihrabColor.moss.opacity(0.9)))
-        .overlay { Capsule().strokeBorder(MihrabColor.mint.opacity(0.2), lineWidth: 1) }
-        .frame(maxWidth: 260)
+        .buttonStyle(.plain)
+        .pressable(reduceMotion)
+        .accessibilityElement(children: .combine)
+        .accessibilityHint(Text(L10n.settings))
     }
 
     // MARK: - Next up
@@ -282,7 +287,7 @@ struct TimesView: View {
                     }
                 }
                 .padding(.horizontal, 16)
-                .padding(.vertical, 14)
+                .padding(.vertical, 11)
                 .mihrabShaderPanel(.caustics, cornerRadius: MihrabSpace.rowRadius, opacity: 0.22)
                 .mihrabSolidCard(
                     cornerRadius: MihrabSpace.rowRadius,
@@ -293,114 +298,91 @@ struct TimesView: View {
         }
     }
 
-    // MARK: - Day pager
+    // MARK: - Day navigator
 
-    /// Yesterday / today / tomorrow as one tap, anything further as arrows or
-    /// a horizontal drag.
-    private var dayPager: some View {
-        VStack(spacing: 10) {
-            HStack(spacing: 6) {
-                ForEach([-1, 0, 1], id: \.self) { offset in
-                    let selected = dayOffset == offset
-                    Button {
-                        guard !selected else { return }
-                        HapticsEngine.shared.light()
-                        withAnimation(reduceMotion ? nil : MihrabMotion.snappyAnimation) { dayOffset = offset }
-                    } label: {
-                        Text(relativeDayName(offset))
-                            .font(.footnote.weight(.semibold))
-                            .foregroundStyle(selected ? MihrabColor.textPrimary : MihrabColor.textSecondary)
-                            .lineLimit(1)
-                            .minimumScaleFactor(0.8)
-                            .frame(maxWidth: .infinity)
-                            .frame(minHeight: 34)
-                            .background {
-                                Capsule().fill(selected ? MihrabColor.moss : Color.clear)
-                            }
-                            .overlay {
-                                Capsule().strokeBorder(
-                                    selected ? MihrabColor.mint.opacity(0.4) : .clear,
-                                    lineWidth: 1
-                                )
-                            }
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityAddTraits(selected ? [.isButton, .isSelected] : .isButton)
-                }
-            }
+    /// One line, three visible targets: back a day, the day itself (tap to
+    /// return to today), forward a day. The old two-tier control — a
+    /// yesterday/today/tomorrow segment *above* an arrow row that did the same
+    /// job — cost 88pt to say one thing twice.
+    private var dayNavigator: some View {
+        HStack(spacing: 10) {
+            navArrow(-1, symbol: "chevron.left", label: L10n.previousDay)
 
-            legacyDayPager
-        }
-    }
-
-    private func relativeDayName(_ offset: Int) -> String {
-        switch offset {
-        case -1: L10n.tmzYesterday
-        case 1: L10n.tmzTomorrow
-        default: L10n.today
-        }
-    }
-
-    private var legacyDayPager: some View {
-        VStack(spacing: 8) {
-            HStack {
-                Button { shiftDay(-1) } label: {
-                    Image(systemName: "chevron.left")
+            Button {
+                guard dayOffset != 0 else { return }
+                HapticsEngine.shared.light()
+                withAnimation(reduceMotion ? nil : MihrabMotion.snappyAnimation) { dayOffset = 0 }
+            } label: {
+                HStack(spacing: 8) {
+                    Text(dayName)
                         .font(.headline)
                         .foregroundStyle(MihrabColor.textPrimary)
-                        .frame(width: MihrabSpace.hit, height: MihrabSpace.hit)
-                        .background(Circle().fill(MihrabColor.moss))
-                        .overlay {
-                            Circle().strokeBorder(MihrabColor.mint.opacity(0.28), lineWidth: 1)
-                        }
-                }
-                .pressable(reduceMotion)
-                .accessibilityLabel(Text(L10n.previousDay))
-
-                Spacer()
-
-                VStack(spacing: 2) {
-                    Text(displayedDate, format: .dateTime.weekday(.wide))
-                        .font(.headline)
-                        .foregroundStyle(MihrabColor.textPrimary)
-                    Text(displayedDate, format: .dateTime.day().month(.wide))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.75)
+                    Text(displayedDate, format: .dateTime.day().month(.wide).locale(L10n.appLocale))
                         .font(.subheadline)
                         .foregroundStyle(MihrabColor.textSecondary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.75)
+                    if dayOffset != 0 {
+                        // A visible way back. "Today" used to appear only past
+                        // ±2 days, and only as an 11pt caption.
+                        Image(systemName: "arrow.uturn.backward.circle.fill")
+                            .font(.subheadline)
+                            .foregroundStyle(theme.accent)
+                            .accessibilityHidden(true)
+                    }
                 }
-                .id(dayOffset)
-                .transition(.offset(x: 12).combined(with: .opacity))
-
-                Spacer()
-
-                Button { shiftDay(1) } label: {
-                    Image(systemName: "chevron.right")
-                        .font(.headline)
-                        .foregroundStyle(MihrabColor.textPrimary)
-                        .frame(width: MihrabSpace.hit, height: MihrabSpace.hit)
-                        .background(Circle().fill(MihrabColor.moss))
-                        .overlay {
-                            Circle().strokeBorder(MihrabColor.mint.opacity(0.28), lineWidth: 1)
-                        }
-                }
-                .pressable(reduceMotion)
-                .accessibilityLabel(Text(L10n.nextDay))
+                .frame(maxWidth: .infinity)
+                .frame(minHeight: 52)
+                .contentShape(Rectangle())
             }
+            .buttonStyle(.plain)
+            .disabled(dayOffset == 0)
+            .accessibilityLabel(Text(accessibleDayLabel))
+            .accessibilityHint(dayOffset == 0 ? Text("") : Text(L10n.today))
 
-            if abs(dayOffset) > 1 {
-                Button(L10n.today) {
-                    withAnimation(MihrabMotion.snappyAnimation) { dayOffset = 0 }
-                }
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(theme.accent)
-                .frame(minHeight: 28)
-            }
+            navArrow(1, symbol: "chevron.right", label: L10n.nextDay)
         }
+        .id(dayOffset)
+        .transition(.opacity)
         .gesture(
             DragGesture(minimumDistance: 30).onEnded { value in
                 if value.translation.width < -40 { shiftDay(1) }
                 else if value.translation.width > 40 { shiftDay(-1) }
             }
         )
+    }
+
+    private func navArrow(_ delta: Int, symbol: String, label: String) -> some View {
+        Button { shiftDay(delta) } label: {
+            Image(systemName: symbol)
+                .font(.title3.weight(.semibold))
+                .foregroundStyle(MihrabColor.textPrimary)
+                .frame(width: 52, height: 52)
+                .background(Circle().fill(MihrabColor.moss))
+                .overlay {
+                    Circle().strokeBorder(MihrabColor.mint.opacity(0.28), lineWidth: 1)
+                }
+        }
+        .buttonStyle(.plain)
+        .pressable(reduceMotion)
+        .accessibilityLabel(Text(label))
+    }
+
+    /// "Yesterday" / "Today" / "Tomorrow" close in, the weekday further out.
+    private var dayName: String {
+        switch dayOffset {
+        case -1: L10n.tmzYesterday
+        case 0: L10n.today
+        case 1: L10n.tmzTomorrow
+        default: displayedDate.formatted(.dateTime.weekday(.wide).locale(L10n.appLocale))
+        }
+    }
+
+    private var accessibleDayLabel: String {
+        let full = displayedDate.formatted(Date.FormatStyle(date: .long).locale(L10n.appLocale))
+        return "\(dayName), \(full)"
     }
 
     private func shiftDay(_ delta: Int) {
@@ -430,8 +412,8 @@ struct TimesView: View {
             }
 
             Text(L10n.tmxDetailHint)
-                .font(.caption2)
-                .foregroundStyle(MihrabColor.textTertiary)
+                .font(.caption)
+                .foregroundStyle(MihrabColor.textSecondary)
                 .frame(maxWidth: .infinity, alignment: .center)
                 .padding(.top, 2)
         }
@@ -547,20 +529,22 @@ struct PrayerRow: View {
                 .frame(width: 28, height: 28)
 
             VStack(alignment: .leading, spacing: 2) {
+                // Semantic, so it grows with Dynamic Type instead of staying
+                // pinned at 18pt for a reader who set the text larger.
                 Text(prayer.localizedName)
-                    .font(.system(size: 18, weight: isCurrent ? .bold : .semibold))
+                    .font(.title3.weight(isCurrent ? .bold : .semibold))
                     .foregroundStyle(isCurrent ? MihrabColor.brass : MihrabColor.textPrimary)
                     .lineLimit(1)
 
                 if isCurrent, let time, Date().timeIntervalSince(time) < 20 * 60 {
                     Text(L10n.now)
-                        .font(.caption2.weight(.semibold))
+                        .font(.caption.weight(.semibold))
                         .tracking(0.6)
                         .foregroundStyle(MihrabColor.brass)
                         .lineLimit(1)
                 } else if isNext, let time {
                     CountdownText(from: .now, to: time)
-                        .font(.caption2.monospacedDigit())
+                        .font(.caption.monospacedDigit())
                         .foregroundStyle(MihrabColor.mint)
                         .lineLimit(1)
                         .minimumScaleFactor(0.8)
@@ -582,7 +566,7 @@ struct PrayerRow: View {
             Button(action: toggleNotification) {
                 Image(systemName: notificationOn ? "bell.fill" : "bell.slash")
                     .font(.body)
-                    .foregroundStyle(notificationOn ? MihrabColor.brass : MihrabColor.textTertiary)
+                    .foregroundStyle(notificationOn ? MihrabColor.brass : MihrabColor.textSecondary)
                     .symbolEffect(.wiggle, options: .speed(3), value: bellRinging)
                     .frame(width: MihrabSpace.hit, height: MihrabSpace.hit)
                     .contentShape(Rectangle())
@@ -618,7 +602,7 @@ struct PrayerRow: View {
         } else {
             Text("–")
                 .font(MihrabFont.timeDisplay(28))
-                .foregroundStyle(MihrabColor.textTertiary)
+                .foregroundStyle(MihrabColor.textSecondary)
                 .lineLimit(1)
         }
     }

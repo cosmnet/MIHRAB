@@ -14,8 +14,9 @@ final class ZakatStore {
     struct State: Codable, Equatable, Sendable {
         var assets = ZakatAssets()
         var prices = MetalPrices()
-        var basis: NisabBasis = .gold
-        var silverStandard: SilverNisabStandard = .grams595
+        /// Diyanet's recommendation, pre-selected. See `NisabBasis`.
+        var basis: NisabBasis = .recommended
+        var silverStandard: SilverNisabStandard = .standard
         /// Start of the current zakat year (havelan-ı havl).
         var zakatYearStart: Date?
         var currencyCode: String?
@@ -113,6 +114,24 @@ final class ZakatStore {
             basis: state.basis,
             silverStandard: state.silverStandard
         )
+    }
+
+    /// Diyanet's announced fitre amount, when it is still current and the
+    /// sheet is in lira. `nil` means we have nothing trustworthy to offer and
+    /// the UI must say so rather than suggest a stale figure.
+    var suggestedFitre: Double? {
+        DiyanetFitre.suggestion(currencyCode: currencyCode)
+    }
+
+    /// `true` when the shipped figure has been superseded and the user has to
+    /// look up this year's amount themselves.
+    var fitreFigureIsStale: Bool {
+        currencyCode == DiyanetFitre.currencyCode && !DiyanetFitre.isCurrent()
+    }
+
+    func applySuggestedFitre() {
+        guard let amount = suggestedFitre else { return }
+        state.fitrePerPerson = amount
     }
 
     var fitre: FitreResult {

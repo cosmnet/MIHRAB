@@ -265,6 +265,30 @@ extension L10n {
         )
     }
 
+    static var setCreditsQuran: String {
+        string(en: "Qur'an text", tr: "Kur'an metni", ar: "نص القرآن")
+    }
+
+    static var setCreditsQuranBody: String {
+        string(
+            en: "Uthmani text from the Tanzil Project (tanzil.net), used under Creative Commons Attribution 3.0 and reproduced verbatim.",
+            tr: "Osmanî metin, Tanzil Project'ten (tanzil.net) Creative Commons Atıf 3.0 lisansıyla, harfi harfine değiştirilmeden alınmıştır.",
+            ar: "النص العثماني من مشروع تنزيل (tanzil.net) بموجب رخصة المشاع الإبداعي — النسب 3.0، منقول حرفيًا دون تغيير."
+        )
+    }
+
+    static var setCreditsOpenSource: String {
+        string(en: "Open-source licences", tr: "Açık kaynak lisansları", ar: "تراخيص المصادر المفتوحة")
+    }
+
+    static var setCreditsOpenSourceBody: String {
+        string(
+            en: "Prayer-time astronomy: adhan-swift by Batoul Apps, MIT licence, © 2016 Batoul Apps. Arabic typeface: Amiri by the Amiri Project Authors, SIL Open Font License 1.1. Both notices ship with the app.",
+            tr: "Vakit astronomisi: Batoul Apps tarafından geliştirilen adhan-swift, MIT lisansı, © 2016 Batoul Apps. Arapça yazı tipi: Amiri Project yazarlarınca Amiri, SIL Open Font License 1.1. Her iki lisans metni uygulamayla birlikte dağıtılır.",
+            ar: "حساب المواقيت: adhan-swift من Batoul Apps برخصة MIT، © 2016 Batoul Apps. الخط العربي: أميري من مؤلفي مشروع أميري برخصة SIL OFL 1.1. يُوزَّع نص الرخصتين مع التطبيق."
+        )
+    }
+
     static var setCreditsDisclaimer: String {
         string(
             en: "Prayer times are calculated and may differ by a minute or two from your local mosque. When in doubt, follow your mosque.",

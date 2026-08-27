@@ -36,8 +36,6 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
-	<key>NSAlarmKitUsageDescription</key>
-	<string>Mihrab uses alarms so the adhan can sound at prayer time, even in Silent mode or Focus.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>AmiriQuran-Regular.ttf</string>

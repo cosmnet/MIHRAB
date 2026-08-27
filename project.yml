@@ -88,7 +88,6 @@ targets:
               - mihrab
         UIAppFonts:
           - AmiriQuran-Regular.ttf
-        NSAlarmKitUsageDescription: "Mihrab uses alarms so the adhan can sound at prayer time, even in Silent mode or Focus."
         UIBackgroundModes:
           - fetch
           - processing
@@ -142,6 +141,8 @@ targets:
       - path: Mihrab/Data/PrayerSource.swift
       - path: Mihrab/Data/L10n+Times.swift
       - path: Mihrab/Core/Connectivity/WatchBridgePayload.swift
+    resources:
+      - path: MihrabWatch/PrivacyInfo.xcprivacy
     settings:
       base:
         PRODUCT_NAME: Mihrab
@@ -172,6 +173,8 @@ targets:
       - path: Mihrab/Data/PrayerSource.swift
       - path: Mihrab/Data/L10n+Times.swift
       - path: Mihrab/Core/Connectivity/WatchBridgePayload.swift
+    resources:
+      - path: MihrabWatchWidgets/PrivacyInfo.xcprivacy
     settings:
       base:
         PRODUCT_NAME: MihrabWatchWidgets
@@ -209,6 +212,7 @@ targets:
       - path: Mihrab/Core/Subscription/TrialReminder.swift
       - path: Mihrab/Features/Paywall/L10n+Paywall.swift
       - path: Mihrab/Features/Zakat/ZakatCalculator.swift
+      - path: Mihrab/Features/Zakat/ZakatStore.swift
       - path: Mihrab/Features/Zakat/L10n+Zakat.swift
       - path: Mihrab/Features/Calendar/IslamicObservances.swift
       - path: Mihrab/Features/Calendar/VoluntaryFasts.swift

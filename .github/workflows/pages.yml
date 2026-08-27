@@ -1,0 +1,58 @@
+# Publishes docs/ (privacy policy, terms, support) to GitHub Pages.
+#
+# This workflow is only needed when Pages is configured with
+#   Settings → Pages → Source: "GitHub Actions".
+# If you instead pick "Deploy from a branch" → main → /docs, GitHub publishes
+# the folder on its own and this file does nothing harmful — it just never runs
+# a deploy that matters. Either route produces the same URLs; see RELEASE.md §1.
+#
+# The site is static HTML + one CSS file. There is no build step, nothing to
+# install, and no external resource is fetched at any point.
+
+name: Deploy docs to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/**"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Never let two deploys race; let a newer push finish rather than cancelling it.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fail if the privacy policy is missing
+        # Guideline 3.1.2 needs a *working* privacy link on the paywall. If this
+        # file ever disappears, the deploy must fail loudly rather than quietly
+        # publishing a site with a dead policy URL in it.
+        run: |
+          for f in docs/index.html docs/privacy.html docs/privacy-en.html \
+                   docs/terms.html docs/support.html docs/style.css; do
+            test -s "$f" || { echo "::error::missing or empty: $f"; exit 1; }
+          done
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs
+
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -3,26 +3,60 @@ import Foundation
 // MARK: - Nisab
 
 /// Which threshold the user's liability is measured against.
+///
+/// **Diyanet's position is gold, for everything.** The Din İşleri Yüksek Kurulu
+/// fatwa "Gümüşün zekât nisabı nedir?" holds that because silver has lost so
+/// much of its historical value relative to gold, the value of 80,18 g of
+/// 24-karat gold should be the measure for silver, cash, trade goods and
+/// securities alike:
+///
+/// > "Gümüşün zekât nisabında da, altın ve ticaret malı durumundaki tüm
+/// > mallarda olduğu gibi 24 ayardan 80,18 gram altın değerinin ölçü alınması
+/// > uygundur."
+///
+/// <https://kurul.diyanet.gov.tr/tr/fetva/gumusun-zekat-nisabi-nedir/9c22f45d-4481-4f4b-0859-08dd1c135351>
+///
+/// So `.gold` is the default and the recommended answer, and the app says whose
+/// recommendation it is. `.silver` stays available because the classical
+/// 200-dirhem threshold is a recognised opinion others follow — but it is
+/// labelled as the classical view, never as Diyanet's.
 enum NisabBasis: String, Codable, CaseIterable, Identifiable, Sendable {
     case gold, silver
     var id: String { rawValue }
+
+    /// What Diyanet İşleri Başkanlığı recommends, and therefore the default.
+    /// The user told us plainly that they cannot make this call themselves;
+    /// the app must not hand it back to them.
+    static let recommended: NisabBasis = .gold
+
     var localizedName: String { self == .gold ? L10n.zakatBasisGold : L10n.zakatBasisSilver }
+
+    /// One line on what picking this changes, and whose position it is.
+    var localizedNote: String {
+        self == .gold ? L10n.zakatBasisGoldNote : L10n.zakatBasisSilverNote
+    }
 }
 
-/// 200 dirhem of silver, converted to grams. The conversion depends on which
-/// dirham weight is used and the published figures genuinely differ, so the
-/// user picks rather than us pretending there is one number.
+/// 200 dirhem of silver, converted to grams.
 ///
-/// - `grams595`: 200 × 2.975 g — the figure most Turkish zakat calculators use.
-/// - `grams561`: 200 × 2.805 g — the figure Diyanet İşleri Başkanlığı publishes
-///   alongside the 80.18 g gold nisab.
+/// Only one figure is offered: **561 g** (200 × 2,805 g), the conversion that
+/// goes with the same classical weights Diyanet's 20 miskal = 80,18 g gold
+/// figure comes from. The alternative 595 g reading (200 × 2,975 g) is retained
+/// as a decodable case so an install that stored it still loads, but it is not
+/// offered: making a user who told us "Din bilmiyorum ki" choose between two
+/// dirham weights is exactly the decision this app should not delegate.
 ///
-/// ⚠️ Both need editorial verification against a current Diyanet fatwa before
-/// release; do not treat these constants as checked.
+/// Note that neither figure is an operative Diyanet threshold — see
+/// `NisabBasis` — so both are presented as the classical view.
 enum SilverNisabStandard: String, Codable, CaseIterable, Identifiable, Sendable {
     case grams595, grams561
 
     var id: String { rawValue }
+
+    /// The one we offer. Everything else only decodes.
+    static let standard: SilverNisabStandard = .grams561
+
+    var isSelectable: Bool { self == Self.standard }
 
     var grams: Double {
         switch self {
@@ -86,19 +120,30 @@ struct ZakatResult: Equatable, Sendable {
 
 /// Pure functions, no state, no formatting. Everything the tests care about.
 enum ZakatCalculator {
-    /// One fortieth — 2.5%.
+    /// Rubu'l-uşr — one fortieth, 2.5%. Stated as "kırkta bir / %2,5" in the
+    /// Din İşleri Yüksek Kurulu fatwas cited below.
     static let rate = 1.0 / 40.0
 
-    /// 20 miskal of gold. Diyanet publishes this as **80.18 g**.
-    /// ⚠️ Verify against a current Diyanet fatwa before release.
+    /// 20 miskal of 24-karat gold. Din İşleri Yüksek Kurulu, "Altının nisabı ve
+    /// birbirinden farklı ayarlardaki altınların zekâtında hangi ölçü esas
+    /// alınır?": Diyanet follows the majority view and takes
+    /// **80,18 g of 24-karat gold**.
+    ///
+    /// <https://kurul.diyanet.gov.tr/tr/fetva/altinin-nisabi-ve-birbirinden-farkli-ayarlardaki-altinlarin/0193c42d-a374-7008-53e8-21cae4812f96>
+    /// <https://kurul.diyanet.gov.tr/tr/fetva/zekat-nedir/0193c42d-650d-7460-b43b-7ad3a03aead3>
     static let goldNisabGrams = 80.18
+
+    /// 200 dirhem of silver — the classical threshold, not Diyanet's operative
+    /// one (see `NisabBasis`). Kept as a named constant so the number has one
+    /// home and the tests can pin it.
+    static let silverNisabGrams = SilverNisabStandard.standard.grams
 
     /// Value of the threshold in the user's currency, or `nil` when the price
     /// needed for the chosen basis has not been entered.
     static func nisabValue(
         basis: NisabBasis,
         prices: MetalPrices,
-        silverStandard: SilverNisabStandard = .grams595
+        silverStandard: SilverNisabStandard = .standard
     ) -> Double? {
         switch basis {
         case .gold:
@@ -114,7 +159,7 @@ enum ZakatCalculator {
         assets: ZakatAssets,
         prices: MetalPrices,
         basis: NisabBasis,
-        silverStandard: SilverNisabStandard = .grams595
+        silverStandard: SilverNisabStandard = .standard
     ) -> ZakatResult {
         let goldValue = max(0, assets.goldGrams) * max(0, prices.goldPerGram)
         let silverValue = max(0, assets.silverGrams) * max(0, prices.silverPerGram)
@@ -151,10 +196,52 @@ enum ZakatCalculator {
 
 // MARK: - Fitre
 
-/// Fitre (sadaka-i fıtr) is a fixed amount per household member, not a
-/// percentage. In Türkiye the minimum is announced annually by the Diyanet
-/// fitre commission, so **the user enters this year's amount** — we ship no
-/// figure, because an out-of-date one would be worse than none.
+/// The figure Diyanet actually announced, and how long it is good for.
+///
+/// Fitre is a fixed amount per household member, not a percentage. In Türkiye
+/// the minimum is set each year by the Din İşleri Yüksek Kurulu. There is no
+/// API, no feed and no stable URL for it — every year's announcement is a fresh
+/// `duyuru` page — so it cannot be fetched. But making a user who told us
+/// "Din bilmiyorum ki" go and find it themselves is not an answer either.
+///
+/// The compromise: ship the announced figure with its announcement date, offer
+/// it as a one-tap suggestion, and **stop offering it the moment it can no
+/// longer be trusted**. After `validUntil` the app says nothing and asks the
+/// user to check the current figure, rather than quietly suggesting a stale one.
+///
+/// - Amount: **240 TL**, announced 13 January 2026 (decided 7 January 2026),
+///   valid from the start of Ramadan 1447 to the start of Ramadan 1448. The
+///   same figure is the daily oruç fidyesi. It is a floor, not a cap.
+/// - <https://kurul.diyanet.gov.tr/tr/duyuru/din-isleri-yuksek-kurulu-2026-yili-fitre-miktarini-acikladi/019bb642-4872-7191-841e-408610f76b33>
+///
+/// **Maintenance:** when the Kurul announces the next figure (usually in
+/// January), update all four constants together. `ZakatTests` fails the build
+/// once `validUntil` is in the past, so this cannot rot silently.
+enum DiyanetFitre {
+    static let amount: Double = 240
+    static let currencyCode = "TRY"
+
+    /// The day the Din İşleri Yüksek Kurulu announced it.
+    static let announcedOn = DateComponents(calendar: Calendar(identifier: .gregorian),
+                                            timeZone: TimeZone(identifier: "Europe/Istanbul"),
+                                            year: 2026, month: 1, day: 13).date!
+
+    /// Start of Ramadan 1448 — the point the figure is superseded.
+    static let validUntil = DateComponents(calendar: Calendar(identifier: .gregorian),
+                                           timeZone: TimeZone(identifier: "Europe/Istanbul"),
+                                           year: 2027, month: 2, day: 18).date!
+
+    static func isCurrent(on date: Date = Date()) -> Bool { date < validUntil }
+
+    /// The amount to suggest, or `nil` when we have nothing trustworthy to say.
+    /// Only offered in Turkish lira: the figure is a lira amount, and silently
+    /// reusing "240" as euros or dollars would be nonsense.
+    static func suggestion(currencyCode code: String, on date: Date = Date()) -> Double? {
+        guard code == currencyCode, isCurrent(on: date) else { return nil }
+        return amount
+    }
+}
+
 struct FitreResult: Equatable, Sendable {
     var perPerson: Double
     var people: Int
