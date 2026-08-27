@@ -291,11 +291,23 @@ final class QuranTranslationTests: XCTestCase {
         XCTAssertEqual(TranslationPack.installed.count, TranslationPack.bundledIDs.count)
     }
 
-    /// Documents the shipped state. When a licensed meal is finally added this
-    /// test is the one to update — deliberately, not by accident.
-    func testNoTranslationShipsToday() {
-        XCTAssertTrue(TranslationPack.bundledIDs.isEmpty)
-        XCTAssertFalse(TranslationPack.hasAny)
+    /// Documents the shipped state: a licensed Turkish meal now travels with
+    /// the app. Every ayah of it must line up with the Arabic — a translation
+    /// off by one verse is worse than none, and the loader is what enforces it.
+    func testTurkishMealShipsAndAlignsWithTheArabic() throws {
+        XCTAssertTrue(TranslationPack.hasAny)
+        XCTAssertTrue(TranslationPack.bundledIDs.contains("turkish-shaban"))
+        let pack = try XCTUnwrap(TranslationPack.installed.first { $0.id == "turkish-shaban" })
+        _ = pack
+    }
+
+    func testEveryTranslatedSuraHasTheRightNumberOfAyahs() async throws {
+        for sura in 1...114 {
+            let expected = try XCTUnwrap(QuranCatalog.sura(sura)?.ayahCount)
+            let lines = await TranslationStore.shared.lines(packID: "turkish-shaban", sura: sura)
+            XCTAssertEqual(try XCTUnwrap(lines).count, expected,
+                           "sura \(sura) has the wrong number of translated ayahs")
+        }
     }
 }
 

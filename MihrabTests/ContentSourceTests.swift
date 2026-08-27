@@ -16,14 +16,19 @@ final class QuranTranslationInstallTests: XCTestCase {
         XCTAssertEqual(TranslationPack.filePrefix, "quran-trans-")
     }
 
-    /// Today: nothing installed, and the reader must be able to see that.
-    func testNoTranslationIsBundledToday() {
-        XCTAssertTrue(TranslationStore.discoveredURLs().isEmpty,
-                      "A quran-trans-*.json appeared in the bundle — check its licence before shipping")
-        XCTAssertTrue(TranslationPack.installed.isEmpty)
-        XCTAssertTrue(TranslationPack.bundledIDs.isEmpty)
-        XCTAssertFalse(TranslationPack.hasAny)
-        XCTAssertTrue(TranslationPack.preferred.isEmpty)
+    /// The Turkish meal now ships. QuranEnc's terms allow redistribution on
+    /// four conditions — no modification, credit the publisher and QuranEnc,
+    /// carry the version, no unsuitable advertising — and Mihrab meets all
+    /// four (it has no advertising at all). The assertions below are those
+    /// conditions expressed as code.
+    func testTurkishTranslationShipsAndCarriesItsLicence() throws {
+        XCTAssertFalse(TranslationStore.discoveredURLs().isEmpty)
+        let pack = try XCTUnwrap(TranslationPack.installed.first { $0.id == "turkish-shaban" },
+                                 "the Turkish pack must install from the bundle alone")
+        XCTAssertEqual(pack.languageCode, "tr")
+        XCTAssertTrue(pack.attribution.contains("QuranEnc.com"), "source must be credited")
+        XCTAssertTrue(pack.license.contains("1.1.0"), "the version must travel with the text")
+        XCTAssertTrue(TranslationPack.hasAny)
     }
 
     /// Dropping one well-formed file is enough: it parses, validates and

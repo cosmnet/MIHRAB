@@ -149,6 +149,7 @@
 		60C4A9D72006064FE4C56C20 /* InlineMonthTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A4F5AD963C7F2FEA4A7B7D2 /* InlineMonthTable.swift */; };
 		61F2B0FED3E290548B55A276 /* LiveActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4EB66056B13D5B9D06BC578 /* LiveActivityManager.swift */; };
 		63D130307EC6974EE89D4261 /* SharedPrayerCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C14EBC7AF467CEA1B890458 /* SharedPrayerCache.swift */; };
+		647060DEBBAE5AD5E646649D /* quran-trans-turkish-shaban.json in Resources */ = {isa = PBXBuildFile; fileRef = FD4149EF7F66173C8E55C099 /* quran-trans-turkish-shaban.json */; };
 		66C14E429AC99032DC2AFB93 /* AuroraBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = 013D923E75851C7979A38E63 /* AuroraBackground.swift */; };
 		6787B05306DF87686CF115ED /* ImsakiyeCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86358B5BB6DC82ECA9FE4728 /* ImsakiyeCard.swift */; };
 		683ADC0BC3E1AA6D2A198C9B /* SubscriptionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F63408048D09488A670C3E77 /* SubscriptionManager.swift */; };
@@ -650,6 +651,7 @@
 		F9A84E63E0826ABE4E51F49E /* ZakatStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZakatStore.swift; sourceTree = "<group>"; };
 		FA7C89560AD0F3295C2DCD47 /* EsmaHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EsmaHomeView.swift; sourceTree = "<group>"; };
 		FC1B33DB0EDB5E0631D27E7F /* AsrMadhabPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsrMadhabPreview.swift; sourceTree = "<group>"; };
+		FD4149EF7F66173C8E55C099 /* quran-trans-turkish-shaban.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "quran-trans-turkish-shaban.json"; sourceTree = "<group>"; };
 		FE520AB9EB81FDEE273B738F /* SunArcView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SunArcView.swift; sourceTree = "<group>"; };
 		FEA03A74A20F8EB077B535C3 /* TodayScreenTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayScreenTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -806,6 +808,7 @@
 				872AE06B7135176469169D08 /* esma.json */,
 				0EA3AECD4E4F15A9B08C47F7 /* hadiths.json */,
 				80325A0CC9E743BA3E442460 /* quran-meta.json */,
+				FD4149EF7F66173C8E55C099 /* quran-trans-turkish-shaban.json */,
 				B1804E135BE91306BBB59199 /* quran-uthmani.json */,
 				583BB080AA737DFCCFEB43B5 /* religious_days.json */,
 			);
@@ -1457,6 +1460,7 @@
 				A2E078FB6C8BDF0E7EB9C7C7 /* mihrab-ezan-short.caf in Resources */,
 				5D200C300D31809F2548B7E1 /* mihrab-ezan.caf in Resources */,
 				185F5D11F839B9CC2765F582 /* quran-meta.json in Resources */,
+				647060DEBBAE5AD5E646649D /* quran-trans-turkish-shaban.json in Resources */,
 				A19E5E9B96A99C9F75E7393E /* quran-uthmani.json in Resources */,
 				CC255485A679BBA0BA4D24C5 /* religious_days.json in Resources */,
 			);

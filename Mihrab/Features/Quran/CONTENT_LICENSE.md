@@ -7,6 +7,30 @@ distributed app.** Where a licence could not be established, the layer ships
 
 ---
 
+## Shipped translation — Turkish
+
+**`quran-trans-turkish-shaban.json`** — Şaban Britiş meali, Rowwad Tercüme
+Merkezi denetiminde, [QuranEnc.com](https://quranenc.com) üzerinden, sürüm
+**1.1.0**, 6236 ayet.
+
+QuranEnc'in yayımladığı şart: *"Contents of the translations can be downloaded
+and re-published"* — dört koşulla:
+
+| Koşul | Mihrab'da durumu |
+|---|---|
+| İçerikte değişiklik, ekleme, çıkarma yok | Metin harfi harfine kopyalandı. Tek istisna: dört ayette cümle ortasında duran satır sonu boşluğa çevrildi, çünkü paket formatı ayetleri `U+000A` ile ayırıyor ve o karakter ayet sınırını kaydırırdı. Kelimeye dokunulmadı. |
+| Yayıncı ve kaynak (QuranEnc.com) açıkça belirtilir | `attribution` alanında, okuyucunun lisans ekranında ve Ayarlar › Kaynaklar'da |
+| Sürüm numarası taşınır | `license` alanında `1.1.0` |
+| Uygunsuz reklam gösterilmez | Uygulamada **hiç** reklam yok |
+
+`QuranTests` her surenin ayet sayısını Arapça mushaf verisiyle karşılaştırıyor:
+bir ayet kayarsa test kırılır, çünkü yanlış ayetle eşleşmiş bir meal hiç
+mealden kötüdür.
+
+**Sürüm güncellemesi:** QuranEnc yeni sürüm yayımlarsa şart gereği güncellenmesi
+beklenir. Paketi yeniden üretmek tek komut — `quranenc.com/api/v1/translation/sura/turkish_shaban/{1..114}`
+çekilip aynı biçime dönüştürülür.
+
 ## 1. Arabic text — BUNDLED ✅
 
 | | |
