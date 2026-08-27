@@ -89,11 +89,11 @@ git push -u origin main
 en olası hâli):
 
 ```
-https://cosm.github.io/MIHRAB/                 → giriş
-https://cosm.github.io/MIHRAB/privacy.html     → Gizlilik Politikası (TR)
-https://cosm.github.io/MIHRAB/privacy-en.html  → Privacy Policy (EN)
-https://cosm.github.io/MIHRAB/terms.html       → Kullanım Şartları
-https://cosm.github.io/MIHRAB/support.html     → Destek
+https://cosmnet.github.io/MIHRAB/                 → giriş
+https://cosmnet.github.io/MIHRAB/privacy.html     → Gizlilik Politikası (TR)
+https://cosmnet.github.io/MIHRAB/privacy-en.html  → Privacy Policy (EN)
+https://cosmnet.github.io/MIHRAB/terms.html       → Kullanım Şartları
+https://cosmnet.github.io/MIHRAB/support.html     → Destek
 ```
 
 - [ ] Depo adını ve GitHub kullanıcı adını **doğrula**; yukarıdaki beş URL'yi
@@ -112,7 +112,7 @@ https://cosm.github.io/MIHRAB/support.html     → Destek
     /// Yayında. GitHub Pages üzerinden servis ediliyor: `docs/privacy.html`.
     /// Guideline 3.1.2 paywall'da *çalışan* bir gizlilik politikası bağlantısı
     /// istiyor; bu bağlantı canlı ve dış kaynak yüklemiyor.
-    private static let privacyURL = URL(string: "https://cosm.github.io/MIHRAB/privacy.html")!
+    private static let privacyURL = URL(string: "https://cosmnet.github.io/MIHRAB/privacy.html")!
     private static let termsURL = URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!
 ```
 
@@ -167,9 +167,9 @@ Settings sahibine ait.)
       **Referans** seçilmesi gerekir; kararı [`ASO.md` §8.1](ASO.md) gerekçelendiriyor.
 - [ ] **Yaş sınırı: 4+.** Ankette tüm kategoriler "Yok". Doğrulandı: uygulamada
       kullanıcı üretimi içerik, sohbet, reklam, kumar, denetlenmemiş web görünümü yok.
-- [ ] **Support URL:** `https://cosm.github.io/MIHRAB/support.html`
-- [ ] **Privacy Policy URL:** `https://cosm.github.io/MIHRAB/privacy.html`
-- [ ] **Marketing URL** (isteğe bağlı): `https://cosm.github.io/MIHRAB/`
+- [ ] **Support URL:** `https://cosmnet.github.io/MIHRAB/support.html`
+- [ ] **Privacy Policy URL:** `https://cosmnet.github.io/MIHRAB/privacy.html`
+- [ ] **Marketing URL** (isteğe bağlı): `https://cosmnet.github.io/MIHRAB/`
 - [ ] **Telif hakkı satırı:** `2026 Cafer Karakaya` (ASC'nin istediği biçim).
 - [ ] **İnceleme notu:** AR kıble ve alarm izinlerinin ne için istendiğini bir
       paragrafla yazın; ayrıca "uygulama hesapsız çalışır, demo hesabı gerekmez"

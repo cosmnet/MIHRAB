@@ -29,7 +29,7 @@ struct PaywallView: View {
     /// Served from GitHub Pages (`docs/privacy.html`). Guideline 3.1.2 wants a
     /// *working* privacy link on the paywall; this one is live and loads no
     /// third-party resources.
-    private static let privacyURL = URL(string: "https://cosm.github.io/MIHRAB/privacy.html")!
+    private static let privacyURL = URL(string: "https://cosmnet.github.io/MIHRAB/privacy.html")!
     private static let termsURL = URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!
 
     var body: some View {

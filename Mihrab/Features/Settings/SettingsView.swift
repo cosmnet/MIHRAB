@@ -104,7 +104,7 @@ struct SettingsView: View {
 
     /// Served from GitHub Pages — see `docs/privacy.html`.
     private static let privacyPolicyURL =
-        URL(string: "https://cosm.github.io/MIHRAB/privacy.html")!
+        URL(string: "https://cosmnet.github.io/MIHRAB/privacy.html")!
 
     private var accent: Color {
         theme.isRamadanMode ? MihrabColor.ramadanGold : settings.accentTheme.color
