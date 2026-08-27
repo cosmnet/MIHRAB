@@ -1,0 +1,68 @@
+{
+  "canvas": { "width": 1290, "height": 2796 },
+
+  "colors": {
+    "abyss": "#07120D",
+    "forest": "#0D2418",
+    "moss": "#143322",
+    "emerald": "#1FA96B",
+    "mint": "#7FE0B2",
+    "brass": "#C9A24B",
+    "textPrimary": "#F2F7F4"
+  },
+
+  "background": {
+    "gradientTop": "abyss",
+    "gradientBottom": "forest",
+    "auroraColor": "emerald",
+    "auroraOpacity": 0.10,
+    "auroraRadiusFraction": 0.62,
+    "auroraPositions": [
+      { "xFraction": 0.28, "yFraction": 0.16 },
+      { "xFraction": 0.74, "yFraction": 0.22 },
+      { "xFraction": 0.50, "yFraction": 0.10 },
+      { "xFraction": 0.20, "yFraction": 0.30 },
+      { "xFraction": 0.80, "yFraction": 0.14 },
+      { "xFraction": 0.42, "yFraction": 0.26 }
+    ]
+  },
+
+  "title": {
+    "topFraction": 0.075,
+    "bandHeightFraction": 0.18,
+    "fontSize": 80,
+    "fontSizeLong": 66,
+    "longThreshold": 30,
+    "lineSpacing": -4,
+    "color": "textPrimary",
+    "horizontalMarginFraction": 0.09,
+    "dividerGap": 34,
+    "dividerWidth": 96,
+    "dividerThickness": 3,
+    "dividerColor": "brass"
+  },
+
+  "device": {
+    "cornerRadiusFraction": 0.13,
+    "borderWidth": 3.5,
+    "borderColor": "brass",
+    "borderOpacity": 0.85,
+    "screenInset": 3.5,
+    "widthFraction": 0.82,
+    "aspectRatio": 0.4602,
+    "bottomOverflowFraction": 0.085,
+    "topFraction": 0.285,
+    "shadow": {
+      "color": "#000000",
+      "opacity": 0.55,
+      "blur": 90,
+      "yOffset": 46
+    }
+  },
+
+  "fonts": {
+    "title": "SF Pro Display",
+    "titleWeight": "bold",
+    "arabicTitle": "SF Arabic"
+  }
+}

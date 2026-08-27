@@ -154,7 +154,7 @@ tutuluyor; cihaz saati bir günden fazla geri alınırsa deneme *tüketilmiş* s
 | Tam zikir geçmişi & istatistik (ücretsizde son 7 gün) | `.dhikrFullHistory` | Veri katmanı |
 | Esma koleksiyonları (derlenmiş setler) | `.esmaCollections` | 99 ismin kendisi ücretsiz |
 | Tefekkür metinleri / uzun içerik | `.tafakkurContent` | Üretilen içerik |
-| Ramazan planlayıcı (hedefler, hatim takibi, 30 günlük plan) | `.ramadanPlanner` | İmsakiye ücretsiz |
+| ~~Ramazan planlayıcı~~ — **geri çekildi** | — | Binary'de böyle bir özellik yok; `.ramadanPlanner` case'i `PremiumFeature`'dan kaldırıldı. Hatim takibi **ücretsiz** (`Features/Hatim/` altında hiçbir premium kapısı yok). Olmayan bir şeyi satmak Guideline 2.3.1 ihlalidir. |
 | AR kıble (kamera üzerinden) | `.qiblaAR` | Pusula ücretsiz |
 | Çoklu şehir / kayıtlı konumlar | `.multipleCities` | Tek konum ücretsiz |
 | iCloud yedekleme & cihazlar arası eşitleme | `.iCloudBackup` | Sürekli maliyet |

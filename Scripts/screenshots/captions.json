@@ -1,0 +1,28 @@
+{
+  "_comment": "Placeholder captions. Real captions come from store/metadata/<lang>.md under the 'Ekran görüntüsü başlıkları' heading, once Agent S1 writes them. compose.swift reads that file first and only falls back to this JSON when it is missing. Do not treat this file as final copy.",
+
+  "en": {
+    "01": "Prayer times, no internet needed",
+    "02": "Full Qur'an text, with translation",
+    "03": "Qibla direction, anywhere",
+    "04": "A tasbih that feels real",
+    "05": "Zakat, worked out for you",
+    "06": "The ninety-nine names"
+  },
+  "tr": {
+    "01": "İnternetsiz namaz vakitleri",
+    "02": "Tam Kur'an metni ve meali",
+    "03": "Her yerde kıble yönü",
+    "04": "Gerçek hissettiren tesbih",
+    "05": "Zekâtınız sizin için hesaplansın",
+    "06": "Esmaül Hüsna"
+  },
+  "ar": {
+    "01": "مواقيت الصلاة دون إنترنت",
+    "02": "نص القرآن كاملاً مع الترجمة",
+    "03": "اتجاه القبلة في أي مكان",
+    "04": "سبحة تشعر بها حقيقية",
+    "05": "زكاتك محسوبة من أجلك",
+    "06": "أسماء الله الحسنى"
+  }
+}
