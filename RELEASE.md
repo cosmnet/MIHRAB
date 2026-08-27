@@ -202,11 +202,9 @@ okundu. **Birebir eşleşmesi gereken beyan:**
 | `NSPrivacyAccessedAPICategoryUserDefaults` | `CA92.1`, `1C8F.1` | App Group üzerinden uygulama + uzantı paylaşımı; kendi ayarları |
 | `NSPrivacyAccessedAPICategoryFileTimestamp` | `C617.1` | Kendi container'ındaki önbellek dosyalarının tazeliği |
 
-- [ ] ⚠️ **Eksik: watch hedeflerinde `PrivacyInfo.xcprivacy` yok.**
-      `MihrabWatch/` ve `MihrabWatchWidgets/` klasörlerinde manifest bulunmuyor,
-      oysa ikisi de `UserDefaults` kullanıyor. iPhone manifestlerinin birer
-      kopyası eklenmeli ve `project.yml`'de o hedeflerin `resources:` listesine
-      girilmeli. (Dosya sahibi: altyapı ajanı — bu ajan `project.yml`'e dokunmadı.)
+- [x] ✅ **Yapıldı.** `MihrabWatch/PrivacyInfo.xcprivacy` ve
+      `MihrabWatchWidgets/PrivacyInfo.xcprivacy` eklendi ve `project.yml`'de her
+      iki hedefin `resources:` listesine girdi.
 
 ---
 
@@ -233,9 +231,8 @@ okundu. **Birebir eşleşmesi gereken beyan:**
 
 - `NSLocationWhenInUseUsageDescription` ✅
 - `NSCameraUsageDescription` ✅ (AR kıble)
-- `NSAlarmKitUsageDescription` ✅ — ama **yalnızca İngilizce**, `Info.plist` içine
-  gömülü. `InfoPlist.xcstrings`'e tr/ar çevirisiyle taşınmalı, yoksa Türk
-  kullanıcı sistem izin diyaloğunu İngilizce görecek. *(Eksik — §9'da tekrar.)*
+- `NSAlarmKitUsageDescription` ✅ — `InfoPlist.xcstrings`'e tr/ar çevirisiyle
+  taşındı ve `project.yml`'deki İngilizce sabit kaldırıldı, ikisi çelişemesin.
 - Watch tarafı: `MihrabWatch/Info.plist` içinde
   `NSLocationWhenInUseUsageDescription` var, ama **düz metin ve yalnızca
   İngilizce**; watch hedefinde `InfoPlist.xcstrings` yok.
@@ -277,26 +274,19 @@ ASC'de **birebir** aynı yazılmalı:
       gösterilen dürüst tahmindir; gerçek fiyatla ayrışırsa güncellenmeli
       (`SubscriptionManager.swift:26-56`).
 
-### ⚠️ Guideline 2.3.1 riski — paywall'da satılan ama kilitlenmemiş özellikler
+### ✅ Guideline 2.3.1 — çözüldü
 
-`PremiumFeature` enum'unda **12 case var; yalnızca 2'si canlı olarak kilitli**
-(`SubscriptionManager.swift:124-190`):
+Paywall artık yalnızca binary'de gerçekten kilitli olanı satıyor.
 
-| Durum | Özellikler |
-|---|---|
-| ✅ Kilitli | `multipleCities`, `iCloudBackup` |
-| ⏳ Kilitlenmemiş | `qiblaAR`, `customAdhan`, `advancedWidgets`, `themes`, `dhikrUnlimitedGoals`, `dhikrFullHistory`, `esmaCollections`, `tafakkurContent`, `ramadanPlanner`, `shareCards` |
-
-Paywall bu 10 özelliği **satıyor** ama ücretsiz kullanıcı da erişebiliyor.
-Apple bunu genelde "kullanıcı lehine" görüp geçirir, ama iki gerçek risk var:
-(a) ödeyen kullanıcı "para verdim, zaten bedavaymış" der; (b) sonradan
-kilitlemek **özellik geri alma** olarak algılanır ve 1★ getirir.
-
-- [ ] **Karar ver:** ya on çağrı noktasını gönderimden önce bağla
-      (`SubscriptionManager.swift` içindeki `.awaitingWiring` kayıtları her birinin
-      tam dosya + tam çağrı satırını veriyor), ya da paywall metninden çıkar.
-      Yarısı olmaz. `MihrabTests/SubscriptionGateTests.swift` bu tabloyu test
-      ediyor, yani sessizce çürümez.
+- **Kaldırılan iki iddia:** `ramadanPlanner` (uygulamada Ramazan planlayıcı diye
+  bir özellik yok) ve `tafakkurContent` (tefekkür metinleri Esma deneyiminin
+  ücretsiz parçası). İkisi de `PremiumFeature`'dan çıkarıldı.
+- **Kalan on özelliğin hepsi `.live`:** `multipleCities`, `iCloudBackup`,
+  `customAdhan`, `qiblaAR`, `themes`, `dhikrUnlimitedGoals`, `dhikrFullHistory`,
+  `esmaCollections`, `advancedWidgets` (şehir seçilebilen widget), `shareCards`
+  (işlenmiş görsel; düz metin paylaşımı her yerde ücretsiz).
+- `MihrabTests/SubscriptionGateTests.swift` tabloyu test ediyor; bir kapı
+  sessizce çürürse test kırılır.
 
 ---
 
@@ -394,12 +384,13 @@ eksik güven getirir.
    `isSelectable = false`; seçicide hiç görünmüyor, kayıtlı değer Diyanet'e
    düşüyor. Doğru karar. → Mağaza metninde **"Fazilet Takvimi desteği" diye bir
    vaat yer almasın.** Türkiye Takvimi ve Diyanet destekleniyor.
-5. **Çoklu şehirde saat dilimi hatası.** `Mihrab/Data/PrayerEngine+AppSettings.swift:10-22`
-   — bkz. §11.2 madde 4. **Bu, ücretli olarak satılan bir özelliğin içindeki
-   saat ölçekli bir hata.** Gönderimden önce ya düzeltilmeli ya da özellik
-   kapatılmalı.
-6. **Paywall'da 10 kilitlenmemiş özellik.** §5.
-7. **AlarmKit izin metni yalnızca İngilizce.** §4.
+5. ✅ **Çoklu şehirde saat dilimi — düzeltildi.** `SavedCity` artık
+   `timeZoneIdentifier` taşıyor (arama sonucunda `CLPlacemark.timeZone`'dan,
+   hazır şehirlerde elle), `AppSettings.manualTimeZoneIdentifier` üzerinden
+   `LocationManager.effectiveTimeZone` olarak yayılıyor ve `PrayerEngine`
+   varsayılan olarak onu alıyor.
+6. ✅ **Paywall kapıları — çözüldü.** §5.
+7. ✅ **AlarmKit izin metni — üç dilde.** §4.
 
 ---
 
@@ -411,18 +402,12 @@ Mevcut durum (doğrulandı):
 |---|---|---|
 | `MARKETING_VERSION` | `1.0` | `project.yml` → `settings.base` |
 | `CURRENT_PROJECT_VERSION` | `1` | `project.yml` → `settings.base` |
-| `CFBundleShortVersionString` | `1.0` (sabit) | `Mihrab/Info.plist` |
-| `CFBundleVersion` | `1` (sabit) | `Mihrab/Info.plist` |
+| `CFBundleShortVersionString` | `$(MARKETING_VERSION)` | `Mihrab/Info.plist` |
+| `CFBundleVersion` | `$(CURRENT_PROJECT_VERSION)` | `Mihrab/Info.plist` |
 
-- [ ] ⚠️ `Mihrab/Info.plist` sürümü **sabit yazıyor**, `project.yml`'deki
-      `MARKETING_VERSION` / `CURRENT_PROJECT_VERSION` değişkenlerini kullanmıyor.
-      Watch hedefi doğru yapıyor (`$(MARKETING_VERSION)`), iPhone hedefi yapmıyor.
-      Sonuç: build numarasını artırmak için **iki yeri** düzenlemek gerekiyor ve
-      unutulursa "bu build numarası zaten kullanılmış" hatası alınır.
-      Düzeltme: `Mihrab/Info.plist` içinde
-      `CFBundleShortVersionString` → `$(MARKETING_VERSION)`,
-      `CFBundleVersion` → `$(CURRENT_PROJECT_VERSION)`.
-      *(Dosya bu ajanın sahibi değil — altyapı ajanına.)*
+- [x] ✅ **Düzeltildi.** `Mihrab/Info.plist` artık `$(MARKETING_VERSION)` ve
+      `$(CURRENT_PROJECT_VERSION)` değişkenlerini kullanıyor; sürüm ve build
+      yalnızca `project.yml` → `settings.base` içinden, tek yerden artırılır.
 
 ### Adımlar
 
