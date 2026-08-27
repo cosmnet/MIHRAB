@@ -106,6 +106,7 @@
 		408E68258D2D9CE67A96A0D3 /* L10n+Hatim.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D240D2A69EE0C45C4E8A139 /* L10n+Hatim.swift */; };
 		418C213E18055DE04CAE7A20 /* QadaStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 250F16ACF7123C83BA098796 /* QadaStore.swift */; };
 		43382E9B8919843E87F7F4F9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C7CE240951162C0B715A578 /* Assets.xcassets */; };
+		43B31E809E0054A298E65DF6 /* AdhanAssetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B456EF6BB5E531620F83F768 /* AdhanAssetTests.swift */; };
 		43DE794F1353696C853DC5EF /* L10n+Zakat.swift in Sources */ = {isa = PBXBuildFile; fileRef = F93044F893586B57DF4CE0F6 /* L10n+Zakat.swift */; };
 		445003E96A0066A83DE8226F /* L10n+Appearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FDA22EB3E1850E7829BA180 /* L10n+Appearance.swift */; };
 		452E39A5B2DFB1ED3B455096 /* MihrabControls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C7EDD60FDCB542EB5BCE040 /* MihrabControls.swift */; };
@@ -137,6 +138,7 @@
 		5A74EF0644E72F0DB058F530 /* RamadanHubView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6392E0EEC744EC0A564766FD /* RamadanHubView.swift */; };
 		5A95DACA7149CF808ECD5B07 /* SunArcView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE520AB9EB81FDEE273B738F /* SunArcView.swift */; };
 		5C17EAAB31D10EA17E3CA5A3 /* L10n+TimesUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6ED1610A134630C5A7459F7 /* L10n+TimesUI.swift */; };
+		5D200C300D31809F2548B7E1 /* mihrab-ezan.caf in Resources */ = {isa = PBXBuildFile; fileRef = 5771B7A959A40760D9734B97 /* mihrab-ezan.caf */; };
 		5D77A4D66F3B6D99311DFF4B /* L10n.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CA84027688D980DEE6A1F54 /* L10n.swift */; };
 		5DB1CF575DAC3A0AC245BFA4 /* EsmaCollections.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CB24C2BEA7DD1EC68817B5F /* EsmaCollections.swift */; };
 		5DBC4C20A68C09B2BA48C596 /* L10n+Times.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CFFD68A82D5FC1CF6E20E61 /* L10n+Times.swift */; };
@@ -224,6 +226,7 @@
 		A19E5E9B96A99C9F75E7393E /* quran-uthmani.json in Resources */ = {isa = PBXBuildFile; fileRef = B1804E135BE91306BBB59199 /* quran-uthmani.json */; };
 		A22821AC50CBEE61E6C26A7A /* DhikrLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 971CE783F1DD8B55D3746ED1 /* DhikrLibrary.swift */; };
 		A24C90ED50D7D9956DD3FD9D /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55A568F529B56C7A91994AA1 /* PaywallView.swift */; };
+		A2E078FB6C8BDF0E7EB9C7C7 /* mihrab-ezan-short.caf in Resources */ = {isa = PBXBuildFile; fileRef = 82D9ABD597B05B25543377B4 /* mihrab-ezan-short.caf */; };
 		A32C590C675549D39241B54B /* DhikrFeedback.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB5CFE406E6CBCD6D6412928 /* DhikrFeedback.swift */; };
 		A37D211CDACC29A6833E1FAA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A5F6C7E0DC8F99BCF2D995E6 /* Assets.xcassets */; };
 		A38BFC1873D3BD5441DDFA7A /* Locale+Mihrab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02F7225942413BE3810182F1 /* Locale+Mihrab.swift */; };
@@ -500,6 +503,7 @@
 		55A568F529B56C7A91994AA1 /* PaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
 		55B3A03BE2D3D8E1420FBF37 /* IntentsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntentsTests.swift; sourceTree = "<group>"; };
 		55D293734DC5848840AC8C85 /* IslamicObservances.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IslamicObservances.swift; sourceTree = "<group>"; };
+		5771B7A959A40760D9734B97 /* mihrab-ezan.caf */ = {isa = PBXFileReference; path = "mihrab-ezan.caf"; sourceTree = "<group>"; };
 		583BB080AA737DFCCFEB43B5 /* religious_days.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = religious_days.json; sourceTree = "<group>"; };
 		58C949E12B0B4C50496AFF20 /* VoluntaryFasts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoluntaryFasts.swift; sourceTree = "<group>"; };
 		5AF3112EADADE56AC13AA5C0 /* ShaderBackdropView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderBackdropView.swift; sourceTree = "<group>"; };
@@ -539,6 +543,7 @@
 		81BDD5F1B8EF94DA8FAE9203 /* SolarPosition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolarPosition.swift; sourceTree = "<group>"; };
 		823FF0B8D8A5A47582151104 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		827898C7E6EC1D5E1066541C /* PrayerSourceSettingsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerSourceSettingsSection.swift; sourceTree = "<group>"; };
+		82D9ABD597B05B25543377B4 /* mihrab-ezan-short.caf */ = {isa = PBXFileReference; path = "mihrab-ezan-short.caf"; sourceTree = "<group>"; };
 		83D2A78AFCEE5BB6523B1015 /* PrayerEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerEngine.swift; sourceTree = "<group>"; };
 		850CCFD2816468447532804D /* MihrabIntentSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MihrabIntentSupport.swift; sourceTree = "<group>"; };
 		86358B5BB6DC82ECA9FE4728 /* ImsakiyeCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImsakiyeCard.swift; sourceTree = "<group>"; };
@@ -590,6 +595,7 @@
 		B2DE3A0AB04C837CAD9D15D3 /* HatimStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HatimStore.swift; sourceTree = "<group>"; };
 		B3929EB74B02AFB963E758E2 /* PrayerCacheStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerCacheStore.swift; sourceTree = "<group>"; };
 		B40699CE779EE83549A7D692 /* CountdownText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownText.swift; sourceTree = "<group>"; };
+		B456EF6BB5E531620F83F768 /* AdhanAssetTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdhanAssetTests.swift; sourceTree = "<group>"; };
 		B49BAD75BD019FE42DED87A8 /* MihrabWatch.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MihrabWatch.entitlements; sourceTree = "<group>"; };
 		B5F24829EA8435CCFEB4C91C /* AlarmLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlarmLiveActivity.swift; sourceTree = "<group>"; };
 		B6746A8E73FF8436B71BF77C /* ASSET_INDEX.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = ASSET_INDEX.md; sourceTree = "<group>"; };
@@ -702,6 +708,7 @@
 			isa = PBXGroup;
 			children = (
 				8A49A4E4DB0F94D3103239D2 /* AccessibilityTests.swift */,
+				B456EF6BB5E531620F83F768 /* AdhanAssetTests.swift */,
 				A9CB3E773A9D413833B556C8 /* ContentSourceTests.swift */,
 				55B3A03BE2D3D8E1420FBF37 /* IntentsTests.swift */,
 				EED3CB362E1A571716BEE8CD /* MihrabTests.swift */,
@@ -1259,6 +1266,8 @@
 		EDD58E08F8123AA2E68F75D7 /* Audio */ = {
 			isa = PBXGroup;
 			children = (
+				82D9ABD597B05B25543377B4 /* mihrab-ezan-short.caf */,
+				5771B7A959A40760D9734B97 /* mihrab-ezan.caf */,
 				7775B75895A43444A9ED9BA8 /* README.md */,
 			);
 			path = Audio;
@@ -1485,6 +1494,8 @@
 				6624AD18A08CB85B1AF9919D /* esma-bg.png in Resources */,
 				51E19007EB02007BC35FDEC6 /* esma.json in Resources */,
 				9AFE4BC251884640D27BBD6F /* hadiths.json in Resources */,
+				A2E078FB6C8BDF0E7EB9C7C7 /* mihrab-ezan-short.caf in Resources */,
+				5D200C300D31809F2548B7E1 /* mihrab-ezan.caf in Resources */,
 				C7D5556959E5F731DCD6C612 /* qibla-bg.png in Resources */,
 				185F5D11F839B9CC2765F582 /* quran-meta.json in Resources */,
 				A19E5E9B96A99C9F75E7393E /* quran-uthmani.json in Resources */,
@@ -1724,6 +1735,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				AB19CC614EAE0C9BFAC8E234 /* AccessibilityTests.swift in Sources */,
+				43B31E809E0054A298E65DF6 /* AdhanAssetTests.swift in Sources */,
 				B9E9BB2235640AB7B885FF45 /* AladhanClient.swift in Sources */,
 				7178259AA7BF20527821254C /* AsrMadhabPreview.swift in Sources */,
 				B523FDD4C0EF7A9018350207 /* BundledContent.swift in Sources */,

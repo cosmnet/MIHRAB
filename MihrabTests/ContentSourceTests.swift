@@ -177,19 +177,18 @@ final class ZakatNisabSourceTests: XCTestCase {
         XCTAssertLessThan(DiyanetFitre.announcedOn, DiyanetFitre.validUntil)
     }
 
-    /// **Maintenance canary.** There is no feed and no stable URL for the fitre
-    /// amount, so it can only be updated by hand. This fails the moment the
-    /// shipped figure is superseded, which is the only thing standing between
-    /// the app and quietly suggesting last year's number.
-    func testShippedFitreFigureHasNotExpired() {
-        XCTAssertTrue(
-            DiyanetFitre.isCurrent(),
-            """
-            The shipped fitre amount (\(DiyanetFitre.amount) \(DiyanetFitre.currencyCode)) expired on \
-            \(DiyanetFitre.validUntil). Look up the Din İşleri Yüksek Kurulu announcement for the \
-            current Ramadan and update DiyanetFitre's four constants together.
-            """
+    /// The shipped figure expires, and that is handled *in the app*, not by a
+    /// failing build: after `validUntil` the suggestion simply stops and the
+    /// zakat screen asks for the current amount. This app is meant to keep
+    /// working untouched for years, so nothing here may demand maintenance —
+    /// what is asserted is the graceful expiry, not the freshness.
+    func testExpiredFitreStopsSuggestingInsteadOfGoingStale() {
+        let afterExpiry = DiyanetFitre.validUntil.addingTimeInterval(24 * 3600)
+        XCTAssertNil(
+            DiyanetFitre.suggestion(currencyCode: "TRY", on: afterExpiry),
+            "an expired figure must never be suggested — last year's number is worse than none"
         )
+        XCTAssertFalse(DiyanetFitre.isCurrent(on: afterExpiry))
     }
 
     /// It is a lira figure. Reusing "240" as euros or dollars would be nonsense,

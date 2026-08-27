@@ -237,6 +237,7 @@ targets:
       - path: Mihrab/Features/Times/L10n+TimesUI.swift
     resources:
       - path: Mihrab/Data/Bundled
+      - path: Mihrab/Resources/Audio
     settings:
       base:
         PRODUCT_NAME: MihrabTests

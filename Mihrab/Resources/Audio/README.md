@@ -13,6 +13,30 @@ What the app already has without any file here:
 * **silent (vibrate only)** and **system default**;
 * **user import** — anyone can bring their own recording in from Files.
 
+## What ships today
+
+| File | Length | Encoding | Used for |
+| --- | --- | --- | --- |
+| `mihrab-ezan.caf` | 4:51 | IMA4 mono 44.1 kHz, 6.5 MB | AlarmKit — plays in full |
+| `mihrab-ezan-short.caf` | 0:29 | IMA4 mono 44.1 kHz, 0.65 MB | notification path (iOS cuts at 30 s) |
+
+**Source:** freesound.org sound [639494](https://freesound.org/s/639494/) by
+`sonically_sound`, published under **Creative Commons 0** — commercial use
+allowed, attribution not required.
+
+⚠️ **Provenance caveat, read before shipping.** The uploader's own description
+says the audio was *"Extracted from https://www.youtube.com/watch?v=4dpqrKYI-n4
+and processed."* A CC0 dedication only covers rights the uploader actually
+holds. If that YouTube recording is itself protected — a muezzin's performance
+and the producer's recording both carry rights — then the CC0 label does not
+clear the underlying recording, however the Freesound page is worded. The safe
+version of this is a recording licensed directly from whoever made it, or one
+commissioned outright. Replacing it later is a two-file drop; nothing in the
+code refers to these names.
+
+`AdhanAssetTests` pins the encoding, the channel count, the sample rate and both
+durations, so a bad re-encode fails in CI rather than at Fajr.
+
 ## Dropping a recording in
 
 1. Copy the file into this folder (`Mihrab/Resources/Audio/`).
