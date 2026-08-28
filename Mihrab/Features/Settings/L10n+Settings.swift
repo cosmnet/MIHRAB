@@ -124,8 +124,8 @@ extension L10n {
     static var setNotificationsSystemHint: String {
         string(
             en: "The alert sound follows your iOS notification settings for Mihrab.",
-            tr: "Bildirim sesi, Mihrab için iOS bildirim ayarlarını izler.",
-            ar: "يتبع صوت التنبيه إعدادات إشعارات iOS الخاصة بمحراب."
+            tr: "Bildirim sesi, Revak için iOS bildirim ayarlarını izler.",
+            ar: "يتبع صوت التنبيه إعدادات إشعارات iOS الخاصة برواق."
         )
     }
 
@@ -151,9 +151,9 @@ extension L10n {
 
     static var setLanguageFooter: String {
         string(
-            en: "Mihrab follows your iPhone language. Change it in iOS Settings.",
-            tr: "Mihrab, iPhone dilini izler. iOS Ayarları'ndan değiştirebilirsin.",
-            ar: "يتبع محراب لغة الآيفون. غيّرها من إعدادات iOS."
+            en: "Revak follows your iPhone language. Change it in iOS Settings.",
+            tr: "Revak, iPhone dilini izler. iOS Ayarları'ndan değiştirebilirsin.",
+            ar: "يتبع رواق لغة الآيفون. غيّرها من إعدادات iOS."
         )
     }
 
@@ -196,7 +196,7 @@ extension L10n {
     // MARK: - Feedback
 
     static var setRateApp: String {
-        string(en: "Rate Mihrab", tr: "Mihrab'ı değerlendir", ar: "قيّم محراب")
+        string(en: "Rate Revak", tr: "Revak'ı değerlendir", ar: "قيّم رواق")
     }
 
     static var setSendFeedback: String {

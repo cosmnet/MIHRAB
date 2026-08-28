@@ -22,7 +22,7 @@ extension L10n {
     // MARK: - 1 · Welcome
 
     static var obWelcomeTitle: String {
-        string(en: "Welcome to Mihrab", tr: "Mihrab'a hoş geldin", ar: "مرحباً بك في محراب")
+        string(en: "Welcome to Revak", tr: "Revak'a hoş geldin", ar: "مرحباً بك في رواق")
     }
 
     static var obWelcomeBody: String {
@@ -226,7 +226,7 @@ extension L10n {
 
     // MARK: - 7 · Mihrab Plus
 
-    static var obPlusTitle: String { string(en: "Mihrab Plus", tr: "Mihrab Plus", ar: "محراب بلس") }
+    static var obPlusTitle: String { string(en: "Revak Plus", tr: "Revak Plus", ar: "رواق بلس") }
 
     static var obPlusBody: String {
         string(
@@ -256,7 +256,7 @@ extension L10n {
         string(en: "Maybe later", tr: "Belki sonra", ar: "ربما لاحقاً")
     }
 
-    static var obFinish: String { string(en: "Enter Mihrab", tr: "Mihrab'a gir", ar: "ادخل محراب") }
+    static var obFinish: String { string(en: "Enter Revak", tr: "Revak'a gir", ar: "ادخل رواق") }
 
     // MARK: - Coach marks
 

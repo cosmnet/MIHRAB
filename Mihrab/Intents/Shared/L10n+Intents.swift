@@ -8,17 +8,17 @@ extension L10n {
 
     static var intErrNoSchedule: String {
         string(
-            en: "Mihrab has no saved prayer times yet. Open the app once so it can calculate them.",
-            tr: "Mihrab'da henüz kayıtlı vakit yok. Hesaplayabilmesi için uygulamayı bir kez aç.",
+            en: "Revak has no saved prayer times yet. Open the app once so it can calculate them.",
+            tr: "Revak'da henüz kayıtlı vakit yok. Hesaplayabilmesi için uygulamayı bir kez aç.",
             ar: "لا توجد مواقيت محفوظة بعد. افتح التطبيق مرة واحدة ليحسبها."
         )
     }
 
     static var intErrNoLocation: String {
         string(
-            en: "Mihrab does not know where you are. Grant location access or pick a city in the app.",
-            tr: "Mihrab konumunu bilmiyor. Konum izni ver ya da uygulamadan bir şehir seç.",
-            ar: "لا يعرف مِحراب موقعك. امنح إذن الموقع أو اختر مدينة داخل التطبيق."
+            en: "Revak does not know where you are. Grant location access or pick a city in the app.",
+            tr: "Revak konumunu bilmiyor. Konum izni ver ya da uygulamadan bir şehir seç.",
+            ar: "لا يعرف رواق موقعك. امنح إذن الموقع أو اختر مدينة داخل التطبيق."
         )
     }
 
@@ -206,14 +206,14 @@ extension L10n {
     // MARK: - Open
 
     static var intOpenTitle: String {
-        string(en: "Open Mihrab", tr: "Mihrab'ı Aç", ar: "افتح مِحراب")
+        string(en: "Open Revak", tr: "Revak'ı Aç", ar: "افتح رواق")
     }
 
     static var intOpenDescription: String {
         string(
-            en: "Opens Mihrab on a chosen screen.",
-            tr: "Mihrab'ı seçtiğin ekranda açar.",
-            ar: "يفتح مِحراب على الشاشة المختارة."
+            en: "Opens Revak on a chosen screen.",
+            tr: "Revak'ı seçtiğin ekranda açar.",
+            ar: "يفتح رواق على الشاشة المختارة."
         )
     }
 
@@ -228,7 +228,7 @@ extension L10n {
     }
 
     static var intTabEntityType: String {
-        string(en: "Mihrab Screen", tr: "Mihrab Ekranı", ar: "شاشة مِحراب")
+        string(en: "Revak Screen", tr: "Revak Ekranı", ar: "شاشة رواق")
     }
 
     static var intCityEntityType: String {
@@ -248,7 +248,7 @@ extension L10n {
     static var wgtDhikrCounterDescription: String {
         string(
             en: "Tap to count without opening Mihrab.",
-            tr: "Mihrab'ı açmadan dokunarak say.",
+            tr: "Revak'ı açmadan dokunarak say.",
             ar: "انقر للعد دون فتح التطبيق."
         )
     }
@@ -282,7 +282,7 @@ extension L10n {
     }
 
     static var wgtOpenAppHint: String {
-        string(en: "Open Mihrab", tr: "Mihrab'ı aç", ar: "افتح مِحراب")
+        string(en: "Open Revak", tr: "Revak'ı aç", ar: "افتح رواق")
     }
 
     static var wgtControlQiblaName: String {

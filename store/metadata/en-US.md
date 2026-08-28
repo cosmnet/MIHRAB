@@ -1,27 +1,31 @@
 # English (en-US)
 
 ## App Name
-Mihrab: Prayer Times & Qibla            ← (28/30)
+Revak: Prayer Times & Qibla            ← (27/30)
+
 
 ## Subtitle
 Athan, Quran, Dhikr & Ramadan            ← (29/30)
 
+
 ## Keywords
 adhan,azan,salah,salat,namaz,tasbih,zikr,dua,99,names,husna,asma,iftar,suhoor,zakat,qada,hijri,khatm            ← (100/100)
+
 
 ## Promotional Text
 No ads, no data collection. Real adhan at full length, offline Quran, a qibla you can trust, dhikr counter, qada and zakat tracking. The essentials stay free.            ← (158/170)
 
+
 ## Description
 No ads. No data collection. Times you can trust.
 
-Mihrab never puts prayer times, the qibla, adhan alerts, the Quran or the dhikr counter behind a paywall or an ad. Worship itself stays free.
+Revak never puts prayer times, the qibla, adhan alerts, the Quran or the dhikr counter behind a paywall or an ad. Worship itself stays free.
 
 — PRAYER TIMES, COMPUTED ON YOUR DEVICE
 No server, no signal, no problem. Pick your calculation authority, apply per-prayer corrections down to the minute, and see exactly where every number came from in the transparency panel.
 
 — WE ASK ABOUT ASR
-The majority and Hanafi rulings can put Asr almost an hour apart. Mihrab shows you both during setup and lets you choose, instead of picking one for you.
+The majority and Hanafi rulings can put Asr almost an hour apart. Revak shows you both during setup and lets you choose, instead of picking one for you.
 
 — A REAL ADHAN, AT FULL LENGTH
 With iOS 26 AlarmKit the adhan plays in full, even in Silent mode or with Focus on. Pick your own adhan voice.

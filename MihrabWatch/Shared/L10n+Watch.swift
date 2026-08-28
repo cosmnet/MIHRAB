@@ -19,9 +19,9 @@ extension L10n {
     static var wNow: String { string(en: "Now", tr: "Şu an", ar: "الآن") }
 
     static var wWaitingForPhone: String {
-        string(en: "Open Mihrab on your iPhone once to send your settings.",
-               tr: "Ayarları göndermek için iPhone'unda Mihrab'ı bir kez aç.",
-               ar: "افتح مِحراب على الآيفون مرة واحدة لإرسال إعداداتك.")
+        string(en: "Open Revak on your iPhone once to send your settings.",
+               tr: "Ayarları göndermek için iPhone'unda Revak'ı bir kez aç.",
+               ar: "افتح رواق على الآيفون مرة واحدة لإرسال إعداداتك.")
     }
 
     static var wNoLocation: String {
@@ -29,9 +29,9 @@ extension L10n {
     }
 
     static var wNoLocationDetail: String {
-        string(en: "Mihrab needs a location to calculate times. Allow location on the watch, or open the iPhone app.",
+        string(en: "Revak needs a location to calculate times. Allow location on the watch, or open the iPhone app.",
                tr: "Vakitleri hesaplamak için konum gerekiyor. Saatte konuma izin ver ya da iPhone uygulamasını aç.",
-               ar: "يحتاج مِحراب إلى موقع لحساب المواقيت. اسمح بالموقع على الساعة أو افتح تطبيق الآيفون.")
+               ar: "يحتاج رواق إلى موقع لحساب المواقيت. اسمح بالموقع على الساعة أو افتح تطبيق الآيفون.")
     }
 
     static var wPolarUnavailable: String {

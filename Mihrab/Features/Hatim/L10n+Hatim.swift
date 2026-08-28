@@ -28,9 +28,9 @@ extension L10n {
     }
     static var hatimEmptyBody: String {
         string(
-            en: "Set a date you'd like to finish by and Mihrab works out the daily share. Change it whenever you like — the plan follows you, not the other way round.",
-            tr: "Bitirmek istediğin bir tarih seç, Mihrab günlük payı hesaplasın. İstediğin zaman değiştir — plan sana uyar, sen plana değil.",
-            ar: "اختر تاريخاً تودّ الختم فيه ويحسب مِحراب النصيب اليومي. غيّره متى شئت — الخطة تتبعك لا العكس."
+            en: "Set a date you'd like to finish by and Revak works out the daily share. Change it whenever you like — the plan follows you, not the other way round.",
+            tr: "Bitirmek istediğin bir tarih seç, Revak günlük payı hesaplasın. İstediğin zaman değiştir — plan sana uyar, sen plana değil.",
+            ar: "اختر تاريخاً تودّ الختم فيه ويحسب رواق النصيب اليومي. غيّره متى شئت — الخطة تتبعك لا العكس."
         )
     }
 
@@ -165,9 +165,9 @@ extension L10n {
     }
     static var hatimNoServerBody: String {
         string(
-            en: "Mihrab has no servers and collects nothing, so a shared hatim lives in the invite itself. Everyone tracks their own juz on their own phone. That means the app cannot show you who has claimed which juz or how far anyone else has read — agree that between yourselves, the way a hatim has always been arranged.",
-            tr: "Mihrab'ın sunucusu yok ve hiçbir veri toplamıyor; bu yüzden ortak hatim davetin kendisinde yaşıyor. Herkes kendi cüzünü kendi telefonunda takip eder. Yani uygulama kimin hangi cüzü aldığını ya da kimin ne kadar okuduğunu gösteremez — bunu aranızda konuşun; hatim zaten hep böyle kurulmuştur.",
-            ar: "لا خوادم لمِحراب ولا يجمع بيانات، فالختمة المشتركة تعيش في الدعوة نفسها: كلٌّ يتابع جزأه على هاتفه. لذا لا يستطيع التطبيق إظهار من أخذ أي جزء ولا مقدار قراءة غيرك — اتفقوا على ذلك بينكم كما جرت العادة."
+            en: "Revak has no servers and collects nothing, so a shared hatim lives in the invite itself. Everyone tracks their own juz on their own phone. That means the app cannot show you who has claimed which juz or how far anyone else has read — agree that between yourselves, the way a hatim has always been arranged.",
+            tr: "Revak'ın sunucusu yok ve hiçbir veri toplamıyor; bu yüzden ortak hatim davetin kendisinde yaşıyor. Herkes kendi cüzünü kendi telefonunda takip eder. Yani uygulama kimin hangi cüzü aldığını ya da kimin ne kadar okuduğunu gösteremez — bunu aranızda konuşun; hatim zaten hep böyle kurulmuştur.",
+            ar: "لا خوادم لرواق ولا يجمع بيانات، فالختمة المشتركة تعيش في الدعوة نفسها: كلٌّ يتابع جزأه على هاتفه. لذا لا يستطيع التطبيق إظهار من أخذ أي جزء ولا مقدار قراءة غيرك — اتفقوا على ذلك بينكم كما جرت العادة."
         )
     }
 
@@ -176,19 +176,19 @@ extension L10n {
             en: """
             \(name) — a shared hatim, split into \(shares) parts, to finish by \(date).
 
-            Pick your juz and track it in Mihrab:
+            Pick your juz and track it in Revak:
             \(link)
             """,
             tr: """
             \(name) — \(shares) paya bölünmüş ortak hatim, \(date) tarihine kadar.
 
-            Cüzünü seç ve Mihrab'da takip et:
+            Cüzünü seç ve Revak'da takip et:
             \(link)
             """,
             ar: """
             \(name) — ختمة مشتركة من \(shares) أنصبة، تُختم بحلول \(date).
 
-            اختر جزأك وتابعه في مِحراب:
+            اختر جزأك وتابعه في رواق:
             \(link)
             """
         )

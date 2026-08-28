@@ -290,7 +290,7 @@ struct OnboardingView: View {
                 // niche the splash draws and the app icon carries.
                 MihrabMark(height: 150)
                 VStack(spacing: 10) {
-                    Text("Mihrab")
+                    Text("Revak")
                         .font(.system(size: 42, weight: .bold, design: .rounded))
                         .foregroundStyle(MihrabColor.textPrimary)
                     Text("بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم")

@@ -87,7 +87,7 @@ enum MihrabIntentBridge {
 
     /// `mihrab://times` and friends, as emitted by `widgetURL(_:)`.
     static func tab(for url: URL) -> AppTab? {
-        guard url.scheme == "mihrab" else { return nil }
+        guard url.scheme == "revak" else { return nil }
         let host = url.host() ?? url.path().trimmingCharacters(in: CharacterSet(charactersIn: "/"))
         return MihrabDeepLink.Tab(rawValue: host).map { tab -> AppTab in
             switch tab {

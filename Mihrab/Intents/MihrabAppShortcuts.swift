@@ -94,7 +94,7 @@ struct MihrabAppShortcuts: AppShortcutsProvider {
                 "\(.applicationName) aç",
                 "افتح \(.applicationName)",
             ],
-            shortTitle: "Open Mihrab",
+            shortTitle: "Open Revak",
             systemImageName: "moon.fill"
         )
     }

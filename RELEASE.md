@@ -1,4 +1,4 @@
-# Mihrab — v1 Yayın Kontrol Listesi
+# Revak — v1 Yayın Kontrol Listesi
 
 > Sahibi: Ajan F5 · Son güncelleme: 27 Ağustos 2026 · Hedef: App Store v1.0 (build 1)
 > Metadata ve ekran görüntüsü metinleri için [`ASO.md`](ASO.md), fiyatlandırma
@@ -105,7 +105,7 @@ https://cosmnet.github.io/MIHRAB/support.html     → Destek
 
 ### 1.3 Koda girilecek satır (dosya F1'in — bu ajan dokunmadı)
 
-**Dosya:** `Mihrab/Features/Paywall/PaywallView.swift`
+**Dosya:** `Revak/Features/Paywall/PaywallView.swift`
 **Satır 29–33** aşağıdaki blokla değiştirilecek:
 
 ```swift
@@ -117,7 +117,7 @@ https://cosmnet.github.io/MIHRAB/support.html     → Destek
 ```
 
 `termsURL` **değişmiyor**: Kullanım Şartları için Apple'ın standart EULA'sı
-kullanılıyor (aşağıda §1.4). `docs/terms.html` bu EULA'yı özetleyip Mihrab'a
+kullanılıyor (aşağıda §1.4). `docs/terms.html` bu EULA'yı özetleyip Revak'a
 özgü abonelik ve içerik lisansı maddelerini ekler, ama **hukuken bağlayıcı olan
 Apple'ın metnidir** ve paywall doğrudan ona bağlanır — bu Apple'ın onayladığı,
 en az sürtünmeli yoldur.
@@ -129,18 +129,18 @@ en az sürtünmeli yoldur.
 
 **Seçilen yol: Apple'ın Standart Son Kullanıcı Lisans Sözleşmesi.**
 
-- Gerekçe: Mihrab'ın hesabı, kullanıcı üretimi içeriği, sunucusu ve veri
+- Gerekçe: Revak'ın hesabı, kullanıcı üretimi içeriği, sunucusu ve veri
   toplaması yok. Özel bir EULA'nın çözeceği bir sorun bulunmuyor; özel EULA
   yazmak yalnızca inceleme riskini ve hukuk maliyetini artırır.
 - App Store Connect'te **"EULA" alanı boş bırakılacak** — boş bırakmak "Apple'ın
   standart EULA'sı geçerlidir" demektir. Özel metin yapıştırmayın.
-- Mihrab'a özgü koşullar (abonelik yenilenmesi, içerik lisansları, dinî içerik
+- Revak'a özgü koşullar (abonelik yenilenmesi, içerik lisansları, dinî içerik
   uyarısı) `docs/terms.html`'de ve uygulama içindeki abonelik metninde yaşıyor;
   bunlar EULA'nın yerine geçmez, onu tamamlar.
 
 ### 1.5 Uygulama içindeki ikinci bağlantı (F1/Settings sahibi için)
 
-`Mihrab/Features/Settings/SettingsView.swift:404-407` — Ayarlar → "Veri ve
+`Revak/Features/Settings/SettingsView.swift:404-407` — Ayarlar → "Veri ve
 gizlilik" bölümündeki **"Gizlilik"** düğmesi şu an
 `UIApplication.openSettingsURLString` açıyor, yani **iOS Ayarlar'a gidiyor,
 gizlilik politikasına değil.** Kullanıcı buradan politikayı okuyamıyor.
@@ -179,7 +179,7 @@ Settings sahibine ait.)
 
 ## 3. Gizlilik beyanı (App Privacy "Nutrition Labels")
 
-`Mihrab/Resources/PrivacyInfo.xcprivacy` ve `MihrabWidgets/PrivacyInfo.xcprivacy`
+`Revak/Resources/PrivacyInfo.xcprivacy` ve `MihrabWidgets/PrivacyInfo.xcprivacy`
 okundu. **Birebir eşleşmesi gereken beyan:**
 
 | ASC sorusu | Cevap | Kod dayanağı |
@@ -189,7 +189,7 @@ okundu. **Birebir eşleşmesi gereken beyan:**
 
 > **Bu "veri toplamıyoruz" cevabı savunulabilir mi?** Evet — Apple'ın tanımında
 > "collect", verinin **cihazdan ayrılıp geliştiricinin erişebildiği bir yere**
-> gitmesidir. Mihrab'da: konum yalnızca anonim bir vakit sorgusuyla üçüncü taraf
+> gitmesidir. Revak'da: konum yalnızca anonim bir vakit sorgusuyla üçüncü taraf
 > Aladhan'a gidiyor ve geliştiriciye ulaşmıyor; iCloud verisi kullanıcının kendi
 > özel veri tabanında ve geliştirici erişemiyor; StoreKit verisini Apple işliyor.
 > Yine de bu üç akış `docs/privacy.html` §3.2, §3.6, §3.7'de açıkça yazılı —
@@ -210,24 +210,24 @@ okundu. **Birebir eşleşmesi gereken beyan:**
 
 ## 4. Yetenekler (Capabilities)
 
-`Mihrab/Mihrab.entitlements`, `Mihrab/Info.plist`, uzantı entitlement'ları ve
+`Revak/Revak.entitlements`, `Revak/Info.plist`, uzantı entitlement'ları ve
 `project.yml` okunarak çıkarıldı. Developer portalında App ID üzerinde
 **açılması gereken** yetenekler:
 
 | Yetenek | Nerede tanımlı | Hedefler |
 |---|---|---|
-| **App Groups** — `group.com.caferkarakaya.mihrab` | dört `.entitlements` dosyasının hepsi | Mihrab, MihrabWidgets, MihrabWatch, MihrabWatchWidgets |
-| **iCloud → CloudKit** — `iCloud.com.caferkarakaya.mihrab` | `Mihrab.entitlements` | Mihrab |
-| **iCloud → Key-value storage** — `$(TeamIdentifierPrefix)$(CFBundleIdentifier)` | `Mihrab.entitlements` | Mihrab |
-| **Push Notifications** | `UIBackgroundModes → remote-notification` (Info.plist) | Mihrab — **yalnızca CloudKit'in sessiz uyandırması için**; push sunucusu yok |
-| **Background Modes** — `fetch`, `processing`, `remote-notification` | `Mihrab/Info.plist` | Mihrab |
-| **BGTaskScheduler kimlikleri** — `…mihrab.refresh`, `…mihrab.maintenance` | `Mihrab/Info.plist` | Mihrab |
-| **AlarmKit** | `NSAlarmKitUsageDescription` (Info.plist) + `MIHRAB_ALARMKIT` derleme koşulu | Mihrab, MihrabWidgets |
-| **Live Activities** | `NSSupportsLiveActivities`, `…FrequentUpdates` (`project.yml`) | Mihrab |
-| **URL şeması** — `mihrab://` | `Mihrab/Info.plist` | Mihrab |
-| **Özel yazı tipi** — `AmiriQuran-Regular.ttf` | `UIAppFonts` | Mihrab |
+| **App Groups** — `group.com.caferkarakaya.mihrab` | dört `.entitlements` dosyasının hepsi | Revak, MihrabWidgets, MihrabWatch, MihrabWatchWidgets |
+| **iCloud → CloudKit** — `iCloud.com.caferkarakaya.mihrab` | `Revak.entitlements` | Revak |
+| **iCloud → Key-value storage** — `$(TeamIdentifierPrefix)$(CFBundleIdentifier)` | `Revak.entitlements` | Revak |
+| **Push Notifications** | `UIBackgroundModes → remote-notification` (Info.plist) | Revak — **yalnızca CloudKit'in sessiz uyandırması için**; push sunucusu yok |
+| **Background Modes** — `fetch`, `processing`, `remote-notification` | `Revak/Info.plist` | Revak |
+| **BGTaskScheduler kimlikleri** — `…mihrab.refresh`, `…mihrab.maintenance` | `Revak/Info.plist` | Revak |
+| **AlarmKit** | `NSAlarmKitUsageDescription` (Info.plist) + `MIHRAB_ALARMKIT` derleme koşulu | Revak, MihrabWidgets |
+| **Live Activities** | `NSSupportsLiveActivities`, `…FrequentUpdates` (`project.yml`) | Revak |
+| **URL şeması** — `mihrab://` | `Revak/Info.plist` | Revak |
+| **Özel yazı tipi** — `AmiriQuran-Regular.ttf` | `UIAppFonts` | Revak |
 
-**İzin metinleri** (`Mihrab/Resources/InfoPlist.xcstrings` — en/tr/ar üçü de çevrili):
+**İzin metinleri** (`Revak/Resources/InfoPlist.xcstrings` — en/tr/ar üçü de çevrili):
 
 - `NSLocationWhenInUseUsageDescription` ✅
 - `NSCameraUsageDescription` ✅ (AR kıble)
@@ -247,7 +247,7 @@ okundu. **Birebir eşleşmesi gereken beyan:**
 
 ## 5. Ürünler, deneme ve fiyatlar
 
-Kodda tanımlı üç kimlik (`Mihrab/Core/Subscription/SubscriptionManager.swift:9-13`)
+Kodda tanımlı üç kimlik (`Revak/Core/Subscription/SubscriptionManager.swift:9-13`)
 ASC'de **birebir** aynı yazılmalı:
 
 | Ürün | Kimlik | Tür | TR | USD |
@@ -256,7 +256,7 @@ ASC'de **birebir** aynı yazılmalı:
 | Yıllık ⭐ | `com.caferkarakaya.mihrab.plus.yearly` | Otomatik yenilenen, 1 yıl | ₺649,99 | $24,99 |
 | Ömür boyu | `com.caferkarakaya.mihrab.plus.lifetime` | Non-consumable | ₺1.299,99 | $59,99 |
 
-- [ ] **Abonelik grubu adı: `Mihrab Plus`** — aylık ve yıllık **aynı grupta**
+- [ ] **Abonelik grubu adı: `Revak Plus`** — aylık ve yıllık **aynı grupta**
       olmalı, yoksa yükseltme/düşürme çalışmaz.
 - [ ] **7 günlük ücretsiz giriş teklifi** aylık *ve* yıllık planda, "yalnızca yeni
       aboneler" olarak tanımlansın. Kod mağazada gerçek bir giriş teklifi görürse
@@ -265,7 +265,7 @@ ASC'de **birebir** aynı yazılmalı:
       belirgin biçimde daha iyi — gerekçe [`PRICING.md`](PRICING.md).
 - [ ] **TR fiyatları elle girilsin.** Otomatik USD→TRY dönüşümü Türkiye'yi 2–3 kat
       aşırı fiyatlıyor.
-- [ ] **Üç üründe de Aile Paylaşımı açık** (`Mihrab.storekit` içinde
+- [ ] **Üç üründe de Aile Paylaşımı açık** (`Revak.storekit` içinde
       `familyShareable: true` — koddaki niyetle uyumlu olmalı).
 - [ ] Her üç ürünün de **ekran görüntüsü + inceleme notu** alanı doldurulmalı,
       yoksa IAP incelemesi "Missing Metadata"da takılır.
@@ -350,14 +350,14 @@ ayrıca Apple Watch için ayrı set (§7).
 
 | İçerik | Lisans | Atıf uygulamada nerede görünüyor | Durum |
 |---|---|---|---|
-| Kur'an Arapça metni (Tanzil, Uthmani v1.1) | CC BY 3.0 | `QuranVerseShareCard.swift:47,85` (paylaşım kartı), `QuranSettingsSection.swift:71` ("Tanzil · CC BY 3.0"), `L10n+Quran.swift:208-214` (canlı `tanzil.net` bağlantısı) | ✅ Atıf var, lisans belgesi `Mihrab/Features/Quran/CONTENT_LICENSE.md`'de |
+| Kur'an Arapça metni (Tanzil, Uthmani v1.1) | CC BY 3.0 | `QuranVerseShareCard.swift:47,85` (paylaşım kartı), `QuranSettingsSection.swift:71` ("Tanzil · CC BY 3.0"), `L10n+Quran.swift:208-214` (canlı `tanzil.net` bağlantısı) | ✅ Atıf var, lisans belgesi `Revak/Features/Quran/CONTENT_LICENSE.md`'de |
 | adhan-swift | MIT | — | ⚠️ **Uygulama içinde hiçbir yerde görünmüyor.** MIT lisansı telif bildiriminin dağıtımla birlikte verilmesini şart koşar. Ayarlar → Hakkında altına bir "Açık kaynak lisansları" satırı eklenmeli. |
-| Amiri Quran yazı tipi | SIL OFL 1.1 | `L10n+Settings.swift:262-263` — "Amiri Quran (SIL Open Font License)" metni var | ⚠️ **Lisans dosyası eksik.** `Mihrab/Resources/Fonts/` içinde yalnızca `AmiriQuran-Regular.ttf` var; `OFL.txt` yok. OFL, yazı tipinin lisans metniyle birlikte dağıtılmasını **şart koşar**. Amiri projesinin `OFL.txt` dosyası bu klasöre eklenmeli. |
+| Amiri Quran yazı tipi | SIL OFL 1.1 | `L10n+Settings.swift:262-263` — "Amiri Quran (SIL Open Font License)" metni var | ⚠️ **Lisans dosyası eksik.** `Revak/Resources/Fonts/` içinde yalnızca `AmiriQuran-Regular.ttf` var; `OFL.txt` yok. OFL, yazı tipinin lisans metniyle birlikte dağıtılmasını **şart koşar**. Amiri projesinin `OFL.txt` dosyası bu klasöre eklenmeli. |
 | Hadis / Esmaül Hüsna / adhkar / dinî günler derlemeleri | Uygulama içinde her kayıtta kaynak gösteriliyor | Kayıt bazında | ✅ |
 | **Meal (Kur'an çevirisi)** | — | — | ❌ **Yok, bilinçli olarak.** Bkz. §9. |
 | **Ezan kaydı** | — | — | ❌ **Yok, bilinçli olarak.** Bkz. §9. |
 
-- [ ] `Mihrab/Resources/Fonts/OFL.txt` ekle (Amiri projesinin lisans metni).
+- [ ] `Revak/Resources/Fonts/OFL.txt` ekle (Amiri projesinin lisans metni).
 - [ ] Ayarlar → Hakkında'ya "Açık kaynak lisansları" ekranı ekle; en az adhan-swift
       (MIT) ve Amiri (OFL) telif bildirimleri görünsün. *(Kod işi — Settings sahibi.)*
 
@@ -369,17 +369,17 @@ Bunlar hata değil, **bilinçli tercih ya da açık eksik**. Mağaza metninde
 saklanmamalı; sürpriz olarak keşfedilen eksik 1★ getirir, önceden söylenen
 eksik güven getirir.
 
-1. **Gerçek ezan kaydı yok.** `Mihrab/Resources/Audio/` bilerek boş: telifi
+1. **Gerçek ezan kaydı yok.** `Revak/Resources/Audio/` bilerek boş: telifi
    belirsiz bir muezzin kaydı dağıtılamaz. Uygulama cihazda üretilen telifsiz
    tonlar sunuyor ve kullanıcının kendi kaydını Dosyalar'dan içe aktarmasına izin
    veriyor. → Mağaza açıklamasında **"kendi ezan sesini ekle"** olarak konumlandır,
-   "ezan sesi var" deme. Ayrıntı: `Mihrab/Resources/Audio/README.md`.
+   "ezan sesi var" deme. Ayrıntı: `Revak/Resources/Audio/README.md`.
 2. **Kur'an meali yok.** Arapça metin CC BY 3.0 ile eksiksiz var; incelenen her
    Türkçe/İngilizce meal ya telifli ya da yalnızca ticari olmayan kullanıma açık.
    → Uygulama bunu zaten dürüstçe söylüyor (`L10n+Quran.swift:189-190`). Mağaza
    metninde "meal" kelimesini vaat olarak kullanma.
 3. **Apple Watch gerçek cihazda denenmedi.** §7.
-4. **Fazilet Takvimi seçeneği geri çekildi.** `Mihrab/Data/PrayerSource.swift` —
+4. **Fazilet Takvimi seçeneği geri çekildi.** `Revak/Data/PrayerSource.swift` —
    temkin değerleri yayımlanmış bir kaynakla doğrulanamadığı için
    `isSelectable = false`; seçicide hiç görünmüyor, kayıtlı değer Diyanet'e
    düşüyor. Doğru karar. → Mağaza metninde **"Fazilet Takvimi desteği" diye bir
@@ -402,10 +402,10 @@ Mevcut durum (doğrulandı):
 |---|---|---|
 | `MARKETING_VERSION` | `1.0` | `project.yml` → `settings.base` |
 | `CURRENT_PROJECT_VERSION` | `1` | `project.yml` → `settings.base` |
-| `CFBundleShortVersionString` | `$(MARKETING_VERSION)` | `Mihrab/Info.plist` |
-| `CFBundleVersion` | `$(CURRENT_PROJECT_VERSION)` | `Mihrab/Info.plist` |
+| `CFBundleShortVersionString` | `$(MARKETING_VERSION)` | `Revak/Info.plist` |
+| `CFBundleVersion` | `$(CURRENT_PROJECT_VERSION)` | `Revak/Info.plist` |
 
-- [x] ✅ **Düzeltildi.** `Mihrab/Info.plist` artık `$(MARKETING_VERSION)` ve
+- [x] ✅ **Düzeltildi.** `Revak/Info.plist` artık `$(MARKETING_VERSION)` ve
       `$(CURRENT_PROJECT_VERSION)` değişkenlerini kullanıyor; sürüm ve build
       yalnızca `project.yml` → `settings.base` içinden, tek yerden artırılır.
 
@@ -452,34 +452,34 @@ Depo taranarak çıkarıldı. **Kod değiştirilmedi**, dosya:satır ile raporla
 
 | # | Yer | Bulgu |
 |---|---|---|
-| 1 | `Mihrab/Features/Paywall/PaywallView.swift:29-32` | `privacyURL = "https://mihrab.app/privacy"` — **alan adı yayında değil.** Guideline 3.1.2 → kesin ret. Kodda `⚠️ Placeholder` yorumu da bunu söylüyor. Düzeltme satırı §1.3'te. |
-| 2 | `Mihrab/Core/Subscription/SubscriptionManager.swift:124-190` | 12 `PremiumFeature` case'inden **10'u `.awaitingWiring`** — paywall satıyor, kod kilitlemiyor. Guideline 2.3.1 riski. Ayrıntı §5. |
+| 1 | `Revak/Features/Paywall/PaywallView.swift:29-32` | `privacyURL = "https://mihrab.app/privacy"` — **alan adı yayında değil.** Guideline 3.1.2 → kesin ret. Kodda `⚠️ Placeholder` yorumu da bunu söylüyor. Düzeltme satırı §1.3'te. |
+| 2 | `Revak/Core/Subscription/SubscriptionManager.swift:124-190` | 12 `PremiumFeature` case'inden **10'u `.awaitingWiring`** — paywall satıyor, kod kilitlemiyor. Guideline 2.3.1 riski. Ayrıntı §5. |
 | 3 | `MihrabWatch/`, `MihrabWatchWidgets/` | **`PrivacyInfo.xcprivacy` yok.** İki hedef de `UserDefaults` kullanıyor. iPhone/widget manifestleri var, watch'ta hiç yok. |
 
 ### 11.2 Yüksek
 
 | # | Yer | Bulgu |
 |---|---|---|
-| 4 | `Mihrab/Data/PrayerEngine+AppSettings.swift:10-22` | **Çoklu şehirde saat dilimi hatası.** `PrayerEngineConfiguration.current()` saat dilimini her zaman **cihazın** diliminden alıyor; ne `SavedCity` ne `LocationManager` bir dilim taşıyor. Başka bir dilimdeki şehir elle seçildiğinde astronomi doğru, ama **her vakit cihazın saatiyle** gösteriliyor — saat ölçeğinde, kullanıcının fark etmesi imkânsız bir hata. Ve `multipleCities` **kilitli, yani parayla satılan** iki özellikten biri. Kodda çözüm de yazılı: `SavedCity`'ye `timeZoneIdentifier` ekle, `LocationManager.effectiveTimeZone` olarak yüzeye çıkar, buraya geçir. |
-| 5 | `Mihrab/Data/PrayerSource.swift` | Fazilet Takvimi `isSelectable = false` ile **seçiciden çıkarıldı** ✅ (temkin değerleri doğrulanamadı; doğru karar). Aksiyon: mağaza metninde ve ekran görüntülerinde Fazilet **vaat edilmemeli**; kayıtlı değeri olan kullanıcı sessizce Diyanet'e düşüyor. |
-| 6 | `Mihrab/Features/Settings/SettingsView.swift:400-408` | "Gizlilik" düğmesi gizlilik politikasını değil **iOS Ayarlar'ı** açıyor (`UIApplication.openSettingsURLString`). Kullanıcı uygulama içinden politikayı okuyamıyor. |
-| 7 | `Mihrab/Resources/Fonts/` | **`OFL.txt` yok** — yalnızca `AmiriQuran-Regular.ttf` var. SIL Open Font License, yazı tipinin lisans metniyle birlikte dağıtılmasını şart koşar. Lisans ihlali. |
+| 4 | `Revak/Data/PrayerEngine+AppSettings.swift:10-22` | **Çoklu şehirde saat dilimi hatası.** `PrayerEngineConfiguration.current()` saat dilimini her zaman **cihazın** diliminden alıyor; ne `SavedCity` ne `LocationManager` bir dilim taşıyor. Başka bir dilimdeki şehir elle seçildiğinde astronomi doğru, ama **her vakit cihazın saatiyle** gösteriliyor — saat ölçeğinde, kullanıcının fark etmesi imkânsız bir hata. Ve `multipleCities` **kilitli, yani parayla satılan** iki özellikten biri. Kodda çözüm de yazılı: `SavedCity`'ye `timeZoneIdentifier` ekle, `LocationManager.effectiveTimeZone` olarak yüzeye çıkar, buraya geçir. |
+| 5 | `Revak/Data/PrayerSource.swift` | Fazilet Takvimi `isSelectable = false` ile **seçiciden çıkarıldı** ✅ (temkin değerleri doğrulanamadı; doğru karar). Aksiyon: mağaza metninde ve ekran görüntülerinde Fazilet **vaat edilmemeli**; kayıtlı değeri olan kullanıcı sessizce Diyanet'e düşüyor. |
+| 6 | `Revak/Features/Settings/SettingsView.swift:400-408` | "Gizlilik" düğmesi gizlilik politikasını değil **iOS Ayarlar'ı** açıyor (`UIApplication.openSettingsURLString`). Kullanıcı uygulama içinden politikayı okuyamıyor. |
+| 7 | `Revak/Resources/Fonts/` | **`OFL.txt` yok** — yalnızca `AmiriQuran-Regular.ttf` var. SIL Open Font License, yazı tipinin lisans metniyle birlikte dağıtılmasını şart koşar. Lisans ihlali. |
 | 8 | Uygulama genelinde | **adhan-swift (MIT) telif bildirimi hiçbir yerde görünmüyor.** MIT, bildirimin dağıtımla birlikte verilmesini şart koşar. Ayarlar'a "Açık kaynak lisansları" ekranı gerekiyor. |
-| 9 | `Mihrab/Info.plist` (`CFBundleShortVersionString`, `CFBundleVersion`) | Sürüm ve build **sabit yazılmış**, `project.yml`'deki değişkenleri kullanmıyor. Watch hedefi doğru yapıyor. Her yüklemede iki yeri elle güncellemek gerekiyor → unutulunca yükleme reddedilir. |
-| 10 | `Mihrab/Info.plist` → `NSAlarmKitUsageDescription` | **Yalnızca İngilizce**, `InfoPlist.xcstrings`'e taşınmamış. Türk kullanıcı alarm izin diyaloğunu İngilizce görecek — konum ve kamera metinleri üç dilde çevrili, bu değil. |
+| 9 | `Revak/Info.plist` (`CFBundleShortVersionString`, `CFBundleVersion`) | Sürüm ve build **sabit yazılmış**, `project.yml`'deki değişkenleri kullanmıyor. Watch hedefi doğru yapıyor. Her yüklemede iki yeri elle güncellemek gerekiyor → unutulunca yükleme reddedilir. |
+| 10 | `Revak/Info.plist` → `NSAlarmKitUsageDescription` | **Yalnızca İngilizce**, `InfoPlist.xcstrings`'e taşınmamış. Türk kullanıcı alarm izin diyaloğunu İngilizce görecek — konum ve kamera metinleri üç dilde çevrili, bu değil. |
 
 ### 11.3 Orta
 
 | # | Yer | Bulgu |
 |---|---|---|
-| 11 | `Mihrab/Core/Subscription/SubscriptionManager.swift:244-246, 308-312` | `debugForcePremium` — `#if DEBUG` içinde ✅ **doğru korunmuş**, ama `UserDefaults` anahtarı `MihrabForcePremium` üzerinden okunuyor. Release archive'ında `DEBUG` tanımsız olduğu için binary'ye girmez; **yine de arşivin Release konfigürasyonuyla alındığını doğrula** (`project.yml` `DEBUG`'ı yalnızca Debug config'inde tanımlıyor ✅). |
+| 11 | `Revak/Core/Subscription/SubscriptionManager.swift:244-246, 308-312` | `debugForcePremium` — `#if DEBUG` içinde ✅ **doğru korunmuş**, ama `UserDefaults` anahtarı `MihrabForcePremium` üzerinden okunuyor. Release archive'ında `DEBUG` tanımsız olduğu için binary'ye girmez; **yine de arşivin Release konfigürasyonuyla alındığını doğrula** (`project.yml` `DEBUG`'ı yalnızca Debug config'inde tanımlıyor ✅). |
 | 12 | `NotificationEngine.swift:230-232,237-239`, `AlarmScheduler.swift:346-348` | Üç `print(` çağrısının **üçü de `#if DEBUG` içinde** ✅. Yayında gürültü yok. Bilgi amaçlı listelendi. |
-| 13 | `Mihrab/Core/LocationManager.swift:208` | `locationManager(_:didFailWithError:)` **tamamen boş** — hata yutuluyor. Yorum gerekçelendiriyor ("önbellek geçerli kalır"), ama izin reddi ve `kCLErrorDenied` de buradan geçiyor ve kullanıcıya hiçbir şey söylenmiyor. En azından yetki hatası ayırt edilmeli. |
-| 14 | `Mihrab/Data/AladhanClient.swift:76-83` | `fetch` üç denemede de başarısız olursa hata fırlatılıyor ✅, ama `catch` bloğu **her hatayı** eşit görüyor: 404 ile bağlantı kopması aynı şekilde 2-4-8 sn beklemeyle yeniden deneniyor. Kalıcı hatalarda gereksiz gecikme. |
-| 15 | `Mihrab/Data/PrayerCacheStore.swift:189-192` | `catch` bloğu boş, yorumla gerekçelendirilmiş ("bellekteki kopya bu oturumu kurtarır"). Kabul edilebilir ama disk yazması **kalıcı** olarak başarısızsa kullanıcı hiç öğrenmiyor. |
-| 16 | `Mihrab/Features/Quran/QuranMetadata.swift:150`, `Mihrab/Data/BundledContent.swift:93` | Gömülü JSON okunamazsa `fatalError` → **uygulama çöker.** Kaynak dosya build phase'den düşerse (widget/watch hedeflerinde bu kolayca olur) kullanıcı çökme yaşar. Dürüst bir boş durum tercih edilmeli. |
-| 17 | `Mihrab/Data/Models/SwiftDataModels.swift:110-111` | `ModelContainer` kurulamazsa `fatalError`. CloudKit hesabı sorunlu bir cihazda **açılışta çökme** riski. En azından `.none` yapılandırmasına düşülmeli. |
-| 18 | `Mihrab/Features/Settings/SettingsView.swift:434` | Geri bildirim adresi `mihrab.feedback@icloud.com` — bu adresin **gerçekten sizde olduğu doğrulanmalı.** Aynı adres artık gizlilik politikasında, destek sayfasında ve ASC'nin destek alanında da geçiyor. |
+| 13 | `Revak/Core/LocationManager.swift:208` | `locationManager(_:didFailWithError:)` **tamamen boş** — hata yutuluyor. Yorum gerekçelendiriyor ("önbellek geçerli kalır"), ama izin reddi ve `kCLErrorDenied` de buradan geçiyor ve kullanıcıya hiçbir şey söylenmiyor. En azından yetki hatası ayırt edilmeli. |
+| 14 | `Revak/Data/AladhanClient.swift:76-83` | `fetch` üç denemede de başarısız olursa hata fırlatılıyor ✅, ama `catch` bloğu **her hatayı** eşit görüyor: 404 ile bağlantı kopması aynı şekilde 2-4-8 sn beklemeyle yeniden deneniyor. Kalıcı hatalarda gereksiz gecikme. |
+| 15 | `Revak/Data/PrayerCacheStore.swift:189-192` | `catch` bloğu boş, yorumla gerekçelendirilmiş ("bellekteki kopya bu oturumu kurtarır"). Kabul edilebilir ama disk yazması **kalıcı** olarak başarısızsa kullanıcı hiç öğrenmiyor. |
+| 16 | `Revak/Features/Quran/QuranMetadata.swift:150`, `Revak/Data/BundledContent.swift:93` | Gömülü JSON okunamazsa `fatalError` → **uygulama çöker.** Kaynak dosya build phase'den düşerse (widget/watch hedeflerinde bu kolayca olur) kullanıcı çökme yaşar. Dürüst bir boş durum tercih edilmeli. |
+| 17 | `Revak/Data/Models/SwiftDataModels.swift:110-111` | `ModelContainer` kurulamazsa `fatalError`. CloudKit hesabı sorunlu bir cihazda **açılışta çökme** riski. En azından `.none` yapılandırmasına düşülmeli. |
+| 18 | `Revak/Features/Settings/SettingsView.swift:434` | Geri bildirim adresi `mihrab.feedback@icloud.com` — bu adresin **gerçekten sizde olduğu doğrulanmalı.** Aynı adres artık gizlilik politikasında, destek sayfasında ve ASC'nin destek alanında da geçiyor. |
 | 19 | Uygulama genelinde | **Aladhan ağ isteğini kapatan bir kullanıcı ayarı yok.** Cihaz üstü motor her koşulda çalışıyor, yani teknik olarak ağ tamamen isteğe bağlı olabilirdi. Gizlilik duruşunu ("sıfır veri") en sert biçimde savunacak ayar bu: *"Yalnızca cihazda hesapla"* anahtarı. v1'de şart değil, ama politikada bunun yerine "şehri elle seç" yolu anlatılmak zorunda kalındı. |
 | 20 | `MihrabWidgets/DhikrCounterWidget.swift:94`, `MihrabWidgets/PrayerLiveActivity.swift:44` | `URL(string: "mihrab://dhikr")!` — zorunlu açma. Sabit ve geçerli oldukları için pratikte güvenli; yine de widget sürecinde çökme, kullanıcının ana ekranında boş kutu demektir. |
 

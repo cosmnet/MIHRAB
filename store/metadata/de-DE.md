@@ -1,27 +1,31 @@
 # Deutsch (de-DE)
 
 ## App Name
-Mihrab: Gebetszeiten & Qibla            ← (28/30)
+Revak: Gebetszeiten & Qibla            ← (27/30)
+
 
 ## Subtitle
 Ezan, Namaz Vakti & Koran            ← (25/30)
 
+
 ## Keywords
 gebet,islam,dhikr,tasbih,dua,ramadan,zakat,hijri,muslim,moschee,adhan,fasten            ← (76/100)
+
 
 ## Promotional Text
 Keine Werbung, keine Datensammlung. Vollständiger Adhan, Koran offline, ehrliche Qibla, Dhikr-Zähler, Qada- und Zakat-Verfolgung. Das Wesentliche bleibt kostenlos.            ← (163/170)
 
+
 ## Description
 Keine Werbung. Keine Datensammlung. Eine App, deren Zeiten stimmen.
 
-Mihrab versteckt Gebetszeiten, die Qibla-Richtung, Adhan-Erinnerungen, den Koran und den Dhikr-Zähler nie hinter einem Abo oder Werbung. Die Andacht selbst bleibt kostenlos.
+Revak versteckt Gebetszeiten, die Qibla-Richtung, Adhan-Erinnerungen, den Koran und den Dhikr-Zähler nie hinter einem Abo oder Werbung. Die Andacht selbst bleibt kostenlos.
 
 — GEBETSZEITEN, BERECHNET AUF DEM GERÄT
 Kein Server, kein Empfang nötig. Wähle deine Berechnungsmethode, passe jede Zeit minutengenau an und sieh im Transparenz-Panel, woher jede Zahl stammt.
 
 — WIR FRAGEN NACH DER ASR-ZEIT
-Die mehrheitliche und die hanafitische Regel können die Asr-Zeit um fast eine Stunde auseinanderziehen. Mihrab zeigt bei der Einrichtung beide Zeiten und lässt dich wählen.
+Die mehrheitliche und die hanafitische Regel können die Asr-Zeit um fast eine Stunde auseinanderziehen. Revak zeigt bei der Einrichtung beide Zeiten und lässt dich wählen.
 
 — EIN ECHTER ADHAN, IN VOLLER LÄNGE
 Mit AlarmKit unter iOS 26 läuft der Adhan vollständig, selbst im Stumm-Modus oder mit aktivem Fokus. Du wählst deine eigene Adhan-Stimme.

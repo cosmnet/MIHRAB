@@ -80,9 +80,9 @@ extension L10n {
 
     static var citiesUpgradePrompt: String {
         string(
-            en: "Follow as many cities as you like with Mihrab Plus — family abroad, a trip next week, the mosque you grew up near.",
-            tr: "Mihrab Plus ile dilediğin kadar şehri takip et — yurt dışındaki ailen, gelecek haftaki yolculuğun, büyüdüğün mahallenin camisi.",
-            ar: "تابع ما شئت من المدن مع محراب بلس — أهلك في الخارج، رحلة الأسبوع القادم، مسجد حيّك."
+            en: "Follow as many cities as you like with Revak Plus — family abroad, a trip next week, the mosque you grew up near.",
+            tr: "Revak Plus ile dilediğin kadar şehri takip et — yurt dışındaki ailen, gelecek haftaki yolculuğun, büyüdüğün mahallenin camisi.",
+            ar: "تابع ما شئت من المدن مع رواق بلس — أهلك في الخارج، رحلة الأسبوع القادم، مسجد حيّك."
         )
     }
 
@@ -95,9 +95,9 @@ extension L10n {
             )
         }
         return string(
-            en: "Free plan: \(limit) city. Mihrab Plus removes the limit.",
-            tr: "Ücretsiz plan: \(limit) şehir. Mihrab Plus sınırı kaldırır.",
-            ar: "الخطة المجانية: \(limit) مدينة. محراب بلس يزيل الحد."
+            en: "Free plan: \(limit) city. Revak Plus removes the limit.",
+            tr: "Ücretsiz plan: \(limit) şehir. Revak Plus sınırı kaldırır.",
+            ar: "الخطة المجانية: \(limit) مدينة. رواق بلس يزيل الحد."
         )
     }
 
@@ -111,9 +111,9 @@ extension L10n {
 
     static func citiesLimitReachedMessage(_ limit: Int) -> String {
         string(
-            en: "The free plan holds \(limit) city. Mihrab Plus lets you keep as many as you like.",
-            tr: "Ücretsiz plan \(limit) şehir tutar. Mihrab Plus ile dilediğin kadar ekleyebilirsin.",
-            ar: "تحتفظ الخطة المجانية بـ\(limit) مدينة. مع محراب بلس أضف ما شئت."
+            en: "The free plan holds \(limit) city. Revak Plus lets you keep as many as you like.",
+            tr: "Ücretsiz plan \(limit) şehir tutar. Revak Plus ile dilediğin kadar ekleyebilirsin.",
+            ar: "تحتفظ الخطة المجانية بـ\(limit) مدينة. مع رواق بلس أضف ما شئت."
         )
     }
 
@@ -189,9 +189,9 @@ extension L10n {
 
     static var syncRelaunchNote: String {
         string(
-            en: "Reopen Mihrab to finish switching iCloud sync.",
-            tr: "iCloud eşitlemesinin tamamlanması için Mihrab'ı yeniden aç.",
-            ar: "أعد فتح محراب لإكمال تبديل مزامنة iCloud."
+            en: "Reopen Revak to finish switching iCloud sync.",
+            tr: "iCloud eşitlemesinin tamamlanması için Revak'ı yeniden aç.",
+            ar: "أعد فتح رواق لإكمال تبديل مزامنة iCloud."
         )
     }
 
@@ -213,9 +213,9 @@ extension L10n {
 
     static var syncFooterNotEntitled: String {
         string(
-            en: "Syncing is paused because Mihrab Plus ended. Nothing was deleted — your data is still here and in iCloud, and syncing resumes if you subscribe again.",
-            tr: "Mihrab Plus bittiği için eşitleme duraklatıldı. Hiçbir şey silinmedi — verilerin hem burada hem iCloud'da duruyor, yeniden abone olursan eşitleme kaldığı yerden devam eder.",
-            ar: "توقّفت المزامنة لانتهاء «محراب بلس». لم يُحذف شيء — بياناتك هنا وفي iCloud، وتستأنف المزامنة إن اشتركت مجددًا."
+            en: "Syncing is paused because Revak Plus ended. Nothing was deleted — your data is still here and in iCloud, and syncing resumes if you subscribe again.",
+            tr: "Revak Plus bittiği için eşitleme duraklatıldı. Hiçbir şey silinmedi — verilerin hem burada hem iCloud'da duruyor, yeniden abone olursan eşitleme kaldığı yerden devam eder.",
+            ar: "توقّفت المزامنة لانتهاء «رواق بلس». لم يُحذف شيء — بياناتك هنا وفي iCloud، وتستأنف المزامنة إن اشتركت مجددًا."
         )
     }
 }

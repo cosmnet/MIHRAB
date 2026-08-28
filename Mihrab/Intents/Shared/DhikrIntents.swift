@@ -86,10 +86,10 @@ struct StartDhikrSessionIntent: AppIntent {
 /// instead of a generic run-this-action row.
 struct OpenMihrabIntent: AppIntent, OpenIntent {
 
-    static var title: LocalizedStringResource { "Open Mihrab" }
+    static var title: LocalizedStringResource { "Open Revak" }
 
     static var description: IntentDescription {
-        IntentDescription("Opens Mihrab on a chosen screen.")
+        IntentDescription("Opens Revak on a chosen screen.")
     }
 
     static let openAppWhenRun = true

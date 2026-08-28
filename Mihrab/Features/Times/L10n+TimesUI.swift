@@ -121,7 +121,7 @@ extension L10n {
 
             Second, temkin — a deliberate safety margin so that someone praying exactly on the printed minute is still inside the valid window anywhere in the city. Diyanet publishes öğle five minutes after the true transit for this reason, and pulls sunrise seven minutes earlier.
 
-            Mihrab tells you which of these applies to the number you are looking at, and lets you shift it yourself if your mosque follows something else.
+            Revak tells you which of these applies to the number you are looking at, and lets you shift it yourself if your mosque follows something else.
             """,
             tr: """
             Basılı bir vakti iki şey oynatır ve ikisi de hata değildir.
@@ -130,7 +130,7 @@ extension L10n {
 
             İkincisi temkin: basılı dakikada namaz kılan birinin şehrin her yerinde vaktin içinde kalması için bilerek eklenen güvenlik payı. Diyanet öğleyi bu yüzden gerçek zeval geçişinden beş dakika sonra yayımlar, güneşi yedi dakika öne çeker.
 
-            Mihrab, baktığınız sayıya bunlardan hangisinin uygulandığını söyler; caminiz başka bir usul izliyorsa vakti kendiniz kaydırabilirsiniz.
+            Revak, baktığınız sayıya bunlardan hangisinin uygulandığını söyler; caminiz başka bir usul izliyorsa vakti kendiniz kaydırabilirsiniz.
             """,
             ar: """
             أمران يُحرّكان الوقت المطبوع، وليس أيٌّ منهما خطأ.
@@ -139,7 +139,7 @@ extension L10n {
 
             الثاني: التمكين، وهو هامش أمان مقصود ليبقى المصلّي في الوقت الصحيح في أي مكان من المدينة. لهذا تنشر ديانت الظهر بعد الزوال الحقيقي بخمس دقائق، وتقدّم الشروق سبع دقائق.
 
-            يوضّح «محراب» أيًّا من هذين ينطبق على الرقم الذي تراه، ويتيح لك إزاحته إن كان مسجدك يتبع غير ذلك.
+            يوضّح «رواق» أيًّا من هذين ينطبق على الرقم الذي تراه، ويتيح لك إزاحته إن كان مسجدك يتبع غير ذلك.
             """
         )
     }

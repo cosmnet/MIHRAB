@@ -66,8 +66,8 @@ extension L10n {
 
     static var apprDhikrMotifFooter: String {
         string(
-            en: "The full-screen texture behind the tasbih counter — the one place Mihrab lets the shader take over.",
-            tr: "Tesbih sayacının arkasındaki tam ekran doku — Mihrab'ın shader'a söz hakkı verdiği tek yer.",
+            en: "The full-screen texture behind the tasbih counter — the one place Revak lets the shader take over.",
+            tr: "Tesbih sayacının arkasındaki tam ekran doku — Revak'ın shader'a söz hakkı verdiği tek yer.",
             ar: "النسيج الذي يملأ الشاشة خلف عدّاد التسبيح — المكان الوحيد الذي يتصدّر فيه المؤثّر."
         )
     }

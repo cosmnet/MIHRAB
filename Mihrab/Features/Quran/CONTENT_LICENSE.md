@@ -16,7 +16,7 @@ Merkezi denetiminde, [QuranEnc.com](https://quranenc.com) üzerinden, sürüm
 QuranEnc'in yayımladığı şart: *"Contents of the translations can be downloaded
 and re-published"* — dört koşulla:
 
-| Koşul | Mihrab'da durumu |
+| Koşul | Revak'da durumu |
 |---|---|
 | İçerikte değişiklik, ekleme, çıkarma yok | Metin harfi harfine kopyalandı. Tek istisna: dört ayette cümle ortasında duran satır sonu boşluğa çevrildi, çünkü paket formatı ayetleri `U+000A` ile ayırıyor ve o karakter ayet sınırını kaydırırdı. Kelimeye dokunulmadı. |
 | Yayıncı ve kaynak (QuranEnc.com) açıkça belirtilir | `attribution` alanında, okuyucunun lisans ekranında ve Ayarlar › Kaynaklar'da |
@@ -35,7 +35,7 @@ beklenir. Paketi yeniden üretmek tek komut — `quranenc.com/api/v1/translation
 
 | | |
 |---|---|
-| File | `Mihrab/Data/Bundled/quran-uthmani.json` |
+| File | `Revak/Data/Bundled/quran-uthmani.json` |
 | Work | Tanzil Qur'an Text (Uthmani, Version 1.1) |
 | Copyright | Copyright © 2007–2026 Tanzil Project |
 | Licence | **Creative Commons Attribution 3.0** |
@@ -53,7 +53,7 @@ beklenir. Paketi yeniden üretmek tek komut — `quranenc.com/api/v1/translation
 >   and shall be reproduced appropriately in all files derived from or
 >   containing substantial portion of this text.
 
-### How Mihrab complies
+### How Revak complies
 
 1. **Verbatim.** The 6,236 ayahs were transferred character-for-character from
    Tanzil's `txt-2` distribution. Only the *container* changed (one line per
@@ -84,7 +84,7 @@ text version lands; bump `"version"` in the JSON when you do.
 
 | | |
 |---|---|
-| File | `Mihrab/Data/Bundled/quran-meta.json` |
+| File | `Revak/Data/Bundled/quran-meta.json` |
 | Source | Tanzil `quran-data.xml` (<https://tanzil.net/res/text/metadata/quran-data.xml>), `license="cc-by"` |
 
 Contains: 114 suras (ayah count, Arabic name, Turkish name, English name,
@@ -136,7 +136,7 @@ Tanzil's translations page carries a term the Arabic text does not:
 > only. If used otherwise, you need to obtain necessary permission from the
 > translator or the publisher."
 
-Mihrab is a commercially distributed app with a subscription, so this rules out
+Revak is a commercially distributed app with a subscription, so this rules out
 `tr.diyanet`, `tr.vakfi`, `tr.yazir`, `tr.bulac`, `tr.ates`, `tr.yildirim`,
 `tr.golpinarli`, `tr.ozturk` **as sources**, regardless of the underlying work's
 own status.
@@ -298,7 +298,7 @@ request for *Kur'an Yolu Meali*.
 >
 > Sayın Yetkili,
 >
-> iOS için geliştirdiğimiz **Mihrab** adlı namaz vakti ve Kur'an okuma
+> iOS için geliştirdiğimiz **Revak** adlı namaz vakti ve Kur'an okuma
 > uygulamasında, Başkanlığınızca yayımlanan **Kur'an Yolu Meali** metnini
 > kullanabilmek için telif izni talep ediyoruz.
 >
@@ -329,7 +329,7 @@ request for *Kur'an Yolu Meali*.
 > Saygılarımızla,
 > [Ad Soyad] — [Ünvan]
 > [E-posta] · [Telefon]
-> Uygulama: Mihrab — [App Store bağlantısı]
+> Uygulama: Revak — [App Store bağlantısı]
 
 Keep the reply — the licence terms it contains have to be transcribed into §3.1
 of this file **and** into the pack's own `license` and `attribution` fields
@@ -352,7 +352,7 @@ rather than a licence liability.
 
 ## 7. Installing a pack once permission arrives
 
-**It is one file.** Drop `quran-trans-<id>.json` into `Mihrab/Data/Bundled/`
+**It is one file.** Drop `quran-trans-<id>.json` into `Revak/Data/Bundled/`
 and it appears in the reader. There is no id list to update: `TranslationPack`
 discovers every `quran-trans-*.json` in the bundle at runtime.
 

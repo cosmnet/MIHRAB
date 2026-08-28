@@ -86,7 +86,7 @@ struct NextPrayerControlProvider: ControlValueProvider {
     func currentValue() async throws -> NextPrayerControlValue {
         guard let next = MihrabIntentData.nextPrayer() else {
             return NextPrayerControlValue(
-                title: "Mihrab",
+                title: "Revak",
                 subtitle: L10n.wgtOpenAppHint,
                 symbol: "moon.fill"
             )

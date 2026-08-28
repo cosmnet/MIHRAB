@@ -112,7 +112,7 @@ struct TodayTimesSnippet: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Text(city ?? "Mihrab")
+                Text(city ?? "Revak")
                     .font(.headline)
                 Spacer()
                 if let hijri = day.hijriDate {

@@ -1,4 +1,4 @@
-# Mihrab — adhan & alert sounds
+# Revak — adhan & alert sounds
 
 This folder is where **licensed adhan recordings** go. It ships empty on
 purpose: nobody on the engineering side can lawfully add a muezzin's recording,
@@ -39,8 +39,8 @@ durations, so a bad re-encode fails in CI rather than at Fajr.
 
 ## Dropping a recording in
 
-1. Copy the file into this folder (`Mihrab/Resources/Audio/`).
-2. Add it to the **Mihrab** app target's *Copy Bundle Resources* build phase.
+1. Copy the file into this folder (`Revak/Resources/Audio/`).
+2. Add it to the **Revak** app target's *Copy Bundle Resources* build phase.
    (The project does not use synchronized folders, so this step is manual.)
 3. Build. **No code change is needed** — `AdhanLibrary.reload()` enumerates the
    bundle at launch via `AdhanFileStore.bundledFileNames()` and every audio file

@@ -30,7 +30,7 @@
 			<string>com.caferkarakaya.mihrab</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>mihrab</string>
+				<string>revak</string>
 			</array>
 		</dict>
 	</array>

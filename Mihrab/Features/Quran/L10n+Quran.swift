@@ -186,9 +186,9 @@ extension L10n {
     }
     static var quranNoTranslationBody: String {
         string(
-            en: "The Arabic text ships under a Creative Commons licence, so it is here in full. Every translation we reviewed is either copyrighted or licensed for non-commercial use only, and Mihrab will not ship text it has no right to — or invent one.",
-            tr: "Arapça metin Creative Commons lisanslı olduğu için eksiksiz burada. İncelediğimiz her meal ya telifli ya da yalnızca ticari olmayan kullanıma açık. Mihrab hakkı olmayan bir metni yayımlamaz — uydurmaz da.",
-            ar: "النص العربي مرخّص برخصة المشاع الإبداعي فهو هنا كاملاً. أما الترجمات التي راجعناها فمحمية أو مرخّصة لغير الأغراض التجارية، ولن ينشر مِحراب نصاً لا يملك حقه ولن يختلقه."
+            en: "The Arabic text ships under a Creative Commons licence, so it is here in full. Every translation we reviewed is either copyrighted or licensed for non-commercial use only, and Revak will not ship text it has no right to — or invent one.",
+            tr: "Arapça metin Creative Commons lisanslı olduğu için eksiksiz burada. İncelediğimiz her meal ya telifli ya da yalnızca ticari olmayan kullanıma açık. Revak hakkı olmayan bir metni yayımlamaz — uydurmaz da.",
+            ar: "النص العربي مرخّص برخصة المشاع الإبداعي فهو هنا كاملاً. أما الترجمات التي راجعناها فمحمية أو مرخّصة لغير الأغراض التجارية، ولن ينشر رواق نصاً لا يملك حقه ولن يختلقه."
         )
     }
     static var quranNoTranslationDetail: String {

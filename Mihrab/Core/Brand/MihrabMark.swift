@@ -1,13 +1,64 @@
 import SwiftUI
 
-// MARK: - Geometry
+// MARK: - Geometry primitive
 
-/// The one piece of geometry the whole brand is built on: a two-centred
-/// pointed *mihrab* niche.
+/// Appends a two-centred pointed (*ogee*) arch to `path`, springing from
+/// `(left, springY)` to `(right, springY)` with its point at `apexY`.
 ///
-/// Drawn in a canonical 100 × 128 design space and mapped onto whatever rect
-/// it is handed, so the proportions never drift between the splash, the
-/// welcome screen, the paywall and the app icon.
+/// Convex where it leaves the jamb, concave as it climbs, meeting in a point.
+/// A single arc would give a Roman semicircle — and a semicircle is exactly
+/// what read as a stray capital "C" in the first mark.
+///
+/// `flare` pushes the springing outwards for a lone arch. In an arcade it is
+/// zero, so the curve leaves the capital vertically and runs on into the
+/// column below without a kink.
+///
+/// This is the one piece of geometry the whole brand is built on. The mark,
+/// the paywall's flanking niches and `Scripts/generate_icon.swift` all call
+/// the same numbers, so nothing drifts between 20 pt and 1024 px.
+private func appendOgee(
+    to path: inout Path,
+    left: CGFloat,
+    right: CGFloat,
+    springY: CGFloat,
+    apexY: CGFloat,
+    flare: CGFloat,
+    _ point: (CGFloat, CGFloat) -> CGPoint
+) {
+    let span = right - left
+    let rise = springY - apexY
+    let mid = (left + right) / 2
+    // The inflection is where the curve changes hands.
+    let ix = span * 0.13
+    let iy = apexY + rise * 0.50
+
+    path.addCurve(
+        to: point(left + ix, iy),
+        control1: point(left - span * flare, springY - rise * 0.26),
+        control2: point(left + ix - span * 0.075, iy + rise * 0.16)
+    )
+    path.addCurve(
+        to: point(mid, apexY),
+        control1: point(left + ix + span * 0.09, iy - rise * 0.20),
+        control2: point(mid - span * 0.155, apexY + rise * 0.20)
+    )
+    path.addCurve(
+        to: point(right - ix, iy),
+        control1: point(mid + span * 0.155, apexY + rise * 0.20),
+        control2: point(right - ix - span * 0.09, iy - rise * 0.20)
+    )
+    path.addCurve(
+        to: point(right, springY),
+        control1: point(right - ix + span * 0.075, iy + rise * 0.16),
+        control2: point(right + span * flare, springY - rise * 0.26)
+    )
+}
+
+/// A single pointed niche, drawn in a canonical 100 × 128 design space and
+/// mapped onto whatever rect it is handed.
+///
+/// Kept as its own shape because the paywall uses bare arches, faint and
+/// un-animated, as depth flanking the mark.
 ///
 /// The path is authored as **one continuous stroke** — up the left jamb, over
 /// the crown, down the right jamb — which is what makes `.trim(from:to:)`
@@ -18,12 +69,10 @@ struct MihrabArch: Shape {
     var inset: CGFloat = 0
 
     func path(in rect: CGRect) -> Path {
-        let scale = CGSize(width: rect.width / 100, height: rect.height / 128)
         func point(_ x: CGFloat, _ y: CGFloat) -> CGPoint {
-            CGPoint(x: rect.minX + x * scale.width, y: rect.minY + y * scale.height)
+            CGPoint(x: rect.minX + x * rect.width / 100, y: rect.minY + y * rect.height / 128)
         }
 
-        // Canonical outer arch, then pushed inwards by `inset` design units.
         // The crown drops faster than the jambs move in — that keeps the
         // inner arches concentric rather than merely narrower.
         let left = 10 + inset
@@ -32,77 +81,186 @@ struct MihrabArch: Shape {
         let springY = 66 + inset * 0.35
         let baseY: CGFloat = 120
 
-        let mid = (left + right) / 2
-        let span = right - left
-        let rise = springY - apexY
-
-        // An *ogee*: convex where it leaves the jamb, concave as it climbs,
-        // meeting in a point. The inflection is where the curve changes
-        // hands. A single arc would give a Roman semicircle — and a
-        // semicircle is exactly what read as a stray capital "C" before.
-        let inflectionX = span * 0.13
-        let inflectionY = apexY + rise * 0.50
-
         var path = Path()
         path.move(to: point(left, baseY))
         path.addLine(to: point(left, springY))
-        // Left limb: convex out of the jamb …
-        path.addCurve(
-            to: point(left + inflectionX, inflectionY),
-            control1: point(left - span * 0.045, springY - rise * 0.26),
-            control2: point(left + inflectionX - span * 0.075, inflectionY + rise * 0.16)
-        )
-        // … then concave into the pointed crown.
-        path.addCurve(
-            to: point(mid, apexY),
-            control1: point(left + inflectionX + span * 0.09, inflectionY - rise * 0.20),
-            control2: point(mid - span * 0.155, apexY + rise * 0.20)
-        )
-        // Right limb, mirrored.
-        path.addCurve(
-            to: point(right - inflectionX, inflectionY),
-            control1: point(mid + span * 0.155, apexY + rise * 0.20),
-            control2: point(right - inflectionX - span * 0.09, inflectionY - rise * 0.20)
-        )
-        path.addCurve(
-            to: point(right, springY),
-            control1: point(right - inflectionX + span * 0.075, inflectionY + rise * 0.16),
-            control2: point(right + span * 0.045, springY - rise * 0.26)
-        )
+        appendOgee(to: &path, left: left, right: right, springY: springY, apexY: apexY, flare: 0.045, point)
         path.addLine(to: point(right, baseY))
+        return path
+    }
+}
+
+// MARK: - Revak canon
+
+/// The arcade's design space: **160 wide × 128 tall**, four columns, three
+/// bays. The centre bay is both wider and much taller than its neighbours, so
+/// as the mark shrinks the side bays fall away and the silhouette degrades
+/// gracefully into a single crowned portal rather than into a comb of equal
+/// teeth.
+///
+/// The proportion is the whole trick. An arcade drawn tall and narrow reads
+/// Gothic; drawn wide and low, with capitals on the columns and a finial over
+/// the centre, it reads as the courtyard of an Ottoman mosque.
+private enum Revak {
+    static let width: CGFloat = 160
+    static let height: CGFloat = 128
+    static let columns: [CGFloat] = [8, 56, 104, 152]
+    static let spring: CGFloat = 62
+    static let base: CGFloat = 122
+    static let apexSide: CGFloat = 36
+    static let apexMid: CGFloat = 12
+    /// Half-width of a capital.
+    static let capital: CGFloat = 7
+    static let mid: CGFloat = 80
+
+    // The mihrab niche recessed into the back wall of the central bay.
+    static let nicheLeft: CGFloat = 64
+    static let nicheRight: CGFloat = 96
+    static let nicheSpring: CGFloat = 66
+    static let nicheApex: CGFloat = 34
+
+    /// Centre of the hanging lamp, and the two radii its petals swing between.
+    static let lamp = CGPoint(x: 80, y: 80)
+    static let lampInner: CGFloat = 8
+    static let lampOuter: CGFloat = 13.5
+
+    static func mapper(_ rect: CGRect) -> (CGFloat, CGFloat) -> CGPoint {
+        { x, y in
+            CGPoint(x: rect.minX + x * rect.width / width, y: rect.minY + y * rect.height / height)
+        }
+    }
+}
+
+/// The load-bearing line of the identity: a *revak*, the run of arches on
+/// columns that wraps a mosque courtyard.
+///
+/// Authored as **one continuous stroke** with no pen lifts — up the outer left
+/// column, over three ogee bays, down the outer right column — so the splash's
+/// `.trim(from:to:)` reads as a single line drawing the arcade bay by bay.
+private struct RevakArcade: Shape {
+    func path(in rect: CGRect) -> Path {
+        let p = Revak.mapper(rect)
+        let c = Revak.columns
+        var path = Path()
+        path.move(to: p(c[0], Revak.base))
+        path.addLine(to: p(c[0], Revak.spring))
+        appendOgee(to: &path, left: c[0], right: c[1], springY: Revak.spring, apexY: Revak.apexSide, flare: 0, p)
+        appendOgee(to: &path, left: c[1], right: c[2], springY: Revak.spring, apexY: Revak.apexMid, flare: 0, p)
+        appendOgee(to: &path, left: c[2], right: c[3], springY: Revak.spring, apexY: Revak.apexSide, flare: 0, p)
+        path.addLine(to: p(c[3], Revak.base))
+        return path
+    }
+}
+
+/// The prayer niche inside the central bay — the *mihrab* the app was first
+/// named for, now standing where a real one stands: under the middle arch of
+/// the arcade. Also one continuous stroke, so it trims alongside the arcade.
+private struct RevakNiche: Shape {
+    func path(in rect: CGRect) -> Path {
+        let p = Revak.mapper(rect)
+        var path = Path()
+        path.move(to: p(Revak.nicheLeft, Revak.base))
+        path.addLine(to: p(Revak.nicheLeft, Revak.nicheSpring))
+        appendOgee(
+            to: &path, left: Revak.nicheLeft, right: Revak.nicheRight,
+            springY: Revak.nicheSpring, apexY: Revak.nicheApex, flare: 0, p
+        )
+        path.addLine(to: p(Revak.nicheRight, Revak.base))
+        return path
+    }
+}
+
+/// The masonry: capitals across every column, the two interior shafts, the
+/// floor they all stand on, and the finial (*alem*) crowning the centre.
+///
+/// Separate from the arcade line so the splash can settle it in behind the
+/// drawn outline rather than trying to trim four disjoint runs.
+private struct RevakStone: Shape {
+    func path(in rect: CGRect) -> Path {
+        let p = Revak.mapper(rect)
+        var path = Path()
+
+        for x in [Revak.columns[1], Revak.columns[2]] {
+            path.move(to: p(x, Revak.spring))
+            path.addLine(to: p(x, Revak.base))
+        }
+        for x in Revak.columns {
+            path.move(to: p(x - Revak.capital, Revak.spring))
+            path.addLine(to: p(x + Revak.capital, Revak.spring))
+        }
+        path.move(to: p(2, Revak.base))
+        path.addLine(to: p(Revak.width - 2, Revak.base))
+
+        path.move(to: p(Revak.mid, Revak.apexMid - 1))
+        path.addLine(to: p(Revak.mid, 5))
+        return path
+    }
+}
+
+/// The lamp hanging in the niche: eight scalloped petals around a disc.
+///
+/// **Radial symmetry only, and never six-fold.** Every petal is one
+/// outward-bulging arc, so no straight-edged star can emerge from it at any
+/// contrast — nothing here is built from triangles or overlapping polygons. At
+/// small sizes the whole ornament collapses into a single warm point of light,
+/// which is exactly what it should do.
+private struct RevakLamp: Shape {
+    var petals: Int = 8
+
+    func path(in rect: CGRect) -> Path {
+        let p = Revak.mapper(rect)
+        let count = max(6, petals)
+        let step = 2 * CGFloat.pi / CGFloat(count)
+
+        func polar(_ radius: CGFloat, _ angle: CGFloat) -> CGPoint {
+            p(Revak.lamp.x + cos(angle) * radius, Revak.lamp.y + sin(angle) * radius)
+        }
+
+        var path = Path()
+        for index in 0..<count {
+            let start = CGFloat(index) * step - .pi / 2
+            path.move(to: polar(Revak.lampInner, start))
+            path.addQuadCurve(
+                to: polar(Revak.lampInner, start + step),
+                control: polar(Revak.lampOuter, start + step / 2)
+            )
+        }
         return path
     }
 }
 
 // MARK: - Mark
 
-/// The Mihrab brand mark.
+/// The Revak brand mark.
 ///
-/// A pointed prayer niche, an echo of itself inset within, a lamp of light
-/// hanging in the recess and a plinth line under both. Vector rather than a
-/// bitmap so it is crisp at 16 pt and at 1024 pt, follows the theme colour,
-/// scales with Dynamic Type wherever it is placed next to text, and adds
-/// nothing to the app's download size.
+/// *Revak* (رواق) is not one arch — it is the run of arches on columns that
+/// wraps a mosque courtyard. So the mark is an arcade: a crowned central portal
+/// between two lower bays, a mihrab niche recessed in the portal, an eight-fold
+/// rosette lamp hanging in the niche, and the floor they all stand on.
 ///
-/// Replaces the old arch-plus-crescent lockup, whose crescent read as a
-/// stray capital "C" at hero sizes.
+/// Vector rather than a bitmap, so it is crisp at 16 pt and at 1024 pt, follows
+/// the theme colour, scales with Dynamic Type wherever it sits next to text,
+/// and adds nothing to the download.
+///
+/// **The mark is landscape** — 160 : 128, so `width` is 1.25 × `height`. Any
+/// container that pins its width must allow for that.
 struct MihrabMark: View {
-    /// Height in points; the width follows the 100:128 canon.
+    /// Height in points; the width follows the 160:128 canon.
     var height: CGFloat = 128
     /// 0…1 — lets the splash draw the outline on. 1 is the finished mark.
     var drawProgress: CGFloat = 1
-    /// Fades the lamp and plinth in behind the outline.
+    /// Fades the masonry, the finial and the lamp in behind the outline.
     var detailOpacity: Double = 1
     var tint: Color = MihrabColor.brass
 
-    private var width: CGFloat { height * 100 / 128 }
+    private var width: CGFloat { height * Revak.width / Revak.height }
     /// One design unit, so every weight below is proportional.
-    private var unit: CGFloat { height / 128 }
+    private var unit: CGFloat { height / Revak.height }
 
     var body: some View {
         ZStack {
-            // Outer niche — the load-bearing line of the whole identity.
-            MihrabArch()
+            // The arcade — the line the whole identity hangs on.
+            RevakArcade()
                 .trim(from: 0, to: drawProgress)
                 .stroke(
                     LinearGradient(
@@ -110,60 +268,56 @@ struct MihrabMark: View {
                         startPoint: .top,
                         endPoint: .bottom
                     ),
-                    style: StrokeStyle(lineWidth: 2.1 * unit, lineCap: .round, lineJoin: .round)
+                    style: StrokeStyle(lineWidth: 3.0 * unit, lineCap: .round, lineJoin: .round)
                 )
 
-            // Inner echo. Same curve, stepped in — depth, not decoration.
-            MihrabArch(inset: 17)
+            // Same curve, recessed.
+            RevakNiche()
                 .trim(from: 0, to: drawProgress)
-                .stroke(tint.opacity(0.5), style: StrokeStyle(lineWidth: 1.3 * unit, lineCap: .round))
+                .stroke(tint.opacity(0.66), style: StrokeStyle(lineWidth: 1.9 * unit, lineCap: .round, lineJoin: .round))
 
+            stone
             lamp
-            plinth
         }
         .frame(width: width, height: height)
         .accessibilityHidden(true)
     }
 
-    /// A single point of light in the recess, over the sill it rests on.
-    /// Solid, centred, circular — it cannot be misread as a letterform the
-    /// way a crescent could. The canonical centre of the design space is
-    /// (50, 64), which is also the centre of the frame, so the lamp needs no
-    /// offset at all.
-    private var lamp: some View {
+    private var stone: some View {
         ZStack {
+            RevakStone()
+                .stroke(tint.opacity(0.9), style: StrokeStyle(lineWidth: 2.4 * unit, lineCap: .round))
+
+            // The bead on top of the finial. Canonical (80, 2.6) in a
+            // 160 × 128 space, i.e. 61.4 units above the frame's centre.
             Circle()
                 .fill(tint)
-                .frame(width: 11 * unit, height: 11 * unit)
-                .overlay {
-                    Circle()
-                        .strokeBorder(tint.opacity(0.45), lineWidth: 1.1 * unit)
-                        .padding(-4 * unit)
-                }
-
-            // Sill at canonical y = 81, i.e. 17 units below centre.
-            Capsule()
-                .fill(tint.opacity(0.8))
-                .frame(width: 28 * unit, height: 1.6 * unit)
-                .offset(y: 17 * unit)
+                .frame(width: 4.8 * unit, height: 4.8 * unit)
+                .offset(y: -61.4 * unit)
         }
         .opacity(detailOpacity)
     }
 
-    /// The floor the niche stands on — closes the silhouette so the two
-    /// jambs do not trail off the bottom of the frame. Canonical y = 120.
-    private var plinth: some View {
-        Capsule()
-            .fill(
-                LinearGradient(
-                    colors: [tint.opacity(0), tint, tint.opacity(0)],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
-            )
-            .frame(width: 96 * unit, height: 1.8 * unit)
-            .offset(y: 56 * unit)
-            .opacity(detailOpacity)
+    private var lamp: some View {
+        ZStack {
+            RevakLamp()
+                .stroke(tint.opacity(0.92), style: StrokeStyle(lineWidth: 1.9 * unit, lineCap: .round, lineJoin: .round))
+                .frame(width: width, height: height)
+
+            // The lamp is centred on (80, 80) in a 160 × 128 space; the
+            // frame's own centre is (80, 64), so the ring and disc hang 16
+            // units low.
+            Circle()
+                .strokeBorder(tint.opacity(0.55), lineWidth: 1.5 * unit)
+                .frame(width: Revak.lampInner * 2 * unit, height: Revak.lampInner * 2 * unit)
+                .offset(y: 16 * unit)
+
+            Circle()
+                .fill(tint)
+                .frame(width: 6.4 * unit, height: 6.4 * unit)
+                .offset(y: 16 * unit)
+        }
+        .opacity(detailOpacity)
     }
 }
 
@@ -171,7 +325,7 @@ struct MihrabMark: View {
 
 /// The ornament that sits behind Arabic calligraphy.
 ///
-/// **Radial symmetry only, and never six-fold.** The previous ornament was a
+/// **Radial symmetry only, and never six-fold.** The original ornament was a
 /// *rub el hizb* — two squares at 45° — which at low contrast behind a name
 /// read to users as a hexagram. Nothing here is built from triangles or from
 /// overlapping polygons: it is a ring of `lobes` identical scallops around
@@ -277,12 +431,18 @@ struct MihrabIllustration: View {
                 .frame(height: resolvedHeight)
                 .background {
                     if !reduceTransparency {
+                        // The gradient fills whatever size it is proposed, and a
+                        // `.background` proposes the *content's* size. With an
+                        // endRadius wider than the artwork the falloff was being
+                        // squeezed into that rectangle and ended in a hard edge.
+                        // Giving it its own, larger frame lets it fade out.
                         RadialGradient(
                             colors: [MihrabColor.emerald.opacity(0.30), .clear],
                             center: .center,
                             startRadius: 6,
                             endRadius: resolvedHeight * 0.8
                         )
+                        .frame(width: resolvedHeight * 1.8, height: resolvedHeight * 1.8)
                     }
                 }
                 .allowsHitTesting(false)
@@ -296,6 +456,8 @@ struct MihrabIllustration: View {
         MihrabColor.abyss.ignoresSafeArea()
         VStack(spacing: 40) {
             MihrabMark(height: 160)
+            MihrabMark(height: 44)
+            MihrabMark(height: 20)
             MihrabRosette(side: 180, opacity: 0.5)
         }
     }

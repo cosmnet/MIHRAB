@@ -1,27 +1,31 @@
 # Bahasa Indonesia (id)
 
 ## App Name
-Mihrab: Jadwal Sholat & Kiblat            ← (30/30)
+Revak: Jadwal Sholat & Kiblat            ← (29/30)
+
 
 ## Subtitle
 Adzan, Al-Quran & Tasbih            ← (24/30)
 
+
 ## Keywords
 alquran,arah,dzikir,zikir,doa,ramadan,imsakiyah,puasa,zakat,hijriah,muslim,qada,ayat            ← (84/100)
+
 
 ## Promotional Text
 Tanpa iklan, tanpa kumpulan data. Adzan penuh tanpa terpotong, Al-Quran offline, kiblat jujur, tasbih digital, pelacak qada dan zakat. Fitur inti selalu gratis.            ← (160/170)
 
+
 ## Description
 Tanpa iklan. Tanpa pengumpulan data. Aplikasi yang bisa kamu percaya waktunya.
 
-Mihrab tidak pernah meletakkan jadwal sholat, arah kiblat, notifikasi adzan, Al-Quran, atau penghitung dzikir di balik langganan atau iklan. Ibadah itu sendiri selalu gratis.
+Revak tidak pernah meletakkan jadwal sholat, arah kiblat, notifikasi adzan, Al-Quran, atau penghitung dzikir di balik langganan atau iklan. Ibadah itu sendiri selalu gratis.
 
 — JADWAL SHOLAT, DIHITUNG DI PERANGKATMU
 Tanpa server, tanpa sinyal, tetap jalan. Pilih metode perhitungan yang kamu percaya, sesuaikan koreksi tiap waktu sampai ke menit, dan lihat dari mana setiap angka berasal di panel transparansi.
 
 — KAMI TANYAKAN SOAL ASHAR
-Perbedaan mazhab bisa membuat waktu Ashar terpaut hampir satu jam. Mihrab menampilkan dua opsi saat pengaturan awal, kamu yang memilih.
+Perbedaan mazhab bisa membuat waktu Ashar terpaut hampir satu jam. Revak menampilkan dua opsi saat pengaturan awal, kamu yang memilih.
 
 — ADZAN SUNGGUHAN, UTUH SAMPAI SELESAI
 Dengan AlarmKit di iOS 26, adzan berkumandang penuh, bahkan saat mode Senyap atau Fokus aktif. Kamu pilih sendiri suara adzannya.

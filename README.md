@@ -1,4 +1,4 @@
-# Mihrab
+# Revak
 
 Your prayer companion, beautifully present. iOS 26 · watchOS 26 · SwiftUI · Liquid Glass.
 
@@ -31,7 +31,7 @@ open.
 From the command line:
 
 ```bash
-xcodebuild -project Mihrab.xcodeproj -scheme Mihrab \
+xcodebuild -project Mihrab.xcodeproj -scheme Revak \
   -destination 'platform=iOS Simulator,name=iPhone 17' build
 ```
 
@@ -43,7 +43,7 @@ where each is declared.
 ## Tests
 
 ```bash
-xcodebuild -project Mihrab.xcodeproj -scheme Mihrab \
+xcodebuild -project Mihrab.xcodeproj -scheme Revak \
   -destination 'platform=iOS Simulator,name=iPhone 17' test
 ```
 
@@ -69,14 +69,14 @@ for the suite.
 
 | Target | Platform | What it is |
 |---|---|---|
-| `Mihrab` | iOS 26 | The app |
+| `Revak` | iOS 26 | The app |
 | `MihrabWidgets` | iOS 26 | Home/Lock Screen widgets, Live Activity, Controls |
 | `MihrabWatch` | watchOS 26 | Standalone watch app, embedded in the iPhone binary |
 | `MihrabWatchWidgets` | watchOS 26 | Complications |
 | `MihrabTests` | iOS 26 | Unit tests |
 
 Shared code is not a framework — `project.yml` lists the same source paths in
-several targets. `Mihrab/Core/Shared/` is the deliberate common floor: pure
+several targets. `Revak/Core/Shared/` is the deliberate common floor: pure
 Foundation and SwiftUI, no UIKit, no WatchKit, nothing platform-specific, so it
 compiles into all five.
 
@@ -139,14 +139,14 @@ private database; the developer cannot read it.
 ## Folder map
 
 ```
-Mihrab/
+Revak/
   App/            MihrabApp, RootView — the two files nobody edits casually
   Core/
     Shared/       DesignTokens, PrayerModels, L10n, SharedPrayerCache
                   — pure, compiled into every target
     Adhan/        AlarmKit scheduler, sound library, reminder planner
     Backdrop/     The time-of-day scene: shaders, veils, day segments
-    Brand/        The Mihrab mark
+    Brand/        The Revak mark
     Connectivity/ WatchBridgePayload + PhoneWatchBridge
     Shaders/      MihrabShaders.metal
     Subscription/ SubscriptionManager, PremiumGate, entitlement mirror
@@ -162,7 +162,7 @@ Mihrab/
                   Onboarding · Paywall · Settings
   Intents/        App Intents, shortcuts, Spotlight, the intent bridge
   Resources/      Localizable/InfoPlist string catalogs, fonts, generated art,
-                  PrivacyInfo.xcprivacy, Mihrab.storekit
+                  PrivacyInfo.xcprivacy, Revak.storekit
 MihrabWidgets/    Home, Lock Screen, Live Activity, Controls
 MihrabWatch/      Watch app — Views/ and Shared/
 MihrabWatchWidgets/ Complications
@@ -173,12 +173,12 @@ Scripts/          generate_localizable.py, generate_icon.swift
 
 ## Content & licences
 
-Mihrab does not ship text, audio or type it has no right to — and it never
+Revak does not ship text, audio or type it has no right to — and it never
 invents a religious value it cannot source.
 
 | Content | Source | Licence |
 |---|---|---|
-| Qur'an, Arabic (Uthmani v1.1) | [Tanzil Project](https://tanzil.net) | **CC BY 3.0** — verbatim, attributed in-app with a live link. See [`Mihrab/Features/Quran/CONTENT_LICENSE.md`](Mihrab/Features/Quran/CONTENT_LICENSE.md) |
+| Qur'an, Arabic (Uthmani v1.1) | [Tanzil Project](https://tanzil.net) | **CC BY 3.0** — verbatim, attributed in-app with a live link. See [`Revak/Features/Quran/CONTENT_LICENSE.md`](Revak/Features/Quran/CONTENT_LICENSE.md) |
 | Prayer-time calculation | [adhan-swift](https://github.com/batoulapps/adhan-swift) | MIT |
 | Prayer-time reconciliation | [Aladhan](https://aladhan.com) | Public API |
 | Arabic type | Amiri Quran | SIL Open Font License 1.1 |
@@ -189,9 +189,9 @@ Two deliberate absences:
 - **No Qur'an translation.** Every Turkish and English translation reviewed is
   either copyrighted or licensed for non-commercial use only. The app says so
   plainly rather than shipping one it has no right to.
-- **No adhan recording.** `Mihrab/Resources/Audio/` ships empty on purpose.
+- **No adhan recording.** `Revak/Resources/Audio/` ships empty on purpose.
   Instead the app generates royalty-free tones on device and lets anyone import
-  their own file — see [`Mihrab/Resources/Audio/README.md`](Mihrab/Resources/Audio/README.md)
+  their own file — see [`Revak/Resources/Audio/README.md`](Revak/Resources/Audio/README.md)
   for the format notes and the licensing checklist.
 
 ## Contributing

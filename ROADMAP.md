@@ -1,4 +1,4 @@
-# Mihrab — Birleşik Yol Haritası
+# Revak — Birleşik Yol Haritası
 
 > 23 Ağustos 2026. Üç paralel araştırmanın sentezi. Detaylar için:
 > [`RESEARCH_MARKET.md`](RESEARCH_MARKET.md) · [`RESEARCH_UI.md`](RESEARCH_UI.md) · [`RESEARCH_PLATFORM.md`](RESEARCH_PLATFORM.md) · [`PRICING.md`](PRICING.md)
@@ -7,7 +7,7 @@
 
 Türkiye'de **marka güveninin sahibi, yazılım kalitesinin sahibi değil.** Diyanet'in kendi uygulaması 3.37★, pazar lideri Ezan Vakti Pro'nun Şikayetvar marka puanı 0/100 — şikayetler ibadet uygulamasının içindeki kumar ve müstehcen reklamlar üzerine. Bu bir kullanılabilirlik şikâyeti değil, **ahlaki bir ihlal** olarak algılanıyor ve rakipler gelir modelleri reklama bağlı olduğu için bunu yapısal olarak karşılayamıyor.
 
-Mihrab'ın konumu buradan çıkıyor: **reklamsız, veri toplamayan, Diyanet'e gerçekten uyan, güzel.**
+Revak'ın konumu buradan çıkıyor: **reklamsız, veri toplamayan, Diyanet'e gerçekten uyan, güzel.**
 
 Pencere açık ama kapanıyor — Türkiye Referans kategorisinin ~%20'si artık İslami uygulama ve 2026 çıkışlı Türk indie'ler hızla büyüyor (Quran Widgets 6 ayda ~10.500 puan).
 

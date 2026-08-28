@@ -2058,7 +2058,7 @@
 				DEFINES_MODULE = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Mihrab/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Mihrab;
+				INFOPLIST_KEY_CFBundleDisplayName = Revak;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Camera is used only to show Qibla direction in AR. Nothing is recorded or uploaded.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Mihrab uses your location to calculate precise prayer times, Qibla direction, and nearby mosques.";
@@ -2144,7 +2144,7 @@
 				DEFINES_MODULE = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Mihrab/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Mihrab;
+				INFOPLIST_KEY_CFBundleDisplayName = Revak;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.lifestyle";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Camera is used only to show Qibla direction in AR. Nothing is recorded or uploaded.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Mihrab uses your location to calculate precise prayer times, Qibla direction, and nearby mosques.";

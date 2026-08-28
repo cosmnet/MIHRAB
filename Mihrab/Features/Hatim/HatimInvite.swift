@@ -23,7 +23,7 @@ struct HatimInvite: Codable, Hashable, Sendable {
     var v: Int = 1
 
     static let currentVersion = 1
-    static let scheme = "mihrab"
+    static let scheme = "revak"
     static let host = "hatim"
 
     // MARK: Encoding

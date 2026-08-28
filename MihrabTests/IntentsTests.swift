@@ -12,10 +12,13 @@ final class SharedDhikrCounterTests: XCTestCase {
     override func setUp() {
         super.setUp()
         defaults = UserDefaults(suiteName: SharedPrayerCache.appGroupID) ?? .standard
-        for key in ["mihrab.shared.dhikr.day", "mihrab.shared.dhikr.count",
-                    "mihrab.shared.dhikr.pending", "mihrab.shared.dhikr.phrase"] {
-            defaults.removeObject(forKey: key)
-        }
+        // `removeObject` leaves values that were registered in another process
+        // (the app itself writes this suite) still readable through the cached
+        // domain. Wiping the persistent domain is the only reliable reset, and
+        // without it a real counting session in the simulator leaks into the
+        // assertions here.
+        defaults.removePersistentDomain(forName: SharedPrayerCache.appGroupID)
+        defaults.synchronize()
     }
 
     func testAddAccumulates() {
@@ -31,12 +34,19 @@ final class SharedDhikrCounterTests: XCTestCase {
     }
 
     /// Drain hands the app exactly the taps made outside it, once.
+    ///
+    /// Asserted as a delta, not an absolute: this suite is the live App Group,
+    /// which the app itself writes to. A real counting session in the simulator
+    /// used to leak in and fail the absolute form — but what the code actually
+    /// promises is "drain returns what was added and leaves the total alone",
+    /// and that holds whatever the starting tally is.
     func testDrainPendingIsConsumedOnlyOnce() {
+        SharedDhikrCounter.drainPending()          // clear anything ambient
+        let before = SharedDhikrCounter.todayCount
         SharedDhikrCounter.add(5)
         XCTAssertEqual(SharedDhikrCounter.drainPending(), 5)
         XCTAssertEqual(SharedDhikrCounter.drainPending(), 0)
-        // Draining must not touch the visible total.
-        XCTAssertEqual(SharedDhikrCounter.todayCount, 5)
+        XCTAssertEqual(SharedDhikrCounter.todayCount, before + 5)
     }
 
     /// A tally written on a previous day resets instead of carrying over.

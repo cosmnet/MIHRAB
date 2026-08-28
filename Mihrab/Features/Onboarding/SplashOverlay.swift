@@ -14,7 +14,7 @@ struct SplashOverlay: View {
     @State private var taglineIn = false
     @State private var haloOpacity: Double = 0
 
-    private let wordmark = Array("Mihrab")
+    private let wordmark = Array("Revak")
 
     var body: some View {
         ZStack {
@@ -32,7 +32,7 @@ struct SplashOverlay: View {
             .padding(32)
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel("Mihrab")
+        .accessibilityLabel("Revak")
         .task { await run() }
     }
 
@@ -68,7 +68,7 @@ struct SplashOverlay: View {
             detailOpacity: lampIn ? 1 : 0
         )
         .scaleEffect(lampIn ? 1 : 0.985)
-        .frame(width: 176, height: 196)
+        .frame(width: 224, height: 196)
         .accessibilityHidden(true)
     }
 

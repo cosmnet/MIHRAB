@@ -7,19 +7,19 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "محراب"
+            "value": "رواق"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Mihrab"
+            "value": "Revak"
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Mihrab"
+            "value": "Revak"
           }
         }
       }
@@ -31,7 +31,7 @@
         "en": {
           "stringUnit": {
             "state": "new",
-            "value": "Mihrab"
+            "value": "Revak"
           }
         }
       }
@@ -65,19 +65,19 @@
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "يستخدم محراب موقعك لحساب أوقات الصلاة الدقيقة واتجاه القبلة والمساجد القريبة."
+            "value": "يستخدم رواق موقعك لحساب أوقات الصلاة الدقيقة واتجاه القبلة والمساجد القريبة."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Mihrab uses your location to calculate precise prayer times, Qibla direction, and nearby mosques."
+            "value": "Revak uses your location to calculate precise prayer times, Qibla direction, and nearby mosques."
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Mihrab konumunu hassas namaz vakitleri, kıble yönü ve yakındaki camiler için kullanır."
+            "value": "Revak konumunu hassas namaz vakitleri, kıble yönü ve yakındaki camiler için kullanır."
           }
         }
       }
@@ -88,19 +88,19 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Mihrab uses alarms so the adhan can sound at prayer time, even in Silent mode or Focus."
+            "value": "Revak uses alarms so the adhan can sound at prayer time, even in Silent mode or Focus."
           }
         },
         "tr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Mihrab, ezanın namaz vaktinde Sessiz modda ve Odak açıkken bile duyulabilmesi için alarm kullanır."
+            "value": "Revak, ezanın namaz vaktinde Sessiz modda ve Odak açıkken bile duyulabilmesi için alarm kullanır."
           }
         },
         "ar": {
           "stringUnit": {
             "state": "translated",
-            "value": "يستخدم مِحراب المنبّهات ليُسمَع الأذان في وقته، حتى في الوضع الصامت أو أثناء التركيز."
+            "value": "يستخدم رواق المنبّهات ليُسمَع الأذان في وقته، حتى في الوضع الصامت أو أثناء التركيز."
           }
         }
       }

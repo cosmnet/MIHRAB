@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none" role="img" aria-label="Revak">
+  <title>Revak</title>
+  <!-- Canonical design space is 160 x 128 units; the group maps it into the 512 box. -->
+  <g transform="translate(32 76.8) scale(2.8)" stroke="#C9A24B" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Arcade: one continuous stroke. Left column up, three ogee bays, right column down. -->
+    <path d="M 8 122 L 8 62 C 8 55.24 10.64 53.16 14.24 49 C 18.56 43.8 24.56 41.2 32 36 C 39.44 41.2 45.44 43.8 49.76 49 C 53.36 53.16 56 55.24 56 62 C 56 49 58.64 45 62.24 37 C 66.56 27 72.56 22 80 12 C 87.44 22 93.44 27 97.76 37 C 101.36 45 104 49 104 62 C 104 55.24 106.64 53.16 110.24 49 C 114.56 43.8 120.56 41.2 128 36 C 135.44 41.2 141.44 43.8 145.76 49 C 149.36 53.16 152 55.24 152 62 L 152 122" stroke-width="3.4"/>
+    <!-- Mihrab niche recessed in the central bay. -->
+    <path d="M 64 122 L 64 66 C 64 57.68 65.76 55.12 68.16 50 C 71.04 43.6 75.04 40.4 80 34 C 84.96 40.4 88.96 43.6 91.84 50 C 94.24 55.12 96 57.68 96 66 L 96 122" stroke-width="2" opacity=".66"/>
+    <!-- Capitals, interior column shafts, floor, and the finial (alem). -->
+    <path d="M 56 62 L 56 122 M 104 62 L 104 122 M 1 62 L 15 62 M 49 62 L 63 62 M 97 62 L 111 62 M 145 62 L 159 62 M 2 122 L 158 122 M 80 11 L 80 5" stroke-width="2.6" opacity=".9"/>
+    <circle cx="80" cy="2.6" r="2.4" fill="#C9A24B" stroke="none"/>
+    <!-- Lamp: eight scalloped petals. Curves only, so no straight-edged star can emerge. -->
+    <path d="M 80 72 Q 85.17 67.53 85.66 74.34 M 85.66 74.34 Q 92.47 74.83 88 80 M 88 80 Q 92.47 85.17 85.66 85.66 M 85.66 85.66 Q 85.17 92.47 80 88 M 80 88 Q 74.83 92.47 74.34 85.66 M 74.34 85.66 Q 67.53 85.17 72 80 M 72 80 Q 67.53 74.83 74.34 74.34 M 74.34 74.34 Q 74.83 67.53 80 72" stroke-width="2" opacity=".92"/>
+    <circle cx="80" cy="80" r="8" stroke-width="1.6" opacity=".55"/>
+    <circle cx="80" cy="80" r="3.2" fill="#C9A24B" stroke="none"/>
+  </g>
+</svg>

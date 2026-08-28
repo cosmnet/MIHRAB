@@ -1,6 +1,6 @@
-# Mihrab Plus — Fiyatlandırma Stratejisi
+# Revak Plus — Fiyatlandırma Stratejisi
 
-> Son güncelleme: 2026-08 · Sahibi: Agent C · İlgili kod: `Mihrab/Core/Subscription/`, `Mihrab/Features/Paywall/`
+> Son güncelleme: 2026-08 · Sahibi: Agent C · İlgili kod: `Revak/Core/Subscription/`, `Revak/Features/Paywall/`
 
 ---
 
@@ -143,7 +143,7 @@ tutuluyor; cihaz saati bir günden fazla geri alınırsa deneme *tüketilmiş* s
 - **Reklam yok — hiçbir katmanda.** Reklamsızlık satılan bir özellik değil,
   uygulamanın baştan verdiği söz.
 
-### Mihrab Plus (`PremiumFeature` enum'u ile birebir)
+### Revak Plus (`PremiumFeature` enum'u ile birebir)
 
 | Özellik | `PremiumFeature` | Gerekçe |
 |---|---|---|
@@ -192,7 +192,7 @@ deneme ile kurulum başına ödemeli dönüşüm **%3–6** bandı; TR'de daha d
 
 ## 6. App Store Connect kurulum notları
 
-1. **Abonelik grubu:** "Mihrab Plus" — aylık ve yıllık aynı grupta, böylece
+1. **Abonelik grubu:** "Revak Plus" — aylık ve yıllık aynı grupta, böylece
    kullanıcı planlar arasında yükseltip düşürebilir.
 2. **Ürün kimlikleri** (koddaki `MihrabProduct` ile birebir):
    - `com.caferkarakaya.mihrab.plus.monthly` — Otomatik yenilenen, 1 ay
@@ -204,7 +204,7 @@ deneme ile kurulum başına ödemeli dönüşüm **%3–6** bandı; TR'de daha d
 6. Gizlilik ve EULA bağlantıları paywall'da mevcut
    (`PaywallView.privacyURL` / `termsURL` — yayından önce gerçek gizlilik
    sayfasıyla değiştirilecek).
-7. Yerel test: `Mihrab/Resources/Mihrab.storekit` dosyasını şemada
+7. Yerel test: `Revak/Resources/Revak.storekit` dosyasını şemada
    *StoreKit Configuration* olarak seç.
 
 ---

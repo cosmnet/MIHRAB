@@ -444,8 +444,8 @@ struct SettingsView: View {
                 Label(L10n.setRateApp, systemImage: "star.fill")
             }
             Button {
-                let subject = "Mihrab \(appVersion)"
-                    .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "Mihrab"
+                let subject = "Revak \(appVersion)"
+                    .addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "Revak"
                 if let url = URL(string: "mailto:mihrab.feedback@icloud.com?subject=\(subject)") {
                     openURL(url)
                 }

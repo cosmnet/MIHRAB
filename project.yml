@@ -76,7 +76,7 @@ targets:
         INFOPLIST_KEY_NSLocationWhenInUseUsageDescription: "Mihrab uses your location to calculate precise prayer times, Qibla direction, and nearby mosques."
         INFOPLIST_KEY_NSCameraUsageDescription: "Camera is used only to show Qibla direction in AR. Nothing is recorded or uploaded."
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
-        INFOPLIST_KEY_CFBundleDisplayName: Mihrab
+        INFOPLIST_KEY_CFBundleDisplayName: Revak
         INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.lifestyle
         INFOPLIST_KEY_NSSupportsLiveActivities: YES
         INFOPLIST_KEY_NSSupportsLiveActivitiesFrequentUpdates: YES
@@ -88,7 +88,7 @@ targets:
           - CFBundleURLName: com.caferkarakaya.mihrab
             CFBundleTypeRole: Editor
             CFBundleURLSchemes:
-              - mihrab
+              - revak
         UIAppFonts:
           - AmiriQuran-Regular.ttf
         UIBackgroundModes:

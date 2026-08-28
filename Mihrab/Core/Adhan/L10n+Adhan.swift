@@ -34,7 +34,7 @@ extension L10n {
     // MARK: - Reminder mode
 
     static var ntfModeTitle: String {
-        string(en: "How Mihrab reminds you", tr: "Mihrab nasıl hatırlatsın", ar: "كيف يذكّرك محراب")
+        string(en: "How Revak reminds you", tr: "Revak nasıl hatırlatsın", ar: "كيف يذكّرك رواق")
     }
 
     static var ntfModeAlarm: String {
@@ -63,25 +63,25 @@ extension L10n {
 
     static var ntfAlarmPermissionDenied: String {
         string(
-            en: "Alarm permission is off, so Mihrab falls back to notifications. You can turn alarms on in Settings ▸ Mihrab.",
-            tr: "Alarm izni kapalı; Mihrab bildirimlere düşüyor. Alarmları Ayarlar ▸ Mihrab'dan açabilirsiniz.",
-            ar: "إذن المنبّه مغلق، لذا يعود محراب إلى الإشعارات. يمكنك تفعيل المنبّهات من الإعدادات ▸ محراب."
+            en: "Alarm permission is off, so Revak falls back to notifications. You can turn alarms on in Settings ▸ Mihrab.",
+            tr: "Alarm izni kapalı; Revak bildirimlere düşüyor. Alarmları Ayarlar ▸ Revak'dan açabilirsiniz.",
+            ar: "إذن المنبّه مغلق، لذا يعود رواق إلى الإشعارات. يمكنك تفعيل المنبّهات من الإعدادات ▸ رواق."
         )
     }
 
     static var ntfAlarmLimitReached: String {
         string(
-            en: "iOS will not accept any more alarms. Mihrab kept the nearest prayers as alarms; the rest arrive as notifications.",
-            tr: "iOS daha fazla alarm kabul etmiyor. Mihrab en yakın vakitleri alarm olarak tuttu; kalanlar bildirim olarak gelecek.",
-            ar: "لا يقبل iOS مزيدًا من المنبّهات. أبقى محراب أقرب الأوقات منبّهات، والباقي إشعارات."
+            en: "iOS will not accept any more alarms. Revak kept the nearest prayers as alarms; the rest arrive as notifications.",
+            tr: "iOS daha fazla alarm kabul etmiyor. Revak en yakın vakitleri alarm olarak tuttu; kalanlar bildirim olarak gelecek.",
+            ar: "لا يقبل iOS مزيدًا من المنبّهات. أبقى رواق أقرب الأوقات منبّهات، والباقي إشعارات."
         )
     }
 
     static var ntfAlarmUnavailable: String {
         string(
-            en: "Alarms are unavailable on this device; Mihrab uses notifications instead.",
-            tr: "Bu cihazda alarm kullanılamıyor; Mihrab bildirim kullanıyor.",
-            ar: "المنبّهات غير متاحة على هذا الجهاز؛ يستخدم محراب الإشعارات."
+            en: "Alarms are unavailable on this device; Revak uses notifications instead.",
+            tr: "Bu cihazda alarm kullanılamıyor; Revak bildirim kullanıyor.",
+            ar: "المنبّهات غير متاحة على هذا الجهاز؛ يستخدم رواق الإشعارات."
         )
     }
 

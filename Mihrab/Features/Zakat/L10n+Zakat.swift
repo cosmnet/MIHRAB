@@ -20,8 +20,8 @@ extension L10n {
     static var zakatSilverPrice: String { string(en: "Silver, current price per gram", tr: "Gümüş, güncel gram fiyatı", ar: "سعر غرام الفضة الحالي") }
     static var zakatPricesNote: String {
         string(
-            en: "Enter today's prices yourself. Mihrab does not fetch them: there is no free, reliable price source we can stand behind, and a stale price would quietly give you the wrong zakat.",
-            tr: "Fiyatları kendin gir. Mihrab bunları çekmiyor: arkasında durabileceğimiz ücretsiz ve güvenilir bir kaynak yok; eski bir fiyat ise zekâtı sessizce yanlış hesaplar.",
+            en: "Enter today's prices yourself. Revak does not fetch them: there is no free, reliable price source we can stand behind, and a stale price would quietly give you the wrong zakat.",
+            tr: "Fiyatları kendin gir. Revak bunları çekmiyor: arkasında durabileceğimiz ücretsiz ve güvenilir bir kaynak yok; eski bir fiyat ise zekâtı sessizce yanlış hesaplar.",
             ar: "أدخل الأسعار بنفسك؛ لا نجلبها لعدم وجود مصدر مجاني موثوق، والسعر القديم يعطي زكاة خاطئة."
         )
     }

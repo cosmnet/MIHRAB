@@ -1,4 +1,4 @@
-# Mihrab — ASO ve Yayın Paketi
+# Revak — ASO ve Yayın Paketi
 
 > Sahibi: Ajan X2 · Kaynak: [`RESEARCH_MARKET.md`](RESEARCH_MARKET.md) bölüm 5 · Yol haritası #22
 > Son güncelleme: 2026-08-23 · Hedef sezon: **Ramazan 2027 = 8 Şubat 2027**
@@ -14,7 +14,7 @@ Aşağıdaki metinlerin hepsi doğrudan App Store Connect'e girilebilir.
 |---|---|
 | Birincil pazar | **Türkiye** (ASA'da CPI ≈ $1,02 — ABD'nin ~¼'ü, marka dışı organik hâlâ mümkün) |
 | Birincil dil | `tr` · Türkiye storefront'unda ikincil `en-GB` = **+100 indekslenebilir karakter, bedava** |
-| Başlık stratejisi | `Mihrab:` öneki kısa, kalan alan jenerik terimlere. TR'de marka-önce isimlendirme ölçülebilir dezavantaj |
+| Başlık stratejisi | `Revak:` öneki kısa, kalan alan jenerik terimlere. TR'de marka-önce isimlendirme ölçülebilir dezavantaj |
 | Kazanılacak ana terim | **zikirmatik** (ilk 12'nin toplamı ~55K — kazanılabilir en iyi ana terim) |
 | Bedava terimler | **kaza namazı** (1. sıradaki uygulamanın <1.000 puanı var), **esmaül hüsna**, **hac umre** |
 | En büyük tek kaldıraç | **CPP'ler** — 70 adet, artık anahtar kelime atanabiliyor ve organik arama sonucunda görünüyor |
@@ -27,7 +27,7 @@ Aşağıdaki metinlerin hepsi doğrudan App Store Connect'e girilebilir.
 ### 1.1 Yıl boyu (varsayılan)
 
 ```
-Başlık   (28/30): Mihrab: Namaz Vakti ve Kıble
+Başlık   (28/30): Revak: Namaz Vakti ve Kıble
 Alt başlık(28/30): Ezan, Zikirmatik ve İmsakiye
 Anahtar (100/100): imsak,iftar,sahur,dua,tesbih,esmaül,hüsna,kuran,ramazan,kandil,hicri,takvim,kaza,diyanet,hadis,kible
 ```
@@ -60,7 +60,7 @@ Virgülden sonra boşluk **yok**; boşluk bir karakter yer.
 Şaban'ın başında (≈ **10 Ocak 2027**) değiştir, bayramdan bir hafta sonra (**~18 Mart 2027**) geri al.
 
 ```
-Başlık   (29/30): Mihrab: Ramazan İmsakiye 2027
+Başlık   (29/30): Revak: Ramazan İmsakiye 2027
 Alt başlık(30/30): Namaz Vakti, İftar, Sahur, Dua
 ```
 
@@ -89,7 +89,7 @@ Kural: aynı kelimeyi iki dilde yazma — kombinasyonlar yalnızca aynı dil iç
 ## 2. Metadata — ABD / global (`en-US`)
 
 ```
-Başlık   (28/30): Mihrab: Prayer Times & Qibla
+Başlık   (28/30): Revak: Prayer Times & Qibla
 Alt başlık(29/30): Athan, Dhikr, Ramadan & Hijri
 Anahtar (98/100): adhan,azan,salah,salat,namaz,tasbih,tasbeeh,zikr,dua,99,names,allah,asma,husna,iftar,suhoor,muslim
 ```
@@ -126,7 +126,7 @@ Anahtar (50 karakter / 93 bayt):
 ```
 Reklamsız. Veri toplamayan. Diyanet uyumlu.
 
-Mihrab; namaz vakitlerini, kıbleyi, ezan bildirimlerini ve zikirmatiği hiçbir
+Revak; namaz vakitlerini, kıbleyi, ezan bildirimlerini ve zikirmatiği hiçbir
 zaman ücret ya da reklam duvarının arkasına koymaz. İbadetin kendisi ücretsiz.
 
 — NAMAZ VAKİTLERİ, GERÇEKTEN DOĞRU
@@ -139,7 +139,7 @@ görürsün.
 — İKİNDİ SORUSUNU SORUYORUZ
 Diyanet takvimi ikindiyi çoğunluk (Şafi) kuralıyla yayımlar; Türkiye'de
 çoğunluk Hanefi kuralını takip eder. Aradaki fark İstanbul'da bir saati
-bulabiliyor. Mihrab kurulumda bunu sessizce seçmez — iki saati de yan yana
+bulabiliyor. Revak kurulumda bunu sessizce seçmez — iki saati de yan yana
 gösterir, tercihi sen yaparsın.
 
 — GERÇEK EZAN, TAM UZUNLUKTA
@@ -169,7 +169,7 @@ dokunuşla yapılır.
 ```
 No ads. No data collection. Times you can trust.
 
-Mihrab never puts prayer times, the qibla, adhan alerts or the dhikr counter
+Revak never puts prayer times, the qibla, adhan alerts or the dhikr counter
 behind a paywall or an ad. Worship itself is free.
 
 — PRAYER TIMES, COMPUTED ON YOUR DEVICE
@@ -178,7 +178,7 @@ per-prayer corrections down to the minute, and see exactly where every number
 came from in the transparency panel.
 
 — WE ASK ABOUT ASR
-The majority and Hanafi rulings can put Asr almost an hour apart. Mihrab shows
+The majority and Hanafi rulings can put Asr almost an hour apart. Revak shows
 you both real times during setup and lets you choose, instead of picking one
 for you.
 
@@ -345,7 +345,7 @@ Sahibinin App Store Connect'te / dışarıda yapması gerekenler. Kod tarafı de
       - `com.caferkarakaya.mihrab.plus.monthly` — Otomatik yenilenen, 1 ay
       - `com.caferkarakaya.mihrab.plus.yearly` — Otomatik yenilenen, 1 yıl
       - `com.caferkarakaya.mihrab.plus.lifetime` — Non-consumable
-      - Abonelik grubu adı: **Mihrab Plus** (aylık + yıllık aynı grupta ki yükseltme/düşürme çalışsın)
+      - Abonelik grubu adı: **Revak Plus** (aylık + yıllık aynı grupta ki yükseltme/düşürme çalışsın)
 - [ ] **Aylık ve yıllığa 1 hafta ücretsiz giriş teklifi** (yalnızca yeni aboneler).
       Kod mağazada gerçek bir giriş teklifi görürse Apple akışını kullanır; görmezse kartsız yerel
       denemeye düşer. Teklif tanımlıysa dönüşüm belirgin biçimde daha iyi.
@@ -373,7 +373,7 @@ Sahibinin App Store Connect'te / dışarıda yapması gerekenler. Kod tarafı de
 - [ ] **Featuring Nomination gönderildi** — ASC → Featuring Nominations. Kriterler: görsel işçilik
       (en yüksek ağırlık), **yeni Apple çerçevelerinin benimsenmesi** (WidgetKit, Live Activities,
       Dynamic Island, App Intents, AlarmKit, Control Center), mevsimsel uyum, geliştirici hikâyesi.
-      Mihrab'ın iOS 26 / Liquid Glass tabanlı olması burada bir **varlık**.
+      Revak'ın iOS 26 / Liquid Glass tabanlı olması burada bir **varlık**.
 - [ ] **IAP promosyon kodları kullanma** — 26 Mart 2026'da sona erdiler. **Teklif kodlarına (offer
       codes)** geç; artık tüm IAP türlerini kapsıyorlar.
 - [ ] TR fiyatları için **6 aylık gözden geçirme** takvime kondu (enflasyon ARPU'yu sessizce eritir).

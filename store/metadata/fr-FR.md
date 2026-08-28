@@ -1,27 +1,31 @@
 # Français (fr-FR)
 
 ## App Name
-Mihrab : Prière et Qibla            ← (24/30)
+Revak : Prière et Qibla            ← (23/30)
+
 
 ## Subtitle
 Coran, Adhan et Ramadan            ← (23/30)
 
+
 ## Keywords
 islam,salat,azkar,dhikr,tasbih,dua,zakat,hijri,musulman,mosquee,jeune            ← (69/100)
+
 
 ## Promotional Text
 Sans publicité, sans collecte de données. Adhan complet, Coran hors ligne, qibla honnête, tasbih, suivi qada et zakat. L'essentiel reste gratuit.            ← (145/170)
 
+
 ## Description
 Sans publicité. Sans collecte de données. Une application dont on peut vérifier l'heure.
 
-Mihrab ne met jamais les heures de prière, la qibla, les alertes d'adhan, le Coran ou le compteur de dhikr derrière un abonnement ou une publicité. Le culte lui-même reste gratuit.
+Revak ne met jamais les heures de prière, la qibla, les alertes d'adhan, le Coran ou le compteur de dhikr derrière un abonnement ou une publicité. Le culte lui-même reste gratuit.
 
 — HEURES DE PRIÈRE, CALCULÉES SUR VOTRE APPAREIL
 Pas de serveur, pas de réseau, aucun souci. Choisissez votre méthode de calcul, ajustez chaque horaire à la minute près, et voyez d'où vient chaque chiffre dans le panneau de transparence.
 
 — NOUS POSONS LA QUESTION D'ASR
-Les écoles majoritaire et hanafite peuvent séparer l'heure d'Asr de presque une heure. Mihrab affiche les deux à la configuration et vous laisse choisir.
+Les écoles majoritaire et hanafite peuvent séparer l'heure d'Asr de presque une heure. Revak affiche les deux à la configuration et vous laisse choisir.
 
 — UN VRAI ADHAN, EN INTÉGRALITÉ
 Avec AlarmKit sur iOS 26, l'adhan joue en entier, même en mode Silence ou avec un Focus actif. Vous choisissez la voix.

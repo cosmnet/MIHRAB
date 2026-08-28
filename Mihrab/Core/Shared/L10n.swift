@@ -107,7 +107,7 @@ enum L10n {
     static var loadingTimes: String { string(en: "Loading prayer times", tr: "Vakitler yükleniyor", ar: "جاري تحميل المواقيت") }
     static var fetchingSchedule: String { string(en: "Fetching today’s schedule for your city.", tr: "Şehrin için bugünün vakitleri alınıyor.", ar: "جاري جلب مواقيت اليوم لمدينتك.") }
     static var locationNeeded: String { string(en: "Location needed", tr: "Konum gerekli", ar: "الموقع مطلوب") }
-    static var locationNeededBody: String { string(en: "Allow location so Mihrab can load prayer times.", tr: "Namaz vakitleri için konuma izin ver.", ar: "اسمح بالموقع لتحميل المواقيت.") }
+    static var locationNeededBody: String { string(en: "Allow location so Revak can load prayer times.", tr: "Namaz vakitleri için konuma izin ver.", ar: "اسمح بالموقع لتحميل المواقيت.") }
     static var timesUnavailable: String { string(en: "Times unavailable", tr: "Vakitler alınamadı", ar: "المواقيت غير متاحة") }
     static var checkConnection: String { string(en: "Check your connection and try again.", tr: "Bağlantını kontrol edip tekrar dene.", ar: "تحقق من الاتصال وحاول مرة أخرى.") }
     static var tryAgain: String { string(en: "Try Again", tr: "Tekrar Dene", ar: "حاول مرة أخرى") }
@@ -199,9 +199,9 @@ enum L10n {
     static var locationTitle: String { string(en: "For precise prayer times", tr: "Hassas namaz vakitleri için", ar: "لأوقات صلاة دقيقة") }
     static var locationBody: String {
         string(
-            en: "Mihrab uses your location only on-device to calculate prayer times, Qibla direction, and nearby mosques.",
-            tr: "Mihrab konumunu yalnızca cihazda kullanır: namaz vakitleri, kıble ve yakındaki camiler.",
-            ar: "يستخدم محراب موقعك على الجهاز فقط لحساب المواقيت والقبلة والمساجد القريبة."
+            en: "Revak uses your location only on-device to calculate prayer times, Qibla direction, and nearby mosques.",
+            tr: "Revak konumunu yalnızca cihazda kullanır: namaz vakitleri, kıble ve yakındaki camiler.",
+            ar: "يستخدم رواق موقعك على الجهاز فقط لحساب المواقيت والقبلة والمساجد القريبة."
         )
     }
     static var calculationMethod: String { string(en: "Calculation method", tr: "Hesaplama yöntemi", ar: "طريقة الحساب") }
@@ -212,12 +212,12 @@ enum L10n {
     static var alwaysWithYou: String { string(en: "Always with you", tr: "Her zaman yanında", ar: "دائماً معك") }
     static var widgetBody: String {
         string(
-            en: "Add the Mihrab widget to your Home Screen, Lock Screen, and Dynamic Island. You can set it up later in Settings.",
-            tr: "Mihrab widget’ını Ana Ekran, Kilit Ekranı ve Dynamic Island’a ekle. Bunu sonra Ayarlar’dan da yapabilirsin.",
-            ar: "أضف ودجة محراب إلى الشاشة الرئيسية وشاشة القفل وDynamic Island. يمكنك إعدادها لاحقاً من الإعدادات."
+            en: "Add the Revak widget to your Home Screen, Lock Screen, and Dynamic Island. You can set it up later in Settings.",
+            tr: "Revak widget’ını Ana Ekran, Kilit Ekranı ve Dynamic Island’a ekle. Bunu sonra Ayarlar’dan da yapabilirsin.",
+            ar: "أضف ودجة رواق إلى الشاشة الرئيسية وشاشة القفل وDynamic Island. يمكنك إعدادها لاحقاً من الإعدادات."
         )
     }
-    static var enterMihrab: String { string(en: "Enter Mihrab", tr: "Mihrab'a gir", ar: "ادخل محراب") }
+    static var enterMihrab: String { string(en: "Enter Revak", tr: "Revak'a gir", ar: "ادخل رواق") }
 
     // MARK: - Zikirmatik
 

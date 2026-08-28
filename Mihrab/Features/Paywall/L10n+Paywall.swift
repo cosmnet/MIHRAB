@@ -9,17 +9,17 @@ extension L10n {
 
     static var paywallTitle: String {
         string(
-            en: "Mihrab Plus",
-            tr: "Mihrab Plus",
-            ar: "محراب بلس"
+            en: "Revak Plus",
+            tr: "Revak Plus",
+            ar: "رواق بلس"
         )
     }
 
     static var paywallHeadline: String {
         string(
-            en: "A calmer, deeper Mihrab",
-            tr: "Daha sakin, daha derin bir Mihrab",
-            ar: "محراب أهدأ وأعمق"
+            en: "A calmer, deeper Revak",
+            tr: "Daha sakin, daha derin bir Revak",
+            ar: "رواق أهدأ وأعمق"
         )
     }
 
@@ -130,9 +130,9 @@ extension L10n {
 
     static var paywallLifetimeNote: String {
         string(
-            en: "Pay once, keep Plus for as long as Mihrab lives.",
-            tr: "Bir kez öde, Mihrab yaşadığı sürece Plus senin olsun.",
-            ar: "ادفع مرة واحدة واحتفظ بـ«بلس» ما دام محراب موجودًا."
+            en: "Pay once, keep Plus for as long as Revak lives.",
+            tr: "Bir kez öde, Revak yaşadığı sürece Plus senin olsun.",
+            ar: "ادفع مرة واحدة واحتفظ بـ«بلس» ما دام رواق موجودًا."
         )
     }
 
@@ -320,16 +320,16 @@ extension L10n {
 
     static var premiumLockedHint: String {
         string(
-            en: "Included with Mihrab Plus.",
-            tr: "Mihrab Plus ile birlikte gelir.",
-            ar: "متاح مع محراب بلس."
+            en: "Included with Revak Plus.",
+            tr: "Revak Plus ile birlikte gelir.",
+            ar: "متاح مع رواق بلس."
         )
     }
 
     // MARK: - Settings section
 
     static var subsSectionTitle: String {
-        string(en: "Mihrab Plus", tr: "Mihrab Plus", ar: "محراب بلس")
+        string(en: "Revak Plus", tr: "Revak Plus", ar: "رواق بلس")
     }
 
     static var subsStatusLabel: String {
@@ -357,7 +357,7 @@ extension L10n {
     }
 
     static var subsUpgrade: String {
-        string(en: "See Mihrab Plus", tr: "Mihrab Plus'ı gör", ar: "استعرض محراب بلس")
+        string(en: "See Revak Plus", tr: "Revak Plus'ı gör", ar: "استعرض رواق بلس")
     }
 
     static var subsStartTrial: String {
@@ -375,8 +375,8 @@ extension L10n {
     static var subsThanks: String {
         string(
             en: "Thank you for supporting Mihrab.",
-            tr: "Mihrab'ı desteklediğin için teşekkürler.",
-            ar: "شكرًا لدعمك محراب."
+            tr: "Revak'ı desteklediğin için teşekkürler.",
+            ar: "شكرًا لدعمك رواق."
         )
     }
 
@@ -509,9 +509,9 @@ extension L10n {
 
     static var paywallAlreadyMember: String {
         string(
-            en: "You already have Mihrab Plus.",
-            tr: "Mihrab Plus'a zaten sahipsin.",
-            ar: "لديك محراب بلس بالفعل."
+            en: "You already have Revak Plus.",
+            tr: "Revak Plus'a zaten sahipsin.",
+            ar: "لديك رواق بلس بالفعل."
         )
     }
 }
@@ -579,9 +579,9 @@ extension L10n {
 
     static var paywallFreeCoreHeading: String {
         string(
-            en: "The heart of Mihrab stays free",
-            tr: "Mihrab'ın kalbi hep ücretsiz kalacak",
-            ar: "قلب محراب يبقى مجانًا"
+            en: "The heart of Revak stays free",
+            tr: "Revak'ın kalbi hep ücretsiz kalacak",
+            ar: "قلب رواق يبقى مجانًا"
         )
     }
 

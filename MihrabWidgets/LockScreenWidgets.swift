@@ -99,7 +99,7 @@ struct LockScreenRectangularView: View {
                     .accessibilityHidden(true)
                 }
             } else {
-                Text("Mihrab")
+                Text("Revak")
                     .font(.headline)
                     .widgetAccentable()
             }
@@ -115,7 +115,7 @@ struct LockScreenInlineWidget: Widget {
             if let next {
                 Text("\(next.prayer.localizedNamazName) \(next.date, format: .dateTime.hour().minute())")
             } else {
-                Text("Mihrab")
+                Text("Revak")
             }
         }
         .configurationDisplayName("Next Prayer")

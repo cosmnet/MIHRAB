@@ -91,7 +91,7 @@ extension DaySegment {
             DaySegmentPalette(sky: Color(hex: 0x8A6224), ground: Color(hex: 0x2E2412),
                               lightCenter: UnitPoint(x: 0.86, y: 0.72), strength: 0.92)
         case .morning:
-            // Clear, light emerald — the most "Mihrab" of the eight.
+            // Clear, light emerald — the most "Revak" of the eight.
             DaySegmentPalette(sky: Color(hex: 0x2A8F63), ground: Color(hex: 0x10382A),
                               lightCenter: UnitPoint(x: 0.68, y: 0.36), strength: 0.78)
         case .dhuhr:

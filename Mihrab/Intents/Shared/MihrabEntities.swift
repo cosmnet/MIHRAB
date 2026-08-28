@@ -83,7 +83,7 @@ struct MihrabScreenEntity: AppEntity, Identifiable, Sendable {
 
     var tab: MihrabDeepLink.Tab? { MihrabDeepLink.Tab(rawValue: id) }
 
-    static let typeDisplayRepresentation = TypeDisplayRepresentation(name: "Mihrab Screen")
+    static let typeDisplayRepresentation = TypeDisplayRepresentation(name: "Revak Screen")
 
     static let defaultQuery = MihrabScreenEntityQuery()
 

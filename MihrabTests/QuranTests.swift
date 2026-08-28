@@ -460,7 +460,7 @@ final class HatimInviteTests: XCTestCase {
 
     func testURLRoundTrips() throws {
         let url = try XCTUnwrap(sample.url)
-        XCTAssertEqual(url.scheme, "mihrab")
+        XCTAssertEqual(url.scheme, "revak")
         XCTAssertEqual(url.host(), "hatim")
         XCTAssertEqual(HatimInvite.parse(url: url)?.groupID, sample.groupID)
         XCTAssertEqual(HatimInvite.parse(url.absoluteString)?.groupID, sample.groupID)
@@ -482,13 +482,13 @@ final class HatimInviteTests: XCTestCase {
     func testGarbageIsRejectedRatherThanPartiallyDecoded() {
         XCTAssertNil(HatimInvite.parse(""))
         XCTAssertNil(HatimInvite.parse("hello"))
-        XCTAssertNil(HatimInvite.parse("mihrab://hatim?c=zzzz"))
+        XCTAssertNil(HatimInvite.parse("revak://hatim?c=zzzz"))
         XCTAssertNil(HatimInvite.parse("https://example.com/hatim?c=abc"))
     }
 
     func testInviteMessageCarriesTheLink() throws {
         let text = sample.shareText()
         XCTAssertTrue(text.contains(sample.name))
-        XCTAssertTrue(text.contains("mihrab://hatim?c="))
+        XCTAssertTrue(text.contains("revak://hatim?c="))
     }
 }
