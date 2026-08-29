@@ -84,6 +84,10 @@ targets:
     info:
       path: Mihrab/Info.plist
       properties:
+        # Revak only speaks HTTPS through the system stack — no proprietary or
+        # non-exempt cryptography. Declaring it here means App Store Connect
+        # never parks a build in "Missing Compliance" waiting for an answer.
+        ITSAppUsesNonExemptEncryption: false
         CFBundleURLTypes:
           - CFBundleURLName: com.caferkarakaya.mihrab
             CFBundleTypeRole: Editor

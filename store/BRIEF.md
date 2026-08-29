@@ -1,10 +1,10 @@
-# Mihrab — App Store vitrin paketi (ortak brief)
+# Revak — App Store vitrin paketi (ortak brief)
 
 Üç ajan paralel çalışıyor. Bu dosya ortak gerçekleri taşır.
 
 ## Uygulama nedir
 
-Mihrab: iOS 26 için İslami günlük yaşam uygulaması. Namaz vakitleri (cihaz üstü
+Revak: iOS 26 için İslami günlük yaşam uygulaması. Namaz vakitleri (cihaz üstü
 hesaplama, internetsiz çalışır), kıble pusulası + AR, Kur'an okuyucu (tam Arapça
 metin + Türkçe meal, çevrimdışı), zikirmatik (gerçek tespih fiziğiyle), Esmaül
 Hüsna, kaza namazı takibi, zekât hesaplayıcı, dinî takvim, hatim takibi,
@@ -22,7 +22,7 @@ widget'lar, Live Activity, Apple Watch uygulaması.
    gömülü.
 
 **Ücretsiz kalanlar:** namaz vakitleri, kıble, ezan bildirimleri, Kur'an ve meal,
-99 isim, zikirmatik, kaza takibi, zekât, takvim, hatim. **Mihrab Plus** yalnızca
+99 isim, zikirmatik, kaza takibi, zekât, takvim, hatim. **Revak Plus** yalnızca
 güzelleştirici katman: zengin widget'lar, temalar, özel ezan sesi, sınırsız zikir
 geçmişi, Esma koleksiyonları, çoklu şehir, iCloud senkronu, AR kıble.
 

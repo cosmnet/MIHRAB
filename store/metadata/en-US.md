@@ -45,7 +45,7 @@ Imsakiye, iftar and suhoor countdowns, a Hijri calendar, notifications for the s
 — WIDGETS, LIVE ACTIVITY, APPLE WATCH
 The next prayer time on your Lock Screen, and on your Apple Watch.
 
-— MIHRAB PLUS
+— REVAK PLUS
 The essentials stay free forever. Plus adds advanced widgets, themes, a custom adhan sound, unlimited dhikr history, Esma collections, AR qibla, multiple cities, iCloud sync. Seven days free, cancel in one tap from Settings.            ← (1652/4000)
 
 ## Ekran görüntüsü başlıkları
