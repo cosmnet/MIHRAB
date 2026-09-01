@@ -46,7 +46,7 @@ Imsakiah, kiraan detik berbuka dan bersahur, kalendar Hijrah, notifikasi malam-m
 Waktu solat seterusnya pada Skrin Kunci, dan pada Apple Watch.
 
 — REVAK PLUS
-Ciri asas kekal percuma selamanya. Plus menambah widget lanjutan, tema, bunyi azan tersendiri, sejarah zikir tanpa had, koleksi Asmaul Husna, kiblat AR, banyak bandar, penyegerakan iCloud. Cubaan percuma tujuh hari, batal bila-bila masa dari Tetapan.            ← (1771/4000)
+Ciri asas kekal percuma selamanya. Plus menambah widget lanjutan, tema, bunyi azan tersendiri, sejarah zikir tanpa had, koleksi Asmaul Husna, kiblat AR, banyak bandar, penyegerakan iCloud. Cubaan percuma tujuh hari, batal bila-bila masa dari Tetapan.            ← (1730/4000)
 
 ## Ekran görüntüsü başlıkları
 1. Tanpa iklan, waktu dipercayai

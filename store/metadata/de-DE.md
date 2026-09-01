@@ -46,7 +46,7 @@ Imsakiye, Countdown für Iftar und Suhoor, Hijri-Kalender, Erinnerungen an die g
 Die nächste Gebetszeit auf dem Sperrbildschirm und auf der Apple Watch.
 
 — REVAK PLUS
-Die Grundfunktionen bleiben für immer kostenlos. Plus bringt erweiterte Widgets, Themes, einen eigenen Adhan-Ton, unbegrenzten Dhikr-Verlauf, Asma-Sammlungen, Qibla per AR, mehrere Städte, iCloud-Synchronisierung. Sieben Tage kostenlos testen, Kündigung mit einem Tipp in den Einstellungen.            ← (1870/4000)
+Die Grundfunktionen bleiben für immer kostenlos. Plus bringt erweiterte Widgets, Themes, einen eigenen Adhan-Ton, unbegrenzten Dhikr-Verlauf, Asma-Sammlungen, Qibla per AR, mehrere Städte, iCloud-Synchronisierung. Sieben Tage kostenlos testen, Kündigung mit einem Tipp in den Einstellungen.            ← (1826/4000)
 
 ## Ekran görüntüsü başlıkları
 1. Keine Werbung, verlässliche Zeit

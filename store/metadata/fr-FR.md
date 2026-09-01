@@ -46,7 +46,7 @@ Imsakiye, comptes à rebours iftar et suhoor, calendrier hégirien, rappels pour
 La prochaine heure de prière sur l'écran verrouillé, et sur l'Apple Watch.
 
 — REVAK PLUS
-L'essentiel reste gratuit pour toujours. Plus ajoute des widgets avancés, des thèmes, un son d'adhan personnalisé, un historique de dhikr illimité, des collections de noms, une qibla en réalité augmentée, plusieurs villes, la synchronisation iCloud. Essai gratuit de sept jours, annulation en un geste depuis les Réglages.            ← (1970/4000)
+L'essentiel reste gratuit pour toujours. Plus ajoute des widgets avancés, des thèmes, un son d'adhan personnalisé, un historique de dhikr illimité, des collections de noms, une qibla en réalité augmentée, plusieurs villes, la synchronisation iCloud. Essai gratuit de sept jours, annulation en un geste depuis les Réglages.            ← (1919/4000)
 
 ## Ekran görüntüsü başlıkları
 1. Sans pub, une heure fiable

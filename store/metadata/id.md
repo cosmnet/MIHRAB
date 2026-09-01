@@ -46,7 +46,7 @@ Imsakiyah, hitung mundur buka dan sahur, kalender Hijriah, notifikasi malam-mala
 Waktu sholat berikutnya di Lock Screen, dan di Apple Watch.
 
 — REVAK PLUS
-Fitur inti tetap gratis selamanya. Plus menambahkan widget lanjutan, tema, suara adzan khusus, riwayat dzikir tanpa batas, koleksi Asmaul Husna, kiblat AR, banyak kota, sinkronisasi iCloud. Coba gratis tujuh hari, batalkan kapan saja dari Pengaturan satu sentuhan.            ← (1819/4000)
+Fitur inti tetap gratis selamanya. Plus menambahkan widget lanjutan, tema, suara adzan khusus, riwayat dzikir tanpa batas, koleksi Asmaul Husna, kiblat AR, banyak kota, sinkronisasi iCloud. Coba gratis tujuh hari, batalkan kapan saja dari Pengaturan satu sentuhan.            ← (1780/4000)
 
 ## Ekran görüntüsü başlıkları
 1. Tanpa iklan, waktu terpercaya

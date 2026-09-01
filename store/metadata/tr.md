@@ -46,7 +46,7 @@ Gerçek tespih fiziğiyle zikirmatik ve hazır 33/99/100 hedefleri. 99 ismin tam
 Kilit ekranında sonraki vakit, Apple Watch'ta namaz vakitleri ve kıble.
 
 — REVAK PLUS
-İbadetin temeli hep ücretsiz kalır. Plus; zengin widget'ları, temaları, özel ezan sesini, sınırsız zikir geçmişini, Esmâ koleksiyonlarını, AR kıbleyi, çoklu şehri, iCloud senkronunu ekler. 7 gün ücretsiz denenir, iptal Ayarlar'dan tek dokunuşla yapılır.            ← (1783/4000)
+İbadetin temeli hep ücretsiz kalır. Plus; zengin widget'ları, temaları, özel ezan sesini, sınırsız zikir geçmişini, Esmâ koleksiyonlarını, AR kıbleyi, çoklu şehri, iCloud senkronunu ekler. 7 gün ücretsiz denenir, iptal Ayarlar'dan tek dokunuşla yapılır.            ← (1742/4000)
 
 ## Ekran görüntüsü başlıkları
 1. Sıfır reklam, doğru vakit
