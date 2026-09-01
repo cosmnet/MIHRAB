@@ -123,7 +123,7 @@ extension L10n {
 
     static var setNotificationsSystemHint: String {
         string(
-            en: "The alert sound follows your iOS notification settings for Mihrab.",
+            en: "The alert sound follows your iOS notification settings for Revak.",
             tr: "Bildirim sesi, Revak için iOS bildirim ayarlarını izler.",
             ar: "يتبع صوت التنبيه إعدادات إشعارات iOS الخاصة برواق."
         )

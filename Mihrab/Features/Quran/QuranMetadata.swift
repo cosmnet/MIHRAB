@@ -72,7 +72,9 @@ struct SuraInfo: Codable, Hashable, Sendable, Identifiable {
         switch L10n.language {
         case .arabic: arabicName
         case .turkish: turkishName
-        case .english: transliteration
+        // Every language added after the first three reads Latin script, so
+        // the transliteration is the name they can actually search for.
+        default: transliteration
         }
     }
 

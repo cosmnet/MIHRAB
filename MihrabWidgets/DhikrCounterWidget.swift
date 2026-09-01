@@ -20,7 +20,7 @@ struct DhikrCounterWidget: Widget {
                 }
         }
         .configurationDisplayName("Dhikr Counter")
-        .description("Tap to count without opening Mihrab.")
+        .description("Tap to count without opening Revak.")
         .supportedFamilies([.systemSmall, .systemMedium])
     }
 }

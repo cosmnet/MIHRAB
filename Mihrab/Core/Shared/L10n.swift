@@ -3,16 +3,31 @@ import Foundation
 /// Hardcoded en/tr/ar copy. String Catalog interpolation was leaking raw keys
 /// (`prayer.schedule.fajr`, `hijri.month.3`, `PRAYER.COUNTDOWN.ASR`) onto the UI.
 enum L10n {
-    enum Language: String {
+    /// Every language the interface speaks. `english`, `turkish` and `arabic`
+    /// are written inline at each call site; the rest are looked up in
+    /// `L10nCatalog` using the English string as the key.
+    enum Language: String, CaseIterable {
         case english = "en"
         case turkish = "tr"
         case arabic = "ar"
+        case indonesian = "id"
     }
 
-    static var language: Language {
+    /// Resolved once. The device language cannot change while the process is
+    /// alive — iOS restarts the app — and every `string(...)` call reads this,
+    /// so recomputing it from `Locale.preferredLanguages` 1300 times a frame
+    /// was pure waste.
+    static let language: Language = detectLanguage()
+
+    private static func detectLanguage() -> Language {
         let codes = preferredLanguageCodes()
-        if codes.contains(where: { $0.hasPrefix("tr") }) { return .turkish }
-        if codes.contains(where: { $0.hasPrefix("ar") }) { return .arabic }
+        // Longest prefix first so "ms" never swallows a hypothetical "msa-…"
+        // before the exact match is considered.
+        for code in codes {
+            if let match = Language.allCases.first(where: { code.hasPrefix($0.rawValue) }) {
+                return match
+            }
+        }
         return .english
     }
 
@@ -21,8 +36,15 @@ enum L10n {
         case .turkish: "tr_TR"
         case .arabic: "ar"
         case .english: "en"
+        case .indonesian: "id_ID"
         }
     }
+
+    /// Arabic and Urdu are written right to left. Everything else is not.
+    /// Kept separate from `isArabic`, which several views use to decide whether
+    /// to *repeat* Arabic scripture the reader can already see — a question
+    /// about content, not about layout.
+    static var isRightToLeft: Bool { language == .arabic }
 
     /// `Date.formatted()` is not a SwiftUI view API, so it ignores the
     /// `\.locale` environment RootView sets and falls back to the device
@@ -33,11 +55,18 @@ enum L10n {
     static var isTurkish: Bool { language == .turkish }
     static var isArabic: Bool { language == .arabic }
 
+    /// The three languages the codebase was written in answer from the call
+    /// site. Every language added later answers from `L10nCatalog`, keyed by
+    /// the English text — so adding a language touches one file, not the 1300
+    /// call sites scattered across the app, the widgets and the watch.
+    ///
+    /// A missing entry falls back to English rather than showing a key.
     static func string(en: String, tr: String, ar: String) -> String {
         switch language {
-        case .turkish: tr
-        case .arabic: ar
-        case .english: en
+        case .english: return en
+        case .turkish: return tr
+        case .arabic: return ar
+        default: return L10nCatalog.lookup(en) ?? en
         }
     }
 

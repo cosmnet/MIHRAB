@@ -63,7 +63,7 @@ extension L10n {
 
     static var ntfAlarmPermissionDenied: String {
         string(
-            en: "Alarm permission is off, so Revak falls back to notifications. You can turn alarms on in Settings ▸ Mihrab.",
+            en: "Alarm permission is off, so Revak falls back to notifications. You can turn alarms on in Settings ▸ Revak.",
             tr: "Alarm izni kapalı; Revak bildirimlere düşüyor. Alarmları Ayarlar ▸ Revak'dan açabilirsiniz.",
             ar: "إذن المنبّه مغلق، لذا يعود رواق إلى الإشعارات. يمكنك تفعيل المنبّهات من الإعدادات ▸ رواق."
         )

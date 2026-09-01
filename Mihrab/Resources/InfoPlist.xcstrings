@@ -30,8 +30,43 @@
       "localizations": {
         "en": {
           "stringUnit": {
-            "state": "new",
+            "state": "translated",
             "value": "Revak"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Revak"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "رواق"
+          }
+        }
+      }
+    },
+    "NSAlarmKitUsageDescription": {
+      "extractionState": "manual",
+      "localizations": {
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "يستخدم رواق المنبّهات ليُسمَع الأذان في وقته، حتى في الوضع الصامت أو أثناء التركيز."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Revak uses alarms so the adhan can sound at prayer time, even in Silent mode or Focus."
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Revak, ezanın namaz vaktinde Sessiz modda ve Odak açıkken bile duyulabilmesi için alarm kullanır."
           }
         }
       }
@@ -78,29 +113,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Revak konumunu hassas namaz vakitleri, kıble yönü ve yakındaki camiler için kullanır."
-          }
-        }
-      }
-    },
-    "NSAlarmKitUsageDescription": {
-      "extractionState": "manual",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Revak uses alarms so the adhan can sound at prayer time, even in Silent mode or Focus."
-          }
-        },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Revak, ezanın namaz vaktinde Sessiz modda ve Odak açıkken bile duyulabilmesi için alarm kullanır."
-          }
-        },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "يستخدم رواق المنبّهات ليُسمَع الأذان في وقته، حتى في الوضع الصامت أو أثناء التركيز."
           }
         }
       }

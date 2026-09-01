@@ -247,7 +247,7 @@ extension L10n {
 
     static var wgtDhikrCounterDescription: String {
         string(
-            en: "Tap to count without opening Mihrab.",
+            en: "Tap to count without opening Revak.",
             tr: "Revak'ı açmadan dokunarak say.",
             ar: "انقر للعد دون فتح التطبيق."
         )

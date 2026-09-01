@@ -374,7 +374,7 @@ extension L10n {
 
     static var subsThanks: String {
         string(
-            en: "Thank you for supporting Mihrab.",
+            en: "Thank you for supporting Revak.",
             tr: "Revak'ı desteklediğin için teşekkürler.",
             ar: "شكرًا لدعمك رواق."
         )

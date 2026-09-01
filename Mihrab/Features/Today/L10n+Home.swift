@@ -20,6 +20,9 @@ extension L10n {
         case .turkish: count == 1 ? "Bugün 1 vakit kaldı" : "Bugün \(count) vakit kaldı"
         case .arabic: "بقيت \(count) صلوات اليوم"
         case .english: count == 1 ? "1 prayer left today" : "\(count) prayers left today"
+        default:
+            L10nCatalog.plural("%d prayers left today", count)
+                ?? (count == 1 ? "1 prayer left today" : "\(count) prayers left today")
         }
     }
 
@@ -70,6 +73,9 @@ extension L10n {
         case .turkish: days == 1 ? "1 günlük seri" : "\(days) günlük seri"
         case .arabic: "سلسلة \(days) يوم"
         case .english: days == 1 ? "1 day streak" : "\(days) day streak"
+        default:
+            L10nCatalog.plural("%d day streak", days)
+                ?? (days == 1 ? "1 day streak" : "\(days) day streak")
         }
     }
 
@@ -119,6 +125,9 @@ extension L10n {
         case .turkish: "\(count) kaza namazı"
         case .arabic: "\(count) صلاة قضاء"
         case .english: count == 1 ? "1 missed prayer" : "\(count) missed prayers"
+        default:
+            L10nCatalog.plural("%d missed prayers", count)
+                ?? (count == 1 ? "1 missed prayer" : "\(count) missed prayers")
         }
     }
 
@@ -291,6 +300,9 @@ extension L10n {
         case .turkish: "\(count) gün oruç"
         case .arabic: "\(count) يوم صيام"
         case .english: count == 1 ? "1 day fasted" : "\(count) days fasted"
+        default:
+            L10nCatalog.plural("%d days fasted", count)
+                ?? (count == 1 ? "1 day fasted" : "\(count) days fasted")
         }
     }
 
