@@ -1,122 +1,121 @@
 {
-  "sourceLanguage": "en",
-  "strings": {
-    "CFBundleDisplayName": {
-      "comment": "Bundle display name",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "رواق"
+  "sourceLanguage" : "en",
+  "strings" : {
+    "CFBundleDisplayName" : {
+      "comment" : "Bundle display name",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "رواق"
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Revak"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Revak"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Revak"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Revak"
           }
         }
       }
     },
-    "CFBundleName": {
-      "comment": "Bundle name",
-      "extractionState": "extracted_with_value",
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Revak"
+    "CFBundleName" : {
+      "comment" : "Bundle name",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "رواق"
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Revak"
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Revak"
           }
         },
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "رواق"
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Revak"
           }
         }
       }
     },
-    "NSAlarmKitUsageDescription": {
-      "extractionState": "manual",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "يستخدم رواق المنبّهات ليُسمَع الأذان في وقته، حتى في الوضع الصامت أو أثناء التركيز."
+    "NSAlarmKitUsageDescription" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يستخدم رواق المنبّهات ليُسمَع الأذان في وقته، حتى في الوضع الصامت أو أثناء التركيز."
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Revak uses alarms so the adhan can sound at prayer time, even in Silent mode or Focus."
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Revak uses alarms so the adhan can sound at prayer time, even in Silent mode or Focus."
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Revak, ezanın namaz vaktinde Sessiz modda ve Odak açıkken bile duyulabilmesi için alarm kullanır."
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Revak, ezanın namaz vaktinde Sessiz modda ve Odak açıkken bile duyulabilmesi için alarm kullanır."
           }
         }
       }
     },
-    "NSCameraUsageDescription": {
-      "comment": "Privacy - Camera Usage Description",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "تُستخدم الكاميرا فقط لإظهار اتجاه القبلة بالواقع المعزز. لا يتم التسجيل أو الرفع."
+    "NSCameraUsageDescription" : {
+      "comment" : "Privacy - Camera Usage Description",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "تُستخدم الكاميرا فقط لإظهار اتجاه القبلة بالواقع المعزز. لا يتم التسجيل أو الرفع."
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Camera is used only to show Qibla direction in AR. Nothing is recorded or uploaded."
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Camera is used only to show Qibla direction in AR. Nothing is recorded or uploaded."
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Kamera yalnızca AR kıble yönü için kullanılır. Kayıt veya yükleme yoktur."
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kamera yalnızca AR kıble yönü için kullanılır. Kayıt veya yükleme yoktur."
           }
         }
       }
     },
-    "NSLocationWhenInUseUsageDescription": {
-      "comment": "Privacy - Location When In Use Usage Description",
-      "localizations": {
-        "ar": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "يستخدم رواق موقعك لحساب أوقات الصلاة الدقيقة واتجاه القبلة والمساجد القريبة."
+    "NSLocationWhenInUseUsageDescription" : {
+      "comment" : "Privacy - Location When In Use Usage Description",
+      "localizations" : {
+        "ar" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "يستخدم رواق موقعك لحساب أوقات الصلاة الدقيقة واتجاه القبلة والمساجد القريبة."
           }
         },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Revak uses your location to calculate precise prayer times, Qibla direction, and nearby mosques."
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Revak uses your location to calculate precise prayer times, Qibla direction, and nearby mosques."
           }
         },
-        "tr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Revak konumunu hassas namaz vakitleri, kıble yönü ve yakındaki camiler için kullanır."
+        "tr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Revak konumunu hassas namaz vakitleri, kıble yönü ve yakındaki camiler için kullanır."
           }
         }
       }
     }
   },
-  "version": "1.0"
+  "version" : "1.0"
 }

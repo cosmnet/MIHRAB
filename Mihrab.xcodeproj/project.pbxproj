@@ -343,7 +343,7 @@
 		F6E25FA1EEF00B6C9BC6D0F7 /* OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6A4FEA0425D044B832303F7D /* OFL.txt */; };
 		F76866841392BDC50EF128EF /* AsrMadhabPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC1B33DB0EDB5E0631D27E7F /* AsrMadhabPreview.swift */; };
 		F883D6D227D2D1EA2EE8C581 /* MihrabAppShortcuts.swift in Sources */ = {isa = PBXBuildFile; fileRef = C42FDD5A1FBA591670957614 /* MihrabAppShortcuts.swift */; };
-		F9954202CFB3836BCDA949EC /* MihrabWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 0F8442FC795010726112A138 /* MihrabWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		F9954202CFB3836BCDA949EC /* Revak.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 0F8442FC795010726112A138 /* Revak.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		FA4FC18B54887CDE67EED39C /* MihrabWatchWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 4CEBB3D076FC9B989D3CA25B /* MihrabWatchWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		FC4B1B3112D8FED8EDAF80F9 /* PrayerEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83D2A78AFCEE5BB6523B1015 /* PrayerEngine.swift */; };
 		FD5227DFBD81BA926F1CEEE6 /* EsmaCommentary.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E4CBDFB8B005D65320AEDD /* EsmaCommentary.swift */; };
@@ -413,7 +413,7 @@
 			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
 			dstSubfolderSpec = 16;
 			files = (
-				F9954202CFB3836BCDA949EC /* MihrabWatch.app in Embed Watch Content */,
+				F9954202CFB3836BCDA949EC /* Revak.app in Embed Watch Content */,
 			);
 			name = "Embed Watch Content";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -426,17 +426,17 @@
 		01B826E2FBBEB8C9B79DDDD6 /* PrayerAccuracyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerAccuracyTests.swift; sourceTree = "<group>"; };
 		02557C483C32E7E62E634E90 /* QadaEstimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QadaEstimator.swift; sourceTree = "<group>"; };
 		02F7225942413BE3810182F1 /* Locale+Mihrab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Locale+Mihrab.swift"; sourceTree = "<group>"; };
-		0591A8236F9CE0CDCBD55367 /* MihrabWidgets.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = MihrabWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		0591A8236F9CE0CDCBD55367 /* MihrabWidgets.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MihrabWidgets.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		059EFC1ECC1B46F682C770F1 /* WatchConnectivityClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchConnectivityClient.swift; sourceTree = "<group>"; };
 		066DB10CD1854117613E9B71 /* PrayerLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerLiveActivity.swift; sourceTree = "<group>"; };
 		067EC67F996C3F35955AF711 /* TasbihTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TasbihTests.swift; sourceTree = "<group>"; };
 		08F81C4E8577D177DC297AE6 /* SacredMarks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SacredMarks.swift; sourceTree = "<group>"; };
-		0942AC934154A367DE2D367D /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		0942AC934154A367DE2D367D /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		09FD2F82FD4ADB1134065E1A /* FastEdge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FastEdge.swift; sourceTree = "<group>"; };
 		0AA161FE1D05C8095ED89CF8 /* QuranText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuranText.swift; sourceTree = "<group>"; };
 		0EA3AECD4E4F15A9B08C47F7 /* hadiths.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = hadiths.json; sourceTree = "<group>"; };
 		0EDA8EF3E8A67EDBF8D9C9C5 /* QuranTranslation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuranTranslation.swift; sourceTree = "<group>"; };
-		0F8442FC795010726112A138 /* MihrabWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MihrabWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		0F8442FC795010726112A138 /* Revak.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Revak.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		103A68B88CA29FFCD29E407B /* TodayPrimaryAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayPrimaryAction.swift; sourceTree = "<group>"; };
 		125D7F2D0C5207279D574C89 /* L10n+Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "L10n+Settings.swift"; sourceTree = "<group>"; };
 		13B1C9A316E9EB8390CDFD79 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
@@ -473,7 +473,7 @@
 		362CBF07C0E010C9687097AC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		362E7256C731756BEB32DF2D /* MihrabWatchWidgetsBundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MihrabWatchWidgetsBundle.swift; sourceTree = "<group>"; };
 		3650D86821E8BB544540EA14 /* DesignTokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignTokens.swift; sourceTree = "<group>"; };
-		36A19D2F2BBDBAD439A0A761 /* Mihrab.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Mihrab.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		36A19D2F2BBDBAD439A0A761 /* Revak.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Revak.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		36ACB869BEF6F1B1D47B9763 /* EsmaLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EsmaLibrary.swift; sourceTree = "<group>"; };
 		384133506A0356FE686029F2 /* EsmaDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EsmaDetailSheet.swift; sourceTree = "<group>"; };
 		3894963B711DC92CEE39C69B /* TodayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayView.swift; sourceTree = "<group>"; };
@@ -508,7 +508,7 @@
 		55A568F529B56C7A91994AA1 /* PaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
 		55B3A03BE2D3D8E1420FBF37 /* IntentsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntentsTests.swift; sourceTree = "<group>"; };
 		55D293734DC5848840AC8C85 /* IslamicObservances.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IslamicObservances.swift; sourceTree = "<group>"; };
-		5771B7A959A40760D9734B97 /* mihrab-ezan.caf */ = {isa = PBXFileReference; path = "mihrab-ezan.caf"; sourceTree = "<group>"; };
+		5771B7A959A40760D9734B97 /* mihrab-ezan.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "mihrab-ezan.caf"; sourceTree = "<group>"; };
 		583BB080AA737DFCCFEB43B5 /* religious_days.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = religious_days.json; sourceTree = "<group>"; };
 		58C949E12B0B4C50496AFF20 /* VoluntaryFasts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoluntaryFasts.swift; sourceTree = "<group>"; };
 		5AF3112EADADE56AC13AA5C0 /* ShaderBackdropView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShaderBackdropView.swift; sourceTree = "<group>"; };
@@ -523,7 +523,7 @@
 		669C225B7FEAB682180421C8 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		6A4FEA0425D044B832303F7D /* OFL.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = OFL.txt; sourceTree = "<group>"; };
 		6A8A7FC3863B89BE4E18409B /* DhikrStatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DhikrStatsView.swift; sourceTree = "<group>"; };
-		6C15B4BC6284DA3838D6FB39 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		6C15B4BC6284DA3838D6FB39 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		6C2DC73D2AA4EB1474B73804 /* RamadanCountdownWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RamadanCountdownWidget.swift; sourceTree = "<group>"; };
 		6C4CC8388A0A56230B067DCC /* QiblaAccuracy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QiblaAccuracy.swift; sourceTree = "<group>"; };
 		6C8114CE0957E224F9D14976 /* MihrabShaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = MihrabShaders.metal; sourceTree = "<group>"; };
@@ -548,7 +548,7 @@
 		81BDD5F1B8EF94DA8FAE9203 /* SolarPosition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SolarPosition.swift; sourceTree = "<group>"; };
 		823FF0B8D8A5A47582151104 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		827898C7E6EC1D5E1066541C /* PrayerSourceSettingsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerSourceSettingsSection.swift; sourceTree = "<group>"; };
-		82D9ABD597B05B25543377B4 /* mihrab-ezan-short.caf */ = {isa = PBXFileReference; path = "mihrab-ezan-short.caf"; sourceTree = "<group>"; };
+		82D9ABD597B05B25543377B4 /* mihrab-ezan-short.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "mihrab-ezan-short.caf"; sourceTree = "<group>"; };
 		83D2A78AFCEE5BB6523B1015 /* PrayerEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerEngine.swift; sourceTree = "<group>"; };
 		850CCFD2816468447532804D /* MihrabIntentSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MihrabIntentSupport.swift; sourceTree = "<group>"; };
 		86358B5BB6DC82ECA9FE4728 /* ImsakiyeCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImsakiyeCard.swift; sourceTree = "<group>"; };
@@ -580,7 +580,7 @@
 		A0E80B89C5C913D54E89ABC9 /* MihrabApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MihrabApp.swift; sourceTree = "<group>"; };
 		A3FECA16833E465BFBA39D87 /* MarkPrayerPrayedIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkPrayerPrayedIntent.swift; sourceTree = "<group>"; };
 		A4F57AAC2BC9C5FAFF1F7190 /* SplashOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashOverlay.swift; sourceTree = "<group>"; };
-		A53E8AFAB1A58BFFAF92871E /* Mihrab.storekit */ = {isa = PBXFileReference; path = Mihrab.storekit; sourceTree = "<group>"; };
+		A53E8AFAB1A58BFFAF92871E /* Mihrab.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Mihrab.storekit; sourceTree = "<group>"; };
 		A5F6C7E0DC8F99BCF2D995E6 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A74140A69455CB8F111DF098 /* L10n+Backdrop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "L10n+Backdrop.swift"; sourceTree = "<group>"; };
 		A9CB3E773A9D413833B556C8 /* ContentSourceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentSourceTests.swift; sourceTree = "<group>"; };
@@ -627,7 +627,7 @@
 		CF03830ABDB0A3F833DDD0EF /* L10n+Cities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "L10n+Cities.swift"; sourceTree = "<group>"; };
 		D1AC810AC36E00BB67493B01 /* TimesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimesView.swift; sourceTree = "<group>"; };
 		D4B361E50156D1D022EF3C27 /* WatchBridgePayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchBridgePayload.swift; sourceTree = "<group>"; };
-		D5BFC74AD6FF9B6B5B12D05F /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		D5BFC74AD6FF9B6B5B12D05F /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		D68E82A706D9DD54FCF15DBD /* MosquesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MosquesView.swift; sourceTree = "<group>"; };
 		D7C3E9BF072E9851CA894773 /* ReligiousDaysListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReligiousDaysListView.swift; sourceTree = "<group>"; };
 		DA397F5F596FA6BCF701D0B1 /* adhkar.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = adhkar.json; sourceTree = "<group>"; };
@@ -653,12 +653,12 @@
 		EDCDAED913E6D02F4196C69E /* EsmaGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EsmaGridView.swift; sourceTree = "<group>"; };
 		EED3CB362E1A571716BEE8CD /* MihrabTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MihrabTests.swift; sourceTree = "<group>"; };
 		F0DEB31E584F89CF1BAF2B3F /* L10nCatalogTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = L10nCatalogTests.swift; sourceTree = "<group>"; };
-		F4508A6E3958A264562C98EF /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		F4508A6E3958A264562C98EF /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		F4EB66056B13D5B9D06BC578 /* LiveActivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveActivityManager.swift; sourceTree = "<group>"; };
 		F50BBC05C4924299AA9D3AE0 /* SubscriptionSettingsSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionSettingsSection.swift; sourceTree = "<group>"; };
 		F532D3E905178F0EE692FF7F /* BackdropSurface.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackdropSurface.swift; sourceTree = "<group>"; };
 		F63408048D09488A670C3E77 /* SubscriptionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SubscriptionManager.swift; sourceTree = "<group>"; };
-		F6C540604B88BB806EC429E7 /* MihrabTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = MihrabTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F6C540604B88BB806EC429E7 /* MihrabTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MihrabTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F7AE203162480552E7C163A9 /* MonthlyTimesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthlyTimesView.swift; sourceTree = "<group>"; };
 		F93044F893586B57DF4CE0F6 /* L10n+Zakat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "L10n+Zakat.swift"; sourceTree = "<group>"; };
 		F97B80A178F61294A7423135 /* OnboardingFlowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingFlowTests.swift; sourceTree = "<group>"; };
@@ -850,9 +850,9 @@
 		3657101CD4265C3496555564 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				36A19D2F2BBDBAD439A0A761 /* Mihrab.app */,
+				36A19D2F2BBDBAD439A0A761 /* Revak.app */,
 				F6C540604B88BB806EC429E7 /* MihrabTests.xctest */,
-				0F8442FC795010726112A138 /* MihrabWatch.app */,
+				0F8442FC795010726112A138 /* Revak.app */,
 				4CEBB3D076FC9B989D3CA25B /* MihrabWatchWidgets.appex */,
 				0591A8236F9CE0CDCBD55367 /* MihrabWidgets.appex */,
 			);
@@ -1335,7 +1335,7 @@
 				D9C9BEFD2326F67701C44E76 /* Adhan */,
 			);
 			productName = Mihrab;
-			productReference = 36A19D2F2BBDBAD439A0A761 /* Mihrab.app */;
+			productReference = 36A19D2F2BBDBAD439A0A761 /* Revak.app */;
 			productType = "com.apple.product-type.application";
 		};
 		609FBB01F87E0165D41D7C26 /* MihrabTests */ = {
@@ -1377,7 +1377,7 @@
 				49992C832D7F331FC8B781F1 /* Adhan */,
 			);
 			productName = MihrabWatch;
-			productReference = 0F8442FC795010726112A138 /* MihrabWatch.app */;
+			productReference = 0F8442FC795010726112A138 /* Revak.app */;
 			productType = "com.apple.product-type.application";
 		};
 		E5227769BCB7B68EF99D5168 /* MihrabWidgets */ = {
@@ -1426,8 +1426,6 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
-				TargetAttributes = {
-				};
 			};
 			buildConfigurationList = EDD40C4ACB4536C7FAF8D39E /* Build configuration list for PBXProject "Mihrab" */;
 			developmentRegion = en;
@@ -1891,6 +1889,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = MihrabWidgets/MihrabWidgets.entitlements;
+				DEVELOPMENT_TEAM = 4MN475Y2KT;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = MihrabWidgets/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
@@ -2009,7 +2008,10 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1 $(inherited)";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -2035,6 +2037,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = MihrabWatch/MihrabWatch.entitlements;
+				DEVELOPMENT_TEAM = 4MN475Y2KT;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = MihrabWatch/Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = com.caferkarakaya.mihrab.watchkitapp;
@@ -2050,6 +2053,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = 4MN475Y2KT;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -2069,6 +2073,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = MihrabWidgets/MihrabWidgets.entitlements;
+				DEVELOPMENT_TEAM = 4MN475Y2KT;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = MihrabWidgets/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
@@ -2092,6 +2097,7 @@
 				CODE_SIGN_ENTITLEMENTS = Mihrab/Mihrab.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 4MN475Y2KT;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Mihrab/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Revak;
@@ -2121,6 +2127,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = MihrabWatchWidgets/MihrabWatchWidgets.entitlements;
+				DEVELOPMENT_TEAM = 4MN475Y2KT;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = MihrabWatchWidgets/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -2141,6 +2148,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = 4MN475Y2KT;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -2161,6 +2169,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = MihrabWatch/MihrabWatch.entitlements;
+				DEVELOPMENT_TEAM = 4MN475Y2KT;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = MihrabWatch/Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = com.caferkarakaya.mihrab.watchkitapp;
@@ -2179,6 +2188,7 @@
 				CODE_SIGN_ENTITLEMENTS = Mihrab/Mihrab.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 4MN475Y2KT;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Mihrab/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Revak;
@@ -2208,6 +2218,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = MihrabWatchWidgets/MihrabWatchWidgets.entitlements;
+				DEVELOPMENT_TEAM = 4MN475Y2KT;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = MihrabWatchWidgets/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (

@@ -14,7 +14,18 @@ Apple ID: 6805912172 · Bundle ID: com.caferkarakaya.mihrab
 Birincil dil Türkçe. Sürüm 1.0, "Prepare for Submission" durumunda.
 
 METİNLERİN KAYNAĞI — hiçbir metni kendin yazma, uydurma, çevirme:
-repoda /store/metadata/<locale>.md dosyaları var. Her dosyada
+
+Depo: /Users/cosm/Desktop/MIHRAB
+Metinler: /Users/cosm/Desktop/MIHRAB/store/metadata/<locale>.md
+
+Bu makinede ~/Projects/mihrab diye boş bir git klasörü de var; o DEĞİL, orada
+hiçbir şey yok. Doğru yol yukarıdaki.
+
+Dosya sistemine erişemiyorsan aynı dosyalar herkese açık depoda duruyor:
+  https://raw.githubusercontent.com/cosmnet/MIHRAB/main/store/metadata/<locale>.md
+Örnek: .../store/metadata/ur-PK.md · .../store/metadata/zh-Hans.md
+
+Her dosyada
 ## App Name, ## Subtitle, ## Keywords, ## Promotional Text, ## Description
 başlıkları ve her birinin sonunda "← (n/limit)" işareti var. Bu işareti ASC'ye
 YAZMA, sadece metnin kendisini kopyala.
@@ -131,7 +142,7 @@ BİR DİL EKLEMEK
    çıkarılamıyor, çünkü sayı çalışma anında metne giriyor):
      %d prayers left today / %d day streak / %d missed prayers / %d days fasted
 
-ANAHTARLARI DÖKME KOMUTU (depo kökünde):
+ANAHTARLARI DÖKME KOMUTU (depo kökü: /Users/cosm/Desktop/MIHRAB):
   python3 - <<'EOF'
   import re, glob, collections, os
   pat = re.compile(r'string\(\s*en:\s*"((?:[^"\\]|\\.)*)"\s*,\s*tr:', re.S)
